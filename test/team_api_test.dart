@@ -71,5 +71,18 @@ void main() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+    expect(team.name, 'Power Ranger');
+    expect(team.timeZone, "Africa/Abidjan");
+    expect(team.countryCode, "AUD");
+  });
+
+  test('getting back team should be successful', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    final team = createdOrError.toIterable().first;
+
+    final retrievedTeamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
+    expect(retrievedTeamOrError.isRight(), true);
   });
 }
