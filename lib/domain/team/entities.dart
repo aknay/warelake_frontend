@@ -67,7 +67,7 @@ class Team {
   // Factory method to create a Team instance from a JSON map
   factory Team.fromJson(Map<String, dynamic> json) {
     return Team(
-      id: json['team_id'],
+      id: json['id'],
       name: json['name'],
       contactName: json['contact_name'],
       email: json['email'],

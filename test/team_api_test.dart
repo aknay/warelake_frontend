@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -12,6 +13,7 @@ import 'helpers/sign.in.response.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
+  final roleApi = RoleRestApi();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -74,7 +76,16 @@ void main() async {
     final team = createdOrError.toIterable().first;
     expect(team.name, 'Power Ranger');
     expect(team.timeZone, "Africa/Abidjan");
-    expect(team.countryCode, "AUD");
+    expect(team.currencyCode, "AUD");
+
+    // admin role will be created when creating a team
+    final roleListOrError = await roleApi.getRoleList(teamId: team.id!, token: firstUserAccessToken);
+    expect(roleListOrError.isRight(), true);
+    expect(roleListOrError.toIterable().first.data.length == 1, true);
+     final adminRole = roleListOrError.toIterable().first.data.first;
+     expect(adminRole.roleName, 'admin');
+    
+
   });
 
   test('getting back team should be successful', () async {
