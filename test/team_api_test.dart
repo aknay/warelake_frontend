@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
+import 'package:inventory_frontend/data/user/rest.api.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -14,6 +15,7 @@ import 'helpers/sign.in.response.dart';
 void main() async {
   final teamApi = TeamRestApi();
   final roleApi = RoleRestApi();
+  final userApi = UserRestApi();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -84,6 +86,15 @@ void main() async {
     expect(roleListOrError.toIterable().first.data.length == 1, true);
      final adminRole = roleListOrError.toIterable().first.data.first;
      expect(adminRole.roleName, 'admin');
+
+     //check admin user is created
+
+         final userListOrError = await userApi.getUserList(team: team, token: firstUserAccessToken);
+    expect(userListOrError.isRight(), true);
+    expect(userListOrError.toIterable().first.data.length == 1, true);
+     final adminUser = userListOrError.toIterable().first.data.first;
+     expect(adminUser.isTeamOwner, true);
+
     
 
   });

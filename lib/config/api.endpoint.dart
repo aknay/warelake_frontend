@@ -16,7 +16,12 @@ class ApiEndPoint {
   static String getTeamEndPoint({String? teamId}) {
     return teamId == null ? "${getApiBaseUrl()}/v1/teams" : "${getApiBaseUrl()}/v1/teams/$teamId";
   }
-    static String getRoleEndPoint({String? roleId}) {
+
+  static String getRoleEndPoint({String? roleId}) {
     return roleId == null ? "${getApiBaseUrl()}/v1/roles" : "${getApiBaseUrl()}/v1/roles/$roleId";
+  }
+
+  static String getUserEndPoint({String? userId}) {
+    return userId == null ? "${getApiBaseUrl()}/v1/users" : "${getApiBaseUrl()}/v1/users/$userId";
   }
 }
