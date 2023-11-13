@@ -3,8 +3,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HttpHelper {
-  static post({required String url, required Map<String, dynamic> body, required String token}) {
-    return http.post(Uri.parse(url),
+  static post({required String url, required Map<String, dynamic> body, required String token, String? teamId}) {
+    Map<String, String> map = {};
+    if (teamId != null) {
+      map["team_id"] = teamId;
+    }
+
+    final uri = teamId == null ? Uri.parse(url) : Uri.parse(url).replace(queryParameters: map);
+
+    return http.post(uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
@@ -12,7 +19,7 @@ class HttpHelper {
         body: jsonEncode(body));
   }
 
-    static postWithoutBody({required String url, required String token}) {
+  static postWithoutBody({required String url, required String token}) {
     return http.post(Uri.parse(url), headers: {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json; charset=UTF-8',

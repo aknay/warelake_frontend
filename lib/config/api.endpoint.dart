@@ -24,4 +24,8 @@ class ApiEndPoint {
   static String getUserEndPoint({String? userId}) {
     return userId == null ? "${getApiBaseUrl()}/v1/users" : "${getApiBaseUrl()}/v1/users/$userId";
   }
+
+    static String getItemEndPoint({String? itemId}) {
+    return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
+  }
 }

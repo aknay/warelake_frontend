@@ -84,19 +84,15 @@ void main() async {
     final roleListOrError = await roleApi.getRoleList(teamId: team.id!, token: firstUserAccessToken);
     expect(roleListOrError.isRight(), true);
     expect(roleListOrError.toIterable().first.data.length == 1, true);
-     final adminRole = roleListOrError.toIterable().first.data.first;
-     expect(adminRole.roleName, 'admin');
+    final adminRole = roleListOrError.toIterable().first.data.first;
+    expect(adminRole.roleName, 'admin');
 
-     //check admin user is created
-
-         final userListOrError = await userApi.getUserList(team: team, token: firstUserAccessToken);
+    //check admin user is created
+    final userListOrError = await userApi.getUserList(team: team, token: firstUserAccessToken);
     expect(userListOrError.isRight(), true);
     expect(userListOrError.toIterable().first.data.length == 1, true);
-     final adminUser = userListOrError.toIterable().first.data.first;
-     expect(adminUser.isTeamOwner, true);
-
-    
-
+    final adminUser = userListOrError.toIterable().first.data.first;
+    expect(adminUser.isTeamOwner, true);
   });
 
   test('getting back team should be successful', () async {
