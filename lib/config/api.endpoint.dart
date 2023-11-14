@@ -28,4 +28,8 @@ class ApiEndPoint {
     static String getItemEndPoint({String? itemId}) {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
+
+      static String getPurchaseOrderEndPoint({String? purchaseOrderId}) {
+    return purchaseOrderId == null ? "${getApiBaseUrl()}/v1/purchase_order" : "${getApiBaseUrl()}/v1/purchase_order/$purchaseOrderId";
+  }
 }
