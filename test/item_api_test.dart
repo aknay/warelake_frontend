@@ -47,8 +47,16 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final whiteShrt = ItemVariation.create(name: "White shirt", stockable: true);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt]);
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);

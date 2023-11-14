@@ -6,27 +6,29 @@ class Item {
   String? createdAt;
   List<ItemVariation> variations;
   String? productType;
+  String unit;
 
-  Item({
-    required this.name,
-    this.description,
-    this.abbreviation,
-    required this.variations,
-    this.productType,
-  });
+  Item(
+      {required this.name,
+      this.description,
+      this.abbreviation,
+      required this.variations,
+      this.productType,
+      required this.unit});
 
-  factory Item.create({required String name, String? description, required List<ItemVariation> variations}) {
-    return Item(name: name, description: description, variations: variations);
+  factory Item.create(
+      {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
+    return Item(name: name, description: description, variations: variations, unit: unit);
   }
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      name: json['name'],
-      description: json['description'],
-      abbreviation: json['abbreviation'],
-      variations: List<ItemVariation>.from(json['item_variations'].map((v) => ItemVariation.fromJson(v))),
-      productType: json['product_type'],
-    );
+        name: json['name'],
+        description: json['description'],
+        abbreviation: json['abbreviation'],
+        variations: List<ItemVariation>.from(json['item_variations'].map((v) => ItemVariation.fromJson(v))),
+        productType: json['product_type'],
+        unit: json['unit']);
   }
 
   Map<String, dynamic> toJson() {
@@ -36,6 +38,7 @@ class Item {
       'abbreviation': abbreviation,
       'item_variations': variations.map((v) => v.toJson()).toList(),
       'product_type': productType,
+      'unit': unit
     };
   }
 }
@@ -52,21 +55,23 @@ class ItemVariation {
   int? ordinal;
   String? pricingType;
   bool stockable;
-  PriceMoney? priceMoney;
+  PriceMoney salePriceMoney;
+  PriceMoney purchasePriceMoney;
+  String sku;
 
-  ItemVariation({
-    this.type,
-    this.id,
-    this.updatedAt,
-    this.isDeleted,
-    required this.name,
-    required this.stockable,
-    this.itemId,
-    this.createdAt
-  });
+  ItemVariation(
+      {this.type,
+      this.id,
+      this.updatedAt,
+      this.isDeleted,
+      required this.name,
+      required this.stockable,
+      this.itemId,
+      this.createdAt,
+      required this.sku, required this.salePriceMoney, required this.purchasePriceMoney});
 
-  factory ItemVariation.create({required String name, required bool stockable}) {
-    return ItemVariation(name: name, stockable: stockable);
+  factory ItemVariation.create({required String name, required bool stockable, required String sku, required PriceMoney salePriceMoney, required PriceMoney purchasePriceMoney}) {
+    return ItemVariation(name: name, stockable: stockable, sku: sku, salePriceMoney: salePriceMoney, purchasePriceMoney: purchasePriceMoney);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
@@ -79,6 +84,9 @@ class ItemVariation {
       isDeleted: json['is_deleted'],
       name: json['name'],
       stockable: json['stockable'],
+      sku: json['sku'],
+      salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
+      purchasePriceMoney: PriceMoney.fromJson( json['purchase_price_money']),
     );
   }
 
@@ -90,6 +98,9 @@ class ItemVariation {
       'is_deleted': isDeleted,
       'name': name,
       'stockable': stockable,
+      'sku' : sku,
+      'sale_price_money' : salePriceMoney.toJson(),
+      'purchase_price_money' : purchasePriceMoney.toJson()
     };
   }
 }
