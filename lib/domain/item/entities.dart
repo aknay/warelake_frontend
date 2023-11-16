@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 class Item {
+  String? itemId;
   String name;
   String? description;
   String? abbreviation;
@@ -16,7 +17,8 @@ class Item {
       this.abbreviation,
       required this.variations,
       this.productType,
-      required this.unit});
+      required this.unit,
+      this.itemId});
 
   factory Item.create(
       {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
@@ -39,6 +41,7 @@ class Item {
     );
 
     return Item(
+      itemId: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
@@ -117,12 +120,12 @@ class ItemVariation {
       sku: json['sku'],
       salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
       purchasePriceMoney: PriceMoney.fromJson(json['purchase_price_money']),
+      itemCount:  json['item_count']
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      
       'type': type,
       'item_variation_id': id,
       'item_id': itemId,

@@ -60,5 +60,33 @@ void main() async {
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
+
+    final item = itemCreated.toIterable().first;
+    expect(item.variations.first.itemCount, 0);
+  });
+
+  test('you can get back the item', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedItemOrError = await itemApi.getItem(
+        itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+    expect(retrievedItemOrError.isRight(), true);
   });
 }

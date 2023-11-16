@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -118,5 +119,16 @@ void main() async {
     final poItemsReceivedOrError =
         await purchaseOrderApi.receivedItems(purchaseOrder: createdPo, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 2));
+
+    {
+      //test item increased after received
+      final retrievedItemOrError = await itemApi.getItem(
+          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final item = retrievedItemOrError.toIterable().first;
+      log("the item is $item");
+      expect(item.variations.first.itemCount, 5);
+    }
   });
 }
