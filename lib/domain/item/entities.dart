@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class Item {
   String name;
   String? description;
@@ -20,13 +22,27 @@ class Item {
       {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
     return Item(name: name, description: description, variations: variations, unit: unit);
   }
+  //we w convert to a map before sending to the server
+  Map<String, dynamic> get variationsMapJson {
+    return variations.fold({}, (Map<String, dynamic> map, ItemVariation variation) {
+      final tempId = const Uuid().v4();
+      map[tempId] = variation.toJson();
+      return map;
+    });
+  }
 
   factory Item.fromJson(Map<String, dynamic> json) {
+    //we will receive a map and we need tot convert to a list
+    var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
+    var itemVariations = itemVariationsJson.map(
+      (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
+    );
+
     return Item(
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
-        variations: List<ItemVariation>.from(json['item_variations'].map((v) => ItemVariation.fromJson(v))),
+        variations: itemVariations.values.toList(),
         productType: json['product_type'],
         unit: json['unit']);
   }
@@ -36,7 +52,7 @@ class Item {
       'name': name,
       'description': description,
       'abbreviation': abbreviation,
-      'item_variations': variations.map((v) => v.toJson()).toList(),
+      'item_variations': variationsMapJson,
       'product_type': productType,
       'unit': unit
     };
@@ -58,6 +74,7 @@ class ItemVariation {
   PriceMoney salePriceMoney;
   PriceMoney purchasePriceMoney;
   String sku;
+  int? itemCount;
 
   ItemVariation(
       {this.type,
@@ -68,10 +85,23 @@ class ItemVariation {
       required this.stockable,
       this.itemId,
       this.createdAt,
-      required this.sku, required this.salePriceMoney, required this.purchasePriceMoney});
+      required this.sku,
+      required this.salePriceMoney,
+      required this.purchasePriceMoney,
+      this.itemCount});
 
-  factory ItemVariation.create({required String name, required bool stockable, required String sku, required PriceMoney salePriceMoney, required PriceMoney purchasePriceMoney}) {
-    return ItemVariation(name: name, stockable: stockable, sku: sku, salePriceMoney: salePriceMoney, purchasePriceMoney: purchasePriceMoney);
+  factory ItemVariation.create(
+      {required String name,
+      required bool stockable,
+      required String sku,
+      required PriceMoney salePriceMoney,
+      required PriceMoney purchasePriceMoney}) {
+    return ItemVariation(
+        name: name,
+        stockable: stockable,
+        sku: sku,
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
@@ -86,7 +116,7 @@ class ItemVariation {
       stockable: json['stockable'],
       sku: json['sku'],
       salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
-      purchasePriceMoney: PriceMoney.fromJson( json['purchase_price_money']),
+      purchasePriceMoney: PriceMoney.fromJson(json['purchase_price_money']),
     );
   }
 
@@ -98,9 +128,9 @@ class ItemVariation {
       'is_deleted': isDeleted,
       'name': name,
       'stockable': stockable,
-      'sku' : sku,
-      'sale_price_money' : salePriceMoney.toJson(),
-      'purchase_price_money' : purchasePriceMoney.toJson()
+      'sku': sku,
+      'sale_price_money': salePriceMoney.toJson(),
+      'purchase_price_money': purchasePriceMoney.toJson()
     };
   }
 }

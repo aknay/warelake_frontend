@@ -66,13 +66,16 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+    final lineItem =
+        LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
 
     final po = PurchaseOrder.create(
         date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
     final poCreatedOrError =
-        await  purchaseOrderApi.createItem(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.createItem(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
-        expect(poCreatedOrError.isRight(), true);
+    expect(poCreatedOrError.isRight(), true);
+    final createdPo = poCreatedOrError.toIterable().first;
+    expect(createdPo.status, 'issued');
   });
 }

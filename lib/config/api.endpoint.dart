@@ -30,6 +30,6 @@ class ApiEndPoint {
   }
 
       static String getPurchaseOrderEndPoint({String? purchaseOrderId}) {
-    return purchaseOrderId == null ? "${getApiBaseUrl()}/v1/purchase_order" : "${getApiBaseUrl()}/v1/purchase_order/$purchaseOrderId";
+    return purchaseOrderId == null ? "${getApiBaseUrl()}/v1/purchase_orders" : "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId";
   }
 }
