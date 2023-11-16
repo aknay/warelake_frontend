@@ -38,4 +38,10 @@ class ApiEndPoint {
   static String getReceivedItemsPurchaseOrderEndPoint({required String purchaseOrderId}) {
     return "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId/received";
   }
+
+    static String getSaleOrderEndPoint({String? saleOrderId}) {
+    return saleOrderId == null
+        ? "${getApiBaseUrl()}/v1/sale_orders"
+        : "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId";
+  }
 }
