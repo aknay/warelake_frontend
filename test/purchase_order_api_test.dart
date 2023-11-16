@@ -72,10 +72,51 @@ void main() async {
     final po = PurchaseOrder.create(
         date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
     final poCreatedOrError =
-        await purchaseOrderApi.createItem(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
     expect(createdPo.status, 'issued');
+  });
+
+  test('you can received item from po', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem =
+        LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+
+    final po = PurchaseOrder.create(
+        date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+    final createdPo = poCreatedOrError.toIterable().first;
+    expect(createdPo.status, 'issued');
+
+    // testing receiving items
+
+    final poItemsReceivedOrError =
+        await purchaseOrderApi.receivedItems(purchaseOrder: createdPo, teamId: team.id!, token: firstUserAccessToken);
+    expect(poItemsReceivedOrError.isRight(), true);
   });
 }

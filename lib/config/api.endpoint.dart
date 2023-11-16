@@ -25,11 +25,17 @@ class ApiEndPoint {
     return userId == null ? "${getApiBaseUrl()}/v1/users" : "${getApiBaseUrl()}/v1/users/$userId";
   }
 
-    static String getItemEndPoint({String? itemId}) {
+  static String getItemEndPoint({String? itemId}) {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
 
-      static String getPurchaseOrderEndPoint({String? purchaseOrderId}) {
-    return purchaseOrderId == null ? "${getApiBaseUrl()}/v1/purchase_orders" : "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId";
+  static String getPurchaseOrderEndPoint({String? purchaseOrderId}) {
+    return purchaseOrderId == null
+        ? "${getApiBaseUrl()}/v1/purchase_orders"
+        : "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId";
+  }
+
+  static String getReceivedItemsPurchaseOrderEndPoint({required String purchaseOrderId}) {
+    return "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId/received";
   }
 }

@@ -122,8 +122,10 @@ class ItemVariation {
 
   Map<String, dynamic> toJson() {
     return {
+      
       'type': type,
-      'id': id,
+      'item_variation_id': id,
+      'item_id': itemId,
       'updated_at': updatedAt,
       'is_deleted': isDeleted,
       'name': name,
