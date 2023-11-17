@@ -26,6 +26,23 @@ class SaleOrderRestApi extends SaleOrderApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<ErrorResponse, SaleOrder>> deliveredItems({required SaleOrder saleOrder, required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.post(
+          url: ApiEndPoint.getDelieveredItemsSaleOrderEndPoint(saleOrderId: saleOrder.id!), token: token, teamId: teamId);
+      log("purchase order create response code ${response.statusCode}");
+      log("purchase order create response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return Right(SaleOrder.fromJson(jsonDecode(response.body)));
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 
   // @override
   // Future<Either<ErrorResponse, PurchaseOrder>> receivedItems({required PurchaseOrder purchaseOrder, required String teamId, required String token}) async {

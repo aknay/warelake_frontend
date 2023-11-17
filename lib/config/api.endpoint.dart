@@ -44,4 +44,8 @@ class ApiEndPoint {
         ? "${getApiBaseUrl()}/v1/sale_orders"
         : "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId";
   }
+
+    static String getDelieveredItemsSaleOrderEndPoint({required String saleOrderId}) {
+    return "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId/delivered";
+  }
 }

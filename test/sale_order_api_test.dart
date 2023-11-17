@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -79,55 +80,55 @@ void main() async {
     expect(createdPo.status, 'processing');
   });
 
-  // test('you can received item from po', () async {
-  //   final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-  //   final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-  //   expect(createdOrError.isRight(), true);
-  //   final team = createdOrError.toIterable().first;
+  test('you can change to delivered for so', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
 
-  //   final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-  //   final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
-  //   final whiteShrt = ItemVariation.create(
-  //       name: "White shirt",
-  //       stockable: true,
-  //       sku: 'sku 123',
-  //       salePriceMoney: salePriceMoney,
-  //       purchasePriceMoney: purchasePriceMoney);
-  //   final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-  //   final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-  //   expect(itemCreated.isRight(), true);
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
 
-  //   final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-  //   final lineItem =
-  //       LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+    final lineItem =
+        SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
 
-  //   final po = PurchaseOrder.create(
-  //       date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
-  //   final poCreatedOrError =
-  //       await saleOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+    final po = SaleOrder.create(
+        date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
+    final poCreatedOrError =
+        await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
-  //   expect(poCreatedOrError.isRight(), true);
-  //   final createdPo = poCreatedOrError.toIterable().first;
-  //   expect(createdPo.status, 'issued');
+    expect(poCreatedOrError.isRight(), true);
+    final createdSo = poCreatedOrError.toIterable().first;
+    expect(createdSo.status, 'processing');
 
-  //   // testing receiving items
+    // testing receiving items
 
-  //   final poItemsReceivedOrError =
-  //       await saleOrderApi.receivedItems(purchaseOrder: createdPo, teamId: team.id!, token: firstUserAccessToken);
-  //   expect(poItemsReceivedOrError.isRight(), true);
-  //   //sleep a while to update correctly
-  //   await Future.delayed(const Duration(seconds: 2));
+    final poItemsReceivedOrError =
+        await saleOrderApi.deliveredItems(saleOrder: createdSo, teamId: team.id!, token: firstUserAccessToken);
+    expect(poItemsReceivedOrError.isRight(), true);
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 2));
 
-  //   {
-  //     //test item increased after received
-  //     final retrievedItemOrError = await itemApi.getItem(
-  //         itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
-  //     final item = retrievedItemOrError.toIterable().first;
-  //     log("the item is $item");
-  //     expect(item.variations.first.itemCount, 5);
-  //   }
-  // });
+    {
+      //test item increased after received
+      final retrievedItemOrError = await itemApi.getItem(
+          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final item = retrievedItemOrError.toIterable().first;
+      log("the item is $item");
+      expect(item.variations.first.itemCount, -5);
+    }
+  });
 }
