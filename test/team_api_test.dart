@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:inventory_frontend/data/bill.account/rest.api.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
@@ -16,6 +17,7 @@ void main() async {
   final teamApi = TeamRestApi();
   final roleApi = RoleRestApi();
   final userApi = UserRestApi();
+  final billAccountApi = BillAccountRestApi();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -93,6 +95,15 @@ void main() async {
     expect(userListOrError.toIterable().first.data.length == 1, true);
     final adminUser = userListOrError.toIterable().first.data.first;
     expect(adminUser.isTeamOwner, true);
+
+    {
+      //check primary account is created
+      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(accountListOrError.isRight(), true);
+      expect(accountListOrError.toIterable().first.data.length == 1, true);
+      // final adminUser = accountListOrError.toIterable().first.data.first;
+      // expect(adminUser.isTeamOwner, true);
+    }
   });
 
   test('getting back team should be successful', () async {
