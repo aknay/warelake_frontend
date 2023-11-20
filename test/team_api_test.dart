@@ -50,27 +50,10 @@ void main() async {
     // Get all time zones available in the timezone package
     tz.initializeTimeZones();
     var locations = tz.timeZoneDatabase.locations;
-    // final locations = tz.initializeTimeZones();
-
     print(locations.length); // => 429
     print(locations.keys.first); // => "Africa/Abidjan"
     print(locations.keys.last); //
 
-    // // Print the list of ISO 8601 time zone offsets
-    // for (final locationName in locations) {
-    //   try {
-    //     final location = tz.getLocation(locationName);
-    //     final offset = location.offsetAt(DateTime.now());
-
-    //     // Format offset as ISO 8601
-    //     final offsetString = offset.toString();
-
-    //     print('$locationName: $offsetString');
-    //   } catch (e) {
-    //     // Handle any exceptions (some locations may not have valid offsets)
-    //     print('Error getting offset for $locationName: $e');
-    //   }
-    // }
   });
 
   test('creating team should be succeful', () async {
@@ -101,8 +84,8 @@ void main() async {
       final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
-      // final adminUser = accountListOrError.toIterable().first.data.first;
-      // expect(adminUser.isTeamOwner, true);
+      final account = accountListOrError.toIterable().first.data.first;
+      expect(account.balance, 0);
     }
   });
 
