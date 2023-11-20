@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:inventory_frontend/data/bill.account/rest.api.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/rest.api.dart';
 import 'package:inventory_frontend/data/sale.order/rest.api.dart';
@@ -17,6 +18,7 @@ void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRestApi();
   final saleOrderApi = SaleOrderRestApi();
+    final billAccountApi = BillAccountRestApi();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -70,7 +72,13 @@ void main() async {
     final lineItem =
         SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
 
+              final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(accountListOrError.isRight(), true);
+      expect(accountListOrError.toIterable().first.data.length == 1, true);
+      final account = accountListOrError.toIterable().first.data.first;
+
     final po = SaleOrder.create(
+      accountId: account.id!,
         date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
@@ -103,9 +111,15 @@ void main() async {
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
     final lineItem =
-        SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+        SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2.7, purchaseQuantity: 5, unit: 'cm');
+
+                      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(accountListOrError.isRight(), true);
+      expect(accountListOrError.toIterable().first.data.length == 1, true);
+      final account = accountListOrError.toIterable().first.data.first;
 
     final po = SaleOrder.create(
+      accountId:  account.id!,
         date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
@@ -129,6 +143,15 @@ void main() async {
       final item = retrievedItemOrError.toIterable().first;
       log("the item is $item");
       expect(item.variations.first.itemCount, -5);
+    }
+
+        {
+      //check primary account is increased
+      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(accountListOrError.isRight(), true);
+      expect(accountListOrError.toIterable().first.data.length == 1, true);
+      final account = accountListOrError.toIterable().first.data.first;
+      expect(account.balance, 13.5);
     }
   });
 }
