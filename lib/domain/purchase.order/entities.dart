@@ -21,7 +21,7 @@ class PurchaseOrder {
   int? pricePrecision;
   List<Address>? billingAddress;
   String? notes;
-  int? accountId;
+  String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
 
@@ -44,7 +44,7 @@ class PurchaseOrder {
     this.pricePrecision,
     this.billingAddress,
     this.notes,
-    this.accountId,
+    required this.accountId,
     this.createdTime,
     this.modifiedAt,
   });
@@ -54,9 +54,11 @@ class PurchaseOrder {
       required CurrencyCode currencyCode,
       required List<LineItem> lineItems,
       required int subTotal,
-      required int total}) {
+      required int total,
+      required accountId}) {
     final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return PurchaseOrder(
+        accountId: accountId,
         date: dateInString,
         status: "issued",
         currencyCode: currencyCode.toString(),
@@ -182,11 +184,14 @@ class LineItem {
 
   factory LineItem.create(
       {required ItemVariation itemVariation,
-      required int purchaseRate,
+      required double purchaseRate,
       required int purchaseQuantity,
       required String unit}) {
     return LineItem(
-        itemVariation: itemVariation, purchaseRate: purchaseRate, purchaseQuantity: purchaseQuantity, unit: unit);
+        itemVariation: itemVariation,
+        purchaseRate: (purchaseRate * 1000).toInt(),
+        purchaseQuantity: purchaseQuantity,
+        unit: unit);
   }
 
   Map<String, dynamic> toJson() {
