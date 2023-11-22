@@ -4,7 +4,7 @@ import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
-import 'package:inventory_frontend/view/main/main.acreen.dart';
+import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
@@ -19,11 +19,11 @@ enum AppRoute {
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
 
   return GoRouter(
     initialLocation: '/sign_in',
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     redirect: (context, state) {
       final isLoggedIn = authRepository.currentUser != null;
       final path = state.uri.path;

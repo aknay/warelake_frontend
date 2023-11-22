@@ -12,6 +12,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'helpers/sign.in.response.dart';
+import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
@@ -21,7 +22,7 @@ void main() async {
   late String firstUserAccessToken;
 
   setUpAll(() async {
-    const email = "abc@someemail.com";
+    final email = generateRandomEmail();
     const password = "nakbi6785!";
 
     Map<String, dynamic> signUpData = {};
@@ -53,7 +54,6 @@ void main() async {
     print(locations.length); // => 429
     print(locations.keys.first); // => "Africa/Abidjan"
     print(locations.keys.last); //
-
   });
 
   test('creating team should be succeful', () async {
@@ -96,5 +96,13 @@ void main() async {
 
     final retrievedTeamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
     expect(retrievedTeamOrError.isRight(), true);
+  });
+
+  test('you can list team', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    final teamListOrError = await teamApi.list(token: firstUserAccessToken);
+    expect(teamListOrError.isRight(), true);
+    expect(teamListOrError.toIterable().first.data.length, 1);
   });
 }
