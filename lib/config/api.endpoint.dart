@@ -8,7 +8,7 @@ class ApiEndPoint {
       return 'http://0.0.0.0:9888/api';
     }
     if (kDebugMode) {
-      return 'http://10.0.2.2:9888/api';
+      return 'https://10.0.2.2:9888/api';
     }
     return 'www.example.com'; //TODO
   }

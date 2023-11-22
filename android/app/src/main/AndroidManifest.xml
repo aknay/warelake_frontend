@@ -2,6 +2,7 @@
     <application
         android:label="inventory_frontend"
         android:name="${applicationName}"
+        android:usesCleartextTraffic="${usesCleartextTraffic}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
