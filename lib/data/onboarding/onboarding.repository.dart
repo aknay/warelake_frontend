@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/data/shared.preferences.providers/shared.preferences.provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,23 +11,25 @@ class OnboardingRepository {
 
   static const onboardingCompleteKey = 'onboardingComplete';
 
-  Future<void> setOnboardingComplete() async {
-    await sharedPreferences.setBool(onboardingCompleteKey, true);
+  Future<void> setOnboardingComplete({required String teamId}) async {
+    await sharedPreferences.setString(onboardingCompleteKey, teamId);
   }
 
-  bool isOnboardingComplete() =>
-      sharedPreferences.getBool(onboardingCompleteKey) ?? false;
+  Option<String> get hasTeamId {
+    final teamIdOrNone = sharedPreferences.getString(onboardingCompleteKey);
+    return optionOf(teamIdOrNone);
+  }
+
+  Future<void> clearTeamId() async {
+    await sharedPreferences.setString(onboardingCompleteKey, '');
+  }
+
+  // bool isOnboardingComplete() => sharedPreferences.getBool(onboardingCompleteKey) ?? false;
 }
 
-// @Riverpod(keepAlive: true)
-// Future<OnboardingRepository> onboardingRepository(
-//     OnboardingRepositoryRef ref) async {
-//   return OnboardingRepository(await SharedPreferences.getInstance());
-// }
-
 @Riverpod(keepAlive: true)
-OnboardingRepository onboardingRepository(
-    OnboardingRepositoryRef ref)  {
+// @riverpod
+OnboardingRepository onboardingRepository(OnboardingRepositoryRef ref) {
   final preferences = ref.watch(sharedPreferencesProvider);
   return OnboardingRepository(preferences);
 }

@@ -1,48 +1,52 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/onboarding/onboarding.repository.dart';
+import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
+import 'package:inventory_frontend/view/onboarding/onboarding.error.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
-enum AppRoute {
-  items,
-  signIn,
-  main,
-  addItem,
-  onboarding
-}
+enum AppRoute { items, signIn, main, addItem, onboarding, onboardingError }
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final rootNavigatorKey = GlobalKey<NavigatorState>();
-
   return GoRouter(
     initialLocation: '/sign_in',
     navigatorKey: rootNavigatorKey,
-    redirect: (context, state) {
-      final isLoggedIn = authRepository.currentUser != null;
+    redirect: (context, state) async {
       final path = state.uri.path;
+      log("path is $path");
+      final isLoggedIn = authRepository.isUserLoggedIn;
       if (isLoggedIn) {
         if (path.startsWith('/sign_in')) {
           return '/main';
         }
       }
-      final onboardingRepository = ref.watch(onboardingRepositoryProvider);
-      final didCompleteOnboarding = onboardingRepository.isOnboardingComplete();
 
-      if (!didCompleteOnboarding) {
-        // Always check state.subloc before returning a non-null route
-        // https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart#L78
-        if (path != '/onboarding') {
-          return '/onboarding';
+      if (path.startsWith('/main')) {
+        //we need to guard otherwise it will call after '\main'
+        final onboardingService = ref.watch(onboardingServiceProvider);
+        final teamIdEmptyOrTeamListOrError = await onboardingService.isOnboardingCompleted;
+
+        if (teamIdEmptyOrTeamListOrError.isLeft()) {
+          return '/error';
+        }
+        final teamIdEmptyOrTeamList = teamIdEmptyOrTeamListOrError.toIterable().first;
+
+        if (teamIdEmptyOrTeamList.isNone()) {
+          if (path != '/onboarding') {
+            return '/onboarding';
+          }
         }
       }
 
@@ -57,12 +61,24 @@ GoRouter goRouter(GoRouterRef ref) {
           return const CustomSignInScreen();
         },
       ),
-            GoRoute(
+      GoRoute(
         path: '/onboarding',
         name: AppRoute.onboarding.name,
         pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()
-          // child: OnboardingScreen(),
-        ),
+            // child: OnboardingScreen(),
+            ),
+        // routes: <RouteBase>[
+        //   // GoRoute(
+        //   //   name: AppRoute.onboardingError.name,
+        //   //   path: 'error',
+        //   //   builder: (context, state) => const OnboardingErrorScreen(),
+        //   // ),
+        // ]
+      ),
+      GoRoute(
+        name: AppRoute.onboardingError.name,
+        path: '/error',
+        builder: (context, state) => const OnboardingErrorScreen(),
       ),
       GoRoute(
         name: AppRoute.main.name,
