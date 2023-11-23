@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
+import 'package:inventory_frontend/data/onboarding/onboarding.repository.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
+import 'package:inventory_frontend/view/onboarding/onboarding.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
@@ -14,6 +16,7 @@ enum AppRoute {
   signIn,
   main,
   addItem,
+  onboarding
 }
 
 @riverpod
@@ -32,6 +35,18 @@ GoRouter goRouter(GoRouterRef ref) {
           return '/main';
         }
       }
+      final onboardingRepository = ref.watch(onboardingRepositoryProvider);
+      final didCompleteOnboarding = onboardingRepository.isOnboardingComplete();
+
+      if (!didCompleteOnboarding) {
+        // Always check state.subloc before returning a non-null route
+        // https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart#L78
+        if (path != '/onboarding') {
+          return '/onboarding';
+        }
+      }
+
+      // no need to redirect at all
       return null;
     },
     routes: <RouteBase>[
@@ -41,6 +56,13 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (BuildContext context, GoRouterState state) {
           return const CustomSignInScreen();
         },
+      ),
+            GoRoute(
+        path: '/onboarding',
+        name: AppRoute.onboarding.name,
+        pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()
+          // child: OnboardingScreen(),
+        ),
       ),
       GoRoute(
         name: AppRoute.main.name,

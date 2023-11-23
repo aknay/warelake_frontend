@@ -3,9 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:inventory_frontend/data/shared.preferences.providers/shared.preferences.provider.dart';
 import 'package:inventory_frontend/firebase_options.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/themes/flex.theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,15 @@ Future<void> main() async {
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 
-  runApp(const ProviderScope(child: MyApp()));
+  final prefs = await SharedPreferences.getInstance();
+  runApp(ProviderScope(
+    overrides: [
+      //ref: https://riverpod.dev/docs/concepts/scopes
+      // Override the unimplemented provider with the value gotten from the plugin
+      sharedPreferencesProvider.overrideWithValue(prefs),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends ConsumerWidget {
