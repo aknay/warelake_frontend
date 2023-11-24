@@ -17,11 +17,15 @@ class CurrencySelectionWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currencyOrNone = ref.watch(_currencyProvider);
 
-    final currencyText = currencyOrNone.fold(() => "Select Currency", (r) => "${r.code} - ${r.name}");
+    final currencyText = currencyOrNone.fold(() => "Select a currency", (r) => "${r.code} - ${r.name}");
 
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => const CurrencySelectionPage()));
+        Currency? currencyCode =
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => const CurrencySelectionPage()));
+        if (currencyCode != null) {
+          ref.read(_currencyProvider.notifier).state = Some(currencyCode);
+        }
       },
       child: TextFormField(
         enabled: false, // Make it non-editable

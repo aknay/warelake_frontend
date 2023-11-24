@@ -9,7 +9,6 @@ import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/themes/flex.theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
-import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +21,7 @@ Future<void> main() async {
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 
-   tzdata.initializeTimeZones();
+  tzdata.initializeTimeZones();
 
   final prefs = await SharedPreferences.getInstance();
   runApp(ProviderScope(

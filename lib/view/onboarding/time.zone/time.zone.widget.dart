@@ -1,10 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.helper.dart';
 import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.selection.screen.dart';
+import 'package:timezone/timezone.dart' as tz;
 
-final _currencyProvider = StateProvider<Option<Currency>>(
+final _timeZoneLocationProvider = StateProvider<Option<tz.Location>>(
   (ref) {
     return const None();
   },
@@ -15,13 +16,15 @@ class TimeZoneSelectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyOrNone = ref.watch(_currencyProvider);
+    final locaitonOrNone = ref.watch(_timeZoneLocationProvider);
 
-    final currencyText = currencyOrNone.fold(() => "Select a Time Zone", (r) => "${r.code} - ${r.name}");
+    final currencyText = locaitonOrNone.fold(() => "Select a Time Zone", (r) => getTimeZoneString(r));
 
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => const TimeZoneScreen()));
+        tz.Location? location =
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => const TimeZoneScreen()));
+        ref.read(_timeZoneLocationProvider.notifier).state = optionOf(location);
       },
       child: TextFormField(
         enabled: false, // Make it non-editable

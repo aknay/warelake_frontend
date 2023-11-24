@@ -1,4 +1,3 @@
-import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'team.list.controller.g.dart';
