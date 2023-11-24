@@ -14,7 +14,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
-enum AppRoute { items, signIn, main, addItem, onboarding, onboardingError }
+enum AppRoute { items, signIn, dashboard, addItem, onboarding, onboardingError }
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
@@ -29,12 +29,12 @@ GoRouter goRouter(GoRouterRef ref) {
       final isLoggedIn = authRepository.isUserLoggedIn;
       if (isLoggedIn) {
         if (path.startsWith('/sign_in')) {
-          return '/main';
+          return '/dashboard';
         }
       }
 
-      if (path.startsWith('/main')) {
-        //we need to guard otherwise it will call after '\main'
+      if (path.startsWith('/dashboard')) {
+        //we need to guard otherwise it will call after '\dashboard'
         final onboardingService = ref.watch(onboardingServiceProvider);
         final teamIdEmptyOrTeamListOrError = await onboardingService.isOnboardingCompleted;
 
@@ -64,7 +64,7 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: '/onboarding',
         name: AppRoute.onboarding.name,
-        pageBuilder: (context, state) =>  NoTransitionPage(child: OnboardingScreen()
+        pageBuilder: (context, state) => NoTransitionPage(child: OnboardingScreen()
             // child: OnboardingScreen(),
             ),
         // routes: <RouteBase>[
@@ -81,10 +81,10 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) => const OnboardingErrorScreen(),
       ),
       GoRoute(
-        name: AppRoute.main.name,
-        path: '/main',
+        name: AppRoute.dashboard.name,
+        path: '/dashboard',
         builder: (BuildContext context, GoRouterState state) {
-          return const MainScreen();
+          return const DashboardScreen();
         },
       ),
       GoRoute(

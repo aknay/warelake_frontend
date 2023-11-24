@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
+import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/onboarding/onboarding.repository.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 part 'onboarding.service.g.dart';
 
@@ -50,6 +52,18 @@ class OnboardingService {
         }
       });
     }
+  }
+
+  Future<Either<ErrorResponse, Team>> submit(
+      {required String teamName, required tz.Location location, required Currency currency}) async {
+    final team = Team.create(name: teamName, timeZone: location.name, currencyCode: currency.toCurrencyCode);
+    final token = await authRepo.shouldGetToken();
+    final newTeamOrError = await teamRepository.teamApi.create(team: team, token: token);
+    await newTeamOrError.fold((l) => null, (r) async {
+      await onboardingRepository.setOnboardingComplete(teamId: r.id!);
+    });
+
+    return newTeamOrError;
   }
 }
 

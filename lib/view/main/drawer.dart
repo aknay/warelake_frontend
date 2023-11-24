@@ -29,9 +29,9 @@ class DrawerWidget extends StatelessWidget {
             title: const Text('Dashboard'),
             // selected: _selectedIndex == 0,
             onTap: () {
-             log("are we going?");
+              log("are we going?");
               context.goNamed(
-                AppRoute.main.name,
+                AppRoute.dashboard.name,
               );
 
               // context.go("/items");
