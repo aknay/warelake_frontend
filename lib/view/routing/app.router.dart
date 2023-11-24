@@ -64,7 +64,7 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: '/onboarding',
         name: AppRoute.onboarding.name,
-        pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()
+        pageBuilder: (context, state) =>  NoTransitionPage(child: OnboardingScreen()
             // child: OnboardingScreen(),
             ),
         // routes: <RouteBase>[
