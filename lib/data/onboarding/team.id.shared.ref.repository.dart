@@ -3,10 +3,10 @@ import 'package:inventory_frontend/data/shared.preferences.providers/shared.pref
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'onboarding.repository.g.dart';
+part 'team.id.shared.ref.repository.g.dart';
 
-class OnboardingRepository {
-  OnboardingRepository(this.sharedPreferences);
+class TeamIdSharedRefereceRepository {
+  TeamIdSharedRefereceRepository(this.sharedPreferences);
   final SharedPreferences sharedPreferences;
 
   static const onboardingCompleteKey = 'onboardingComplete';
@@ -23,13 +23,10 @@ class OnboardingRepository {
   Future<void> clearTeamId() async {
     await sharedPreferences.setString(onboardingCompleteKey, '');
   }
-
-  // bool isOnboardingComplete() => sharedPreferences.getBool(onboardingCompleteKey) ?? false;
 }
 
 @Riverpod(keepAlive: true)
-// @riverpod
-OnboardingRepository onboardingRepository(OnboardingRepositoryRef ref) {
+TeamIdSharedRefereceRepository teamIdSharedReferenceRepository(TeamIdSharedReferenceRepositoryRef ref) {
   final preferences = ref.watch(sharedPreferencesProvider);
-  return OnboardingRepository(preferences);
+  return TeamIdSharedRefereceRepository(preferences);
 }

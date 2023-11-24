@@ -13,13 +13,13 @@ import 'package:inventory_frontend/view/utils/alert_dialogs.dart';
 import 'package:inventory_frontend/view/utils/async_value_ui.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+//ignore: must_be_immutable
 class OnboardingScreen extends ConsumerWidget {
   OnboardingScreen({super.key});
   final _formKey = GlobalKey<FormState>();
   Option<String> teamName = const None();
   Option<tz.Location> location = const None();
   Option<Currency> currency = const None();
-  // Option<>
 
   bool _validateAndSaveForm() {
     final form = _formKey.currentState!;

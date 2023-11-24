@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/onboarding/onboarding.repository.dart';
+import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
@@ -14,9 +14,9 @@ part 'onboarding.service.g.dart';
 
 class OnboardingService {
   final AuthRepository authRepo;
-  final OnboardingRepository onboardingRepository;
+  final TeamIdSharedRefereceRepository teamIdSharedRefRepository;
   final TeamRepository teamRepository;
-  OnboardingService({required this.authRepo, required this.onboardingRepository, required this.teamRepository});
+  OnboardingService({required this.authRepo, required this.teamIdSharedRefRepository, required this.teamRepository});
 
   static const onboardingCompleteKey = 'onboardingComplete';
 
@@ -34,11 +34,11 @@ class OnboardingService {
     if (teamList.isEmpty) {
       return right(none());
     } else {
-      final teamIdOrNone = onboardingRepository.hasTeamId;
+      final teamIdOrNone = teamIdSharedRefRepository.hasTeamId;
 
       return await teamIdOrNone.fold(() async {
         if (teamList.length == 1) {
-          onboardingRepository.setOnboardingComplete(teamId: teamList.first.id!);
+          teamIdSharedRefRepository.setOnboardingComplete(teamId: teamList.first.id!);
         }
         return right(some(teamList));
       }, (existingTeamId) async {
@@ -47,7 +47,7 @@ class OnboardingService {
           final currentTeam = teamList.where((element) => element.id! == existingTeamId).first;
           return right(some([currentTeam]));
         } else {
-          await onboardingRepository.clearTeamId();
+          await teamIdSharedRefRepository.clearTeamId();
           return right(some(teamList));
         }
       });
@@ -60,7 +60,7 @@ class OnboardingService {
     final token = await authRepo.shouldGetToken();
     final newTeamOrError = await teamRepository.teamApi.create(team: team, token: token);
     await newTeamOrError.fold((l) => null, (r) async {
-      await onboardingRepository.setOnboardingComplete(teamId: r.id!);
+      await teamIdSharedRefRepository.setOnboardingComplete(teamId: r.id!);
     });
 
     return newTeamOrError;
@@ -71,7 +71,7 @@ class OnboardingService {
 // @riverpod
 OnboardingService onboardingService(OnboardingServiceRef ref) {
   final authRepo = ref.watch(authRepositoryProvider);
-  final onBoardingRepo = ref.watch(onboardingRepositoryProvider);
+  final teamIdSharedRefRepo = ref.watch(teamIdSharedReferenceRepositoryProvider);
   final teamRepo = ref.watch(teamRepositoryProvider);
-  return OnboardingService(authRepo: authRepo, onboardingRepository: onBoardingRepo, teamRepository: teamRepo);
+  return OnboardingService(authRepo: authRepo, teamIdSharedRefRepository: teamIdSharedRefRepo, teamRepository: teamRepo);
 }
