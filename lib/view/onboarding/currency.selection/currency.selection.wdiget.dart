@@ -11,7 +11,8 @@ final _currencyProvider = StateProvider<Option<Currency>>(
 );
 
 class CurrencySelectionWidget extends ConsumerWidget {
-  const CurrencySelectionWidget({super.key});
+  const CurrencySelectionWidget({super.key, required this.onValueChanged});
+  final void Function(Option<Currency> currency) onValueChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +25,8 @@ class CurrencySelectionWidget extends ConsumerWidget {
         Currency? currencyCode =
             await Navigator.push(context, MaterialPageRoute(builder: (_) => const CurrencySelectionPage()));
         if (currencyCode != null) {
-          ref.read(_currencyProvider.notifier).state = Some(currencyCode);
+          ref.read(_currencyProvider.notifier).state = optionOf(currencyCode);
+          onValueChanged(optionOf(currencyCode));
         }
       },
       child: TextFormField(

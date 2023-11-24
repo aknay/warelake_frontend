@@ -51,12 +51,6 @@ class OnboardingService {
       });
     }
   }
-
-  // Future<void> setOnboardingComplete() async {
-  //   await sharedPreferences.setBool(onboardingCompleteKey, true);
-  // }
-
-  // bool isOnboardingComplete() => sharedPreferences.getBool(onboardingCompleteKey) ?? false;
 }
 
 @Riverpod(keepAlive: true)

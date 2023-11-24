@@ -12,7 +12,8 @@ final _timeZoneLocationProvider = StateProvider<Option<tz.Location>>(
 );
 
 class TimeZoneSelectionWidget extends ConsumerWidget {
-  const TimeZoneSelectionWidget({super.key});
+  const TimeZoneSelectionWidget({super.key, required this.onValueChanged});
+  final void Function(Option<tz.Location> location) onValueChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,11 +26,12 @@ class TimeZoneSelectionWidget extends ConsumerWidget {
         tz.Location? location =
             await Navigator.push(context, MaterialPageRoute(builder: (_) => const TimeZoneScreen()));
         ref.read(_timeZoneLocationProvider.notifier).state = optionOf(location);
+        onValueChanged(optionOf(location));
       },
       child: TextFormField(
         enabled: false, // Make it non-editable
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.currency_exchange_outlined, color: Colors.white),
+          prefixIcon: const Icon(Icons.access_time, color: Colors.white),
           labelText: currencyText,
           labelStyle: Theme.of(context).textTheme.bodyLarge,
           border: const OutlineInputBorder(),
