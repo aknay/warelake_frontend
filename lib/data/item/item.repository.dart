@@ -9,8 +9,13 @@ import 'package:inventory_frontend/domain/item/api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
 import 'package:inventory_frontend/domain/responses.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class ItemRestApi extends ItemApi {
+part 'item.repository.g.dart';
+
+class ItemRepository extends ItemApi {
+  ItemRepository();
+
   @override
   Future<Either<ErrorResponse, Item>> createItem(
       {required Item item, required String teamId, required String token}) async {
@@ -75,4 +80,9 @@ class ItemRestApi extends ItemApi {
     // TODO: implement createImage
     throw UnimplementedError();
   }
+}
+
+@Riverpod(keepAlive: true)
+ItemRepository itemRepository(ItemRepositoryRef ref) {
+  return ItemRepository();
 }

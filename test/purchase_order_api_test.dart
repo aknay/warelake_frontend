@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/bill.account/rest.api.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/item/rest.api.dart';
+import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/purchase.order/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
@@ -16,7 +16,7 @@ import 'helpers/sign.in.response.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
-  final itemApi = ItemRestApi();
+  final itemApi = ItemRepository();
   final purchaseOrderApi = PurchaseOrderRestApi();
   final billAccountApi = BillAccountRestApi();
   late String firstUserAccessToken;
@@ -77,8 +77,12 @@ void main() async {
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
-      accountId: account.id!,
-        date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
+        accountId: account.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: [lineItem],
+        subTotal: 10,
+        total: 20);
     final poCreatedOrError =
         await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
@@ -112,14 +116,17 @@ void main() async {
     final lineItem =
         LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2.5, purchaseQuantity: 5, unit: 'cm');
 
-
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
-      accountId: account.id!,
-        date: DateTime.now(), currencyCode: CurrencyCode.AUD, lineItems: [lineItem], subTotal: 10, total: 20);
+        accountId: account.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: [lineItem],
+        subTotal: 10,
+        total: 20);
     final poCreatedOrError =
         await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 

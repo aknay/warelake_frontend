@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/item/rest.api.dart';
+import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
@@ -14,7 +14,7 @@ import 'helpers/sign.in.response.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
-  final itemApi = ItemRestApi();
+  final itemApi = ItemRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {

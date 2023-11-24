@@ -14,21 +14,3 @@ TeamRepository teamRepository(TeamRepositoryRef ref) {
   final api = TeamRestApi();
   return TeamRepository(teamApi: api);
 }
-
-
-// @riverpod
-// class AsyncTeamRepository extends _$AsyncTeamRepository {
-//   Future<List<Team>> _fetchTodo() async {
-// TeamRestApi().
-
-
-//     // final json = await http.get('api/todos');
-//     // final todos = jsonDecode(json) as List<Map<String, dynamic>>;
-//     // return todos.map(Todo.fromJson).toList();
-//   }
-
-//   @override
-//   FutureOr<List<Todo>> build() async {
-//     // Load initial todo list from the remote repository
-//     return _fetchTodo();
-//   }
