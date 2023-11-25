@@ -8,13 +8,15 @@ import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
+import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.error.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.screen.dart';
+import 'package:inventory_frontend/view/routing/go_router_refresh_stream.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
-enum AppRoute { items, signIn, dashboard, addItem, onboarding, onboardingError }
+enum AppRoute { items, signIn, dashboard, addItem, onboarding, onboardingError, profile }
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
@@ -27,10 +29,18 @@ GoRouter goRouter(GoRouterRef ref) {
       final path = state.uri.path;
       log("path is $path");
       final isLoggedIn = authRepository.isUserLoggedIn;
+
+      final isLoggedInn = authRepository.currentUserOrNull != null;
+
+      log("null log? $isLoggedInn");
+
+      // log("is loggin in $isLoggedIn");
       if (isLoggedIn) {
         if (path.startsWith('/sign_in')) {
           return '/dashboard';
         }
+      } else {
+        return '/sign_in';
       }
 
       if (path.startsWith('/dashboard')) {
@@ -53,6 +63,7 @@ GoRouter goRouter(GoRouterRef ref) {
       // no need to redirect at all
       return null;
     },
+    refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges()),
     routes: <RouteBase>[
       GoRoute(
         name: AppRoute.signIn.name,
@@ -64,16 +75,7 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: '/onboarding',
         name: AppRoute.onboarding.name,
-        pageBuilder: (context, state) => NoTransitionPage(child: OnboardingScreen()
-            // child: OnboardingScreen(),
-            ),
-        // routes: <RouteBase>[
-        //   // GoRoute(
-        //   //   name: AppRoute.onboardingError.name,
-        //   //   path: 'error',
-        //   //   builder: (context, state) => const OnboardingErrorScreen(),
-        //   // ),
-        // ]
+        pageBuilder: (context, state) => NoTransitionPage(child: OnboardingScreen()),
       ),
       GoRoute(
         name: AppRoute.onboardingError.name,
@@ -85,6 +87,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/dashboard',
         builder: (BuildContext context, GoRouterState state) {
           return const DashboardScreen();
+        },
+      ),
+      GoRoute(
+        name: AppRoute.profile.name,
+        path: '/profile',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProfileScreen();
         },
       ),
       GoRoute(

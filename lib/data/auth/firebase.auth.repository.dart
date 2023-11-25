@@ -13,6 +13,8 @@ class AuthRepository {
 
   Option<User> get currentUser => optionOf(_auth.currentUser);
 
+  User? get currentUserOrNull => _auth.currentUser;
+
   Future<void> signInAnonymously() {
     return _auth.signInAnonymously();
   }
@@ -25,6 +27,10 @@ class AuthRepository {
 
     final token = await user.getIdToken();
     return token!;
+  }
+
+  Future<void> signOut() async {
+    _auth.signOut();
   }
 }
 
