@@ -28,11 +28,11 @@ GoRouter goRouter(GoRouterRef ref) {
     redirect: (context, state) async {
       final path = state.uri.path;
       log("path is $path");
-      final isLoggedIn = authRepository.isUserLoggedIn;
+      final isLoggedIn = await authRepository.isUserLoggedIn;
 
-      final isLoggedInn = authRepository.currentUserOrNull != null;
+ 
 
-      log("null log? $isLoggedInn");
+      log("is log? $isLoggedIn");
 
       // log("is loggin in $isLoggedIn");
       if (isLoggedIn) {

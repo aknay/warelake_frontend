@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -9,9 +11,31 @@ class AuthRepository {
   final FirebaseAuth _auth;
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
-  bool get isUserLoggedIn => currentUser.isSome();
+  Future<bool> get isUserLoggedIn async {
+    final f = await currentUser;
+    return f.isSome();
+  }
 
-  Option<User> get currentUser => optionOf(_auth.currentUser);
+  Future<Option<User>> get currentUser async {
+    // TODO: _auth will remember even we close emulator
+    final authUser = _auth.currentUser;
+    if (authUser == null) {
+      return const None();
+    }
+    try {
+      log("come to trying");
+      //TODO: force to get token, still need to uninstall the app
+      final token = await authUser.getIdToken();
+      log("token: $token");
+      return optionOf(authUser);
+      // } on Exception catch (exception) {
+      //   log("come to expection");
+    } catch (error) {
+      log("come to catch");
+      _auth.signOut();
+      return const None();
+    }
+  }
 
   User? get currentUserOrNull => _auth.currentUser;
 
