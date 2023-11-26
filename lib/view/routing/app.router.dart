@@ -6,6 +6,7 @@ import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
+import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
@@ -16,7 +17,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
-enum AppRoute { items, signIn, dashboard, addItem, onboarding, onboardingError, profile }
+enum AppRoute { items, signIn, dashboard, addItem, addItemVariation, onboarding, onboardingError, profile }
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
@@ -29,8 +30,6 @@ GoRouter goRouter(GoRouterRef ref) {
       final path = state.uri.path;
       log("path is $path");
       final isLoggedIn = await authRepository.isUserLoggedIn;
-
- 
 
       log("is log? $isLoggedIn");
 
@@ -104,10 +103,17 @@ GoRouter goRouter(GoRouterRef ref) {
           },
           routes: <RouteBase>[
             GoRoute(
-              name: AppRoute.addItem.name,
-              path: 'add',
-              builder: (context, state) => const AddItemScreen(),
-            ),
+                name: AppRoute.addItem.name,
+                path: 'add',
+                builder: (context, state) => const AddItemScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    name: AppRoute.addItemVariation.name,
+                    path: 'item_variation',
+                    builder: (context, state) =>  const AddItemVariationScreen(),
+                    // routes:
+                  ),
+                ]),
           ]),
     ],
   );

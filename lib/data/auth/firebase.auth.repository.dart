@@ -28,8 +28,6 @@ class AuthRepository {
       final token = await authUser.getIdToken();
       log("token: $token");
       return optionOf(authUser);
-      // } on Exception catch (exception) {
-      //   log("come to expection");
     } catch (error) {
       log("come to catch");
       _auth.signOut();
@@ -46,6 +44,7 @@ class AuthRepository {
   Future<String> shouldGetToken() async {
     final user = _auth.currentUser;
     if (user == null) {
+      _auth.signOut();
       throw AssertionError('User can\'t be null');
     }
 
