@@ -4,7 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
+
+final itemVariationListProvider = StateProvider<List<ItemVariation>>(
+  // only list works, not map
+  (ref) => [],
+);
 
 class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key});
@@ -16,12 +22,22 @@ class AddItemScreen extends ConsumerStatefulWidget {
 class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
+    final itemVariationList = ref.watch(itemVariationListProvider);
+    log("item ${itemVariationList.length}");
+
+    ref.listen(itemVariationListProvider, (previous, next) {
+      log("next ${next.length}");
+    });
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final ItemVariation? itemVariation = await context.pushNamed(AppRoute.addItemVariation.name);
           if (itemVariation != null) {
-            log(itemVariation.name);
+
+            ref.read(itemVariationListProvider.notifier).update((state) {
+              return [...state, itemVariation];
+            });
           }
         },
         child: const Icon(Icons.add),
@@ -62,8 +78,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
               icon: const Icon(Icons.check)),
         ],
       ),
-      body: SingleChildScrollView(
-          child: Column(
+      body: Column(
         children: [
           TextFormField(
             decoration: const InputDecoration(
@@ -78,19 +93,39 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
               return null;
             },
           ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Unit *',
-              hintText: 'Enter your username',
-              suffixIcon: Icon(Icons.person),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your username';
-              }
-              return null;
-            },
-          ),
+
+          Expanded(
+            child: ItemVariationListView(itemVariationList: itemVariationList.toList()),
+            // child: ListView.builder(
+            //   // Let the ListView know how many items it needs to build.
+            //   // itemCount: items.length,
+            //   // Provide a builder function. This is where the magic happens.
+            //   // Convert each item into a widget based on the type of item it is.
+            //   itemBuilder: (context, index) {
+            //     final item = itemVariationList[index];
+
+            //     return ListTile(
+            //       title: Text(item.name),
+            //       // title: item.buildTitle(context),
+            //       // subtitle: item.buildSubtitle(context),
+            //     );
+            //   },
+            // ),
+          )
+
+          // TextFormField(
+          //   decoration: const InputDecoration(
+          //     labelText: 'Unit *',
+          //     hintText: 'Enter your username',
+          //     suffixIcon: Icon(Icons.person),
+          //   ),
+          //   validator: (value) {
+          //     if (value == null || value.isEmpty) {
+          //       return 'Please enter your username';
+          //     }
+          //     return null;
+          //   },
+          // ),
           // Card(
           //   elevation: 5,
           //   child: Padding(
@@ -164,7 +199,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
           //   ),
           // )
         ],
-      )),
+      ),
     );
   }
 }
@@ -183,7 +218,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
 //          if (itemVariation != null){
 //      log(itemVariation.name);
 //          }
-    
+
 //         },
 //         child: const Icon(Icons.add),
 //       ),

@@ -41,7 +41,7 @@ class Item {
     );
 
     return Item(
-      itemId: json['item_id'],
+        itemId: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
@@ -99,7 +99,11 @@ class ItemVariation {
       required String sku,
       required PriceMoney salePriceMoney,
       required PriceMoney purchasePriceMoney}) {
+    var uuid = const Uuid();
+    String newUuid = uuid.v4();
+
     return ItemVariation(
+        id: newUuid,
         name: name,
         stockable: stockable,
         sku: sku,
@@ -109,19 +113,18 @@ class ItemVariation {
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
     return ItemVariation(
-      type: json['type'],
-      id: json['item_variation_id'],
-      itemId: json['item_id'],
-      updatedAt: json['updated_at'],
-      createdAt: json['created_at'],
-      isDeleted: json['is_deleted'],
-      name: json['name'],
-      stockable: json['stockable'],
-      sku: json['sku'],
-      salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
-      purchasePriceMoney: PriceMoney.fromJson(json['purchase_price_money']),
-      itemCount:  json['item_count']
-    );
+        type: json['type'],
+        id: json['item_variation_id'],
+        itemId: json['item_id'],
+        updatedAt: json['updated_at'],
+        createdAt: json['created_at'],
+        isDeleted: json['is_deleted'],
+        name: json['name'],
+        stockable: json['stockable'],
+        sku: json['sku'],
+        salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
+        purchasePriceMoney: PriceMoney.fromJson(json['purchase_price_money']),
+        itemCount: json['item_count']);
   }
 
   Map<String, dynamic> toJson() {
