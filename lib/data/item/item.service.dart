@@ -1,15 +1,41 @@
+import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.service.g.dart';
 
 class ItemService {
-  final AuthRepository authRepo;
-  final TeamIdSharedRefereceRepository teamIdSharedRefRepository;
-  final ItemRepository itemRepo;
-  ItemService({required this.authRepo, required this.teamIdSharedRefRepository, required this.itemRepo});
+  final AuthRepository _authRepo;
+  final TeamIdSharedRefereceRepository _teamIdSharedRefRepository;
+  final ItemRepository _itemRepo;
+  ItemService(
+      {required AuthRepository authRepo,
+      required TeamIdSharedRefereceRepository teamIdSharedRefRepository,
+      required ItemRepository itemRepo})
+      : _itemRepo = itemRepo,
+        _teamIdSharedRefRepository = teamIdSharedRefRepository,
+        _authRepo = authRepo;
+
+  Future<Either<String, Unit>> createItem(Item item) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _itemRepo.createItem(item: item, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
+
+  Future<Either<String, List<Item>>> list() async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.getItemList(teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => Right(r.data));
+    });
+  }
 }
 
 @Riverpod(keepAlive: true)

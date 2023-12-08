@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/view/items/item.list.controller.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
@@ -20,6 +22,18 @@ class AddItemScreen extends ConsumerStatefulWidget {
 }
 
 class _AddItemScreenState extends ConsumerState<AddItemScreen> {
+  final _formKey = GlobalKey<FormState>();
+  Option<String> itemName = const None();
+
+  bool _validateAndSaveForm() {
+    final form = _formKey.currentState!;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final itemVariationList = ref.watch(itemVariationListProvider);
@@ -34,7 +48,6 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
         onPressed: () async {
           final ItemVariation? itemVariation = await context.pushNamed(AppRoute.addItemVariation.name);
           if (itemVariation != null) {
-
             ref.read(itemVariationListProvider.notifier).update((state) {
               return [...state, itemVariation];
             });
@@ -47,6 +60,15 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
         actions: [
           IconButton(
               onPressed: () async {
+                if (_validateAndSaveForm()) {
+                  final itemVariations = ref.read(itemVariationListProvider);
+                  // final itemName = ite
+                  final item = Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: "unit");
+
+                  final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
+                  log("is cre $isCreated");
+                }
+
                 // if (_validateAndSaveForm()) {
                 //   if (currency.isNone()) {
                 //     showAlertDialog(
@@ -78,286 +100,30 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
               icon: const Icon(Icons.check)),
         ],
       ),
-      body: Column(
-        children: [
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Item Name *',
-              hintText: 'Enter your username',
-              suffixIcon: Icon(Icons.person),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Item Name *',
+                hintText: 'Enter Item Name',
+                suffixIcon: Icon(Icons.person),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please Item Name';
+                }
+                return null;
+              },
+              onSaved: (value) => itemName = optionOf(value),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your username';
-              }
-              return null;
-            },
-          ),
-
-          Expanded(
-            child: ItemVariationListView(itemVariationList: itemVariationList.toList()),
-            // child: ListView.builder(
-            //   // Let the ListView know how many items it needs to build.
-            //   // itemCount: items.length,
-            //   // Provide a builder function. This is where the magic happens.
-            //   // Convert each item into a widget based on the type of item it is.
-            //   itemBuilder: (context, index) {
-            //     final item = itemVariationList[index];
-
-            //     return ListTile(
-            //       title: Text(item.name),
-            //       // title: item.buildTitle(context),
-            //       // subtitle: item.buildSubtitle(context),
-            //     );
-            //   },
-            // ),
-          )
-
-          // TextFormField(
-          //   decoration: const InputDecoration(
-          //     labelText: 'Unit *',
-          //     hintText: 'Enter your username',
-          //     suffixIcon: Icon(Icons.person),
-          //   ),
-          //   validator: (value) {
-          //     if (value == null || value.isEmpty) {
-          //       return 'Please enter your username';
-          //     }
-          //     return null;
-          //   },
-          // ),
-          // Card(
-          //   elevation: 5,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(8.0),
-          //     child: Column(children: [
-          //       const Text("Sales Information"),
-          //       TextFormField(
-          //         decoration: const InputDecoration(
-          //           labelText: 'Purchase Price*',
-          //           hintText: 'Enter your username',
-          //           suffixIcon: Icon(Icons.person),
-          //         ),
-          //         validator: (value) {
-          //           if (value == null || value.isEmpty) {
-          //             return 'Please enter your username';
-          //           }
-          //           return null;
-          //         },
-          //       ),
-          //       const SizedBox(height: 8),
-          //       TextFormField(
-          //         decoration: const InputDecoration(
-          //           labelText: 'Selling Price *',
-          //           hintText: 'Enter your username',
-          //           suffixIcon: Icon(Icons.person),
-          //         ),
-          //         validator: (value) {
-          //           if (value == null || value.isEmpty) {
-          //             return 'Please enter your username';
-          //           }
-          //           return null;
-          //         },
-          //       ),
-          //     ]),
-          //   ),
-          // ),
-          //      Card(
-          //   elevation: 5,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(8.0),
-          //     child: Column(children: [
-          //       const Text("Inventory Information"),
-          //       TextFormField(
-          //         decoration: const InputDecoration(
-          //           labelText: 'Current Stock Level',
-          //           hintText: 'Enter your username',
-          //           suffixIcon: Icon(Icons.person),
-          //         ),
-          //         validator: (value) {
-          //           if (value == null || value.isEmpty) {
-          //             return 'Please enter your username';
-          //           }
-          //           return null;
-          //         },
-          //       ),
-          //       const SizedBox(height: 8),
-          //       TextFormField(
-          //         decoration: const InputDecoration(
-          //           labelText: 'Reorder Stock Level',
-          //           hintText: 'Enter your username',
-          //           suffixIcon: Icon(Icons.person),
-          //         ),
-          //         validator: (value) {
-          //           if (value == null || value.isEmpty) {
-          //             return 'Please enter your username';
-          //           }
-          //           return null;
-          //         },
-          //       ),
-          //     ]),
-          //   ),
-          // )
-        ],
+            Expanded(
+              child: ItemVariationListView(itemVariationList: itemVariationList.toList()),
+            )
+          ],
+        ),
       ),
     );
   }
 }
-
-// class AddItemScreen extends ConsumerWidget {
-//   const AddItemScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-//     return Scaffold(
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () async {
-//          final ItemVariation? itemVariation = await context.pushNamed(AppRoute.addItemVariation.name);
-//          if (itemVariation != null){
-//      log(itemVariation.name);
-//          }
-
-//         },
-//         child: const Icon(Icons.add),
-//       ),
-//       appBar: AppBar(title: const Text("Add Items"), actions: [
-//             IconButton(
-//                 onPressed: () async {
-//                   // if (_validateAndSaveForm()) {
-//                   //   if (currency.isNone()) {
-//                   //     showAlertDialog(
-//                   //         context: context,
-//                   //         title: "Currency",
-//                   //         defaultActionText: "OK",
-//                   //         content: "Please select a currency.");
-//                   //     return;
-//                   //   }
-//                   //   if (location.isNone()) {
-//                   //     showAlertDialog(
-//                   //         context: context,
-//                   //         title: "Timezone",
-//                   //         defaultActionText: "OK",
-//                   //         content: "Please select a timezone.");
-//                   //     return;
-//                   //   }
-
-//                   //   final success = await ref.read(teamListControllerProvider.notifier).submit(
-//                   //       teamName: teamName.toNullable()!,
-//                   //       location: location.toIterable().first,
-//                   //       currency: currency.toIterable().first);
-
-//                   //   if (success && context.mounted) {
-//                   //     context.goNamed(AppRoute.dashboard.name);
-//                   //   }
-//                   // }
-//                 },
-//                 icon: const Icon(Icons.check)),
-//       ],),
-//       body: SingleChildScrollView(
-//           child: Column(
-//         children: [
-//           TextFormField(
-//             decoration: const InputDecoration(
-//               labelText: 'Item Name *',
-//               hintText: 'Enter your username',
-//               suffixIcon: Icon(Icons.person),
-//             ),
-//             validator: (value) {
-//               if (value == null || value.isEmpty) {
-//                 return 'Please enter your username';
-//               }
-//               return null;
-//             },
-//           ),
-//           TextFormField(
-//             decoration: const InputDecoration(
-//               labelText: 'Unit *',
-//               hintText: 'Enter your username',
-//               suffixIcon: Icon(Icons.person),
-//             ),
-//             validator: (value) {
-//               if (value == null || value.isEmpty) {
-//                 return 'Please enter your username';
-//               }
-//               return null;
-//             },
-//           ),
-//           // Card(
-//           //   elevation: 5,
-//           //   child: Padding(
-//           //     padding: const EdgeInsets.all(8.0),
-//           //     child: Column(children: [
-//           //       const Text("Sales Information"),
-//           //       TextFormField(
-//           //         decoration: const InputDecoration(
-//           //           labelText: 'Purchase Price*',
-//           //           hintText: 'Enter your username',
-//           //           suffixIcon: Icon(Icons.person),
-//           //         ),
-//           //         validator: (value) {
-//           //           if (value == null || value.isEmpty) {
-//           //             return 'Please enter your username';
-//           //           }
-//           //           return null;
-//           //         },
-//           //       ),
-//           //       const SizedBox(height: 8),
-//           //       TextFormField(
-//           //         decoration: const InputDecoration(
-//           //           labelText: 'Selling Price *',
-//           //           hintText: 'Enter your username',
-//           //           suffixIcon: Icon(Icons.person),
-//           //         ),
-//           //         validator: (value) {
-//           //           if (value == null || value.isEmpty) {
-//           //             return 'Please enter your username';
-//           //           }
-//           //           return null;
-//           //         },
-//           //       ),
-//           //     ]),
-//           //   ),
-//           // ),
-//           //      Card(
-//           //   elevation: 5,
-//           //   child: Padding(
-//           //     padding: const EdgeInsets.all(8.0),
-//           //     child: Column(children: [
-//           //       const Text("Inventory Information"),
-//           //       TextFormField(
-//           //         decoration: const InputDecoration(
-//           //           labelText: 'Current Stock Level',
-//           //           hintText: 'Enter your username',
-//           //           suffixIcon: Icon(Icons.person),
-//           //         ),
-//           //         validator: (value) {
-//           //           if (value == null || value.isEmpty) {
-//           //             return 'Please enter your username';
-//           //           }
-//           //           return null;
-//           //         },
-//           //       ),
-//           //       const SizedBox(height: 8),
-//           //       TextFormField(
-//           //         decoration: const InputDecoration(
-//           //           labelText: 'Reorder Stock Level',
-//           //           hintText: 'Enter your username',
-//           //           suffixIcon: Icon(Icons.person),
-//           //         ),
-//           //         validator: (value) {
-//           //           if (value == null || value.isEmpty) {
-//           //             return 'Please enter your username';
-//           //           }
-//           //           return null;
-//           //         },
-//           //       ),
-//           //     ]),
-//           //   ),
-//           // )
-//         ],
-//       )),
-//     );
-//   }
-// }

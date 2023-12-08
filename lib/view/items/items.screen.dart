@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventory_frontend/view/items/item.list.view.dart';
 import 'package:inventory_frontend/view/main/drawer.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
@@ -11,7 +12,7 @@ class ItemsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text("Items")),
-      body: const Text("items"),
+      body: const ItemListView(),
       drawer: const DrawerWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

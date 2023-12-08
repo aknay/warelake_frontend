@@ -35,9 +35,20 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({required String teamId, required String token}) {
-    // TODO: implement getItemList
-    throw UnimplementedError();
+  Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.get(url: ApiEndPoint.getItemEndPoint(), token: token, teamId: teamId);
+      log("team create response code ${response.statusCode}");
+      log("team create response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        final listResponse = ListResponse.fromJson(jsonDecode(response.body), Item.fromJson);
+        return Right(listResponse);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
   }
 
   @override

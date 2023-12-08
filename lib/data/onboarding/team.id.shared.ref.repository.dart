@@ -6,22 +6,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'team.id.shared.ref.repository.g.dart';
 
 class TeamIdSharedRefereceRepository {
-  TeamIdSharedRefereceRepository(this.sharedPreferences);
-  final SharedPreferences sharedPreferences;
+  TeamIdSharedRefereceRepository(this._sharedPreferences);
+  final SharedPreferences _sharedPreferences;
 
   static const onboardingCompleteKey = 'onboardingComplete';
 
   Future<void> setOnboardingComplete({required String teamId}) async {
-    await sharedPreferences.setString(onboardingCompleteKey, teamId);
+    await _sharedPreferences.setString(onboardingCompleteKey, teamId);
   }
 
-  Option<String> get hasTeamId {
-    final teamIdOrNone = sharedPreferences.getString(onboardingCompleteKey);
+  Option<String> get getTemId {
+    final teamIdOrNone = _sharedPreferences.getString(onboardingCompleteKey);
     return optionOf(teamIdOrNone);
   }
 
   Future<void> clearTeamId() async {
-    await sharedPreferences.setString(onboardingCompleteKey, '');
+    await _sharedPreferences.setString(onboardingCompleteKey, '');
   }
 }
 

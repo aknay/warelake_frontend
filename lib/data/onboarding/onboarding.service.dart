@@ -34,7 +34,7 @@ class OnboardingService {
     if (teamList.isEmpty) {
       return right(none());
     } else {
-      final teamIdOrNone = teamIdSharedRefRepository.hasTeamId;
+      final teamIdOrNone = teamIdSharedRefRepository.getTemId;
 
       return await teamIdOrNone.fold(() async {
         if (teamList.length == 1) {
@@ -73,5 +73,6 @@ OnboardingService onboardingService(OnboardingServiceRef ref) {
   final authRepo = ref.watch(authRepositoryProvider);
   final teamIdSharedRefRepo = ref.watch(teamIdSharedReferenceRepositoryProvider);
   final teamRepo = ref.watch(teamRepositoryProvider);
-  return OnboardingService(authRepo: authRepo, teamIdSharedRefRepository: teamIdSharedRefRepo, teamRepository: teamRepo);
+  return OnboardingService(
+      authRepo: authRepo, teamIdSharedRefRepository: teamIdSharedRefRepo, teamRepository: teamRepo);
 }
