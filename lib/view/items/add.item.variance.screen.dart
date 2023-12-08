@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/bill.account/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/view/common.widgets.dart/responsive.center.dart';
+import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
 import 'package:inventory_frontend/view/constants/breakpoints.dart';
 import 'package:inventory_frontend/view/utils/currency.input.formatter.dart';
 

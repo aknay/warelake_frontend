@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
@@ -7,6 +8,7 @@ import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
+import 'package:inventory_frontend/view/items/item.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
@@ -17,7 +19,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
-enum AppRoute { items, signIn, dashboard, addItem, addItemVariation, onboarding, onboardingError, profile }
+enum AppRoute { items, signIn, dashboard, addItem, viewItem, addItemVariation, onboarding, onboardingError, profile }
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
@@ -105,15 +107,35 @@ GoRouter goRouter(GoRouterRef ref) {
             GoRoute(
                 name: AppRoute.addItem.name,
                 path: 'add',
-                builder: (context, state) => const AddItemScreen(),
+                builder: (context, state) {
+                  //  final jobId = state.pathParameters['item']!;
+                  return const AddItemScreen(item: None());
+                },
                 routes: <RouteBase>[
                   GoRoute(
                     name: AppRoute.addItemVariation.name,
                     path: 'item_variation',
-                    builder: (context, state) =>  const AddItemVariationScreen(),
+                    builder: (context, state) => const AddItemVariationScreen(),
                     // routes:
                   ),
                 ]),
+            GoRoute(
+                name: AppRoute.viewItem.name,
+                path: ':id',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ItemScreen(itemId: id);
+                },
+                // routes: <RouteBase>[
+                //   GoRoute(
+                //     name: AppRoute.addItemVariation.name,
+                //     path: 'item_variation',
+                //     builder: (context, state) => const AddItemVariationScreen(),
+                //     // routes:
+                //   ),
+                // ]
+                
+                ),
           ]),
     ],
   );

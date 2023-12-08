@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/view/common.widgets.dart/responsive.center.dart';
+import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
 import 'package:inventory_frontend/view/constants/breakpoints.dart';
 import 'package:inventory_frontend/view/onboarding/currency.selection/currency.selection.wdiget.dart';
 import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.widget.dart';

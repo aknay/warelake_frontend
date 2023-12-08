@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/view/common.widgets.dart/dialogs/yes.no.dialog.dart';
+import 'package:inventory_frontend/view/common.widgets/dialogs/yes.no.dialog.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

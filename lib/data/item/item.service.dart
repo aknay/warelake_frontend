@@ -28,6 +28,15 @@ class ItemService {
     });
   }
 
+  Future<Either<String, Item>> getItem({required String itemId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _itemRepo.getItem(itemId: itemId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
+
   Future<Either<String, List<Item>>> list() async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {

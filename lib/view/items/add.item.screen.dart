@@ -15,8 +15,8 @@ final itemVariationListProvider = StateProvider<List<ItemVariation>>(
 );
 
 class AddItemScreen extends ConsumerStatefulWidget {
-  const AddItemScreen({super.key});
-
+  const AddItemScreen({super.key, required this.item});
+  final Option<Item> item;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddItemScreenState();
 }
@@ -24,6 +24,14 @@ class AddItemScreen extends ConsumerStatefulWidget {
 class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<String> itemName = const None();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.item.fold(() => null, (a) {
+      itemName = Some(a.name);
+    });
+  }
 
   bool _validateAndSaveForm() {
     final form = _formKey.currentState!;
@@ -68,34 +76,6 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                   final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
                   log("is cre $isCreated");
                 }
-
-                // if (_validateAndSaveForm()) {
-                //   if (currency.isNone()) {
-                //     showAlertDialog(
-                //         context: context,
-                //         title: "Currency",
-                //         defaultActionText: "OK",
-                //         content: "Please select a currency.");
-                //     return;
-                //   }
-                //   if (location.isNone()) {
-                //     showAlertDialog(
-                //         context: context,
-                //         title: "Timezone",
-                //         defaultActionText: "OK",
-                //         content: "Please select a timezone.");
-                //     return;
-                //   }
-
-                //   final success = await ref.read(teamListControllerProvider.notifier).submit(
-                //       teamName: teamName.toNullable()!,
-                //       location: location.toIterable().first,
-                //       currency: currency.toIterable().first);
-
-                //   if (success && context.mounted) {
-                //     context.goNamed(AppRoute.dashboard.name);
-                //   }
-                // }
               },
               icon: const Icon(Icons.check)),
         ],
