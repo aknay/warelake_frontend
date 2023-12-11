@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-import 'package:inventory_frontend/domain/bill.account/valueobject.dart';
+import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/view/utils/number.formatter.dart';
 
 //ref: https://github.com/gtgalone/currency_text_input_formatter/blob/master/lib/currency_text_input_formatter.dart

@@ -64,7 +64,7 @@ void main() async {
     expect(itemCreated.isRight(), true);
 
     final item = itemCreated.toIterable().first;
-    expect(item.variations.first.itemCount, 0);
+    expect(item.variations.length, 1);
   });
 
   test('you can get back the item', () async {

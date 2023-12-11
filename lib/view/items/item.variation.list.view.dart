@@ -13,24 +13,12 @@ class ItemVariationListView extends ConsumerWidget {
       return const Center(child: Text("Please add at least one item variation."));
     }
 
-      return ListView(
-          children: itemVariationList.map((e) => ListTile(title: Text(e.name),)).toList(),
-        );
-
-    // return ListView.builder(
-    //   // Let the ListView know how many items it needs to build.
-    //   // itemCount: items.length,
-    //   // Provide a builder function. This is where the magic happens.
-    //   // Convert each item into a widget based on the type of item it is.
-    //   itemBuilder: (context, index) {
-    //     final item = itemVariationList[index];
-
-    //     return ListTile(
-    //       title: Text(item.name),
-    //       // title: item.buildTitle(context),
-    //       // subtitle: item.buildSubtitle(context),
-    //     );
-    //   },
-    // );
+    return ListView(
+      children: itemVariationList
+          .map((e) => ListTile(
+                title: Text(e.name),
+              ))
+          .toList(),
+    );
   }
 }

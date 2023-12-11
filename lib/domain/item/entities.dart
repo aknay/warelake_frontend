@@ -1,3 +1,4 @@
+import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:uuid/uuid.dart';
 
 class Item {
@@ -151,6 +152,10 @@ class PriceMoney {
     required this.amount,
     required this.currency,
   });
+
+  factory PriceMoney.from({required double amount, required CurrencyCode currencyCode}) {
+    return PriceMoney(amount: (amount * 1000).toInt(), currency: currencyCode.name);
+  }
 
   factory PriceMoney.fromJson(Map<String, dynamic> json) {
     return PriceMoney(

@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/bill.account/valueobject.dart';
+import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
 import 'package:inventory_frontend/view/constants/breakpoints.dart';
@@ -43,10 +45,12 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
           purchasingPrice.isSome() &&
           sellingPrice.isSome()) {
         final salePrice = sellingPrice.fold(() => 0.0, (a) => a);
-        final salePriceMoney = PriceMoney(amount: (salePrice * 1000).toInt(), currency: currencyCode.name);
+        final salePriceMoney = PriceMoney.from(amount: salePrice, currencyCode: currencyCode);
 
         final purchasePrice = purchasingPrice.fold(() => 0.0, (a) => a);
-        final purchasePriceMoney = PriceMoney(amount: (purchasePrice * 1000).toInt(), currency: currencyCode.name);
+        final purchasePriceMoney = PriceMoney.from(amount: purchasePrice, currencyCode: currencyCode);
+        log("sale price money ${salePriceMoney.amount}");
+        log("purchase price money ${purchasePriceMoney.amount}");
 
         final itemVariation = ItemVariation.create(
             name: itemVariationName.fold(() => '', (a) => a),
@@ -57,17 +61,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
         context.pop(itemVariation);
       }
-
-      // final success =
-      //     await ref.read(editJobScreenControllerProvider.notifier).submit(
-      //           jobId: widget.jobId,
-      //           oldJob: widget.job,
-      //           name: _name ?? '',
-      //           ratePerHour: _ratePerHour ?? 0,
-      //         );
-      // if (success && mounted) {
-      //   context.pop();
-      // }
     }
   }
 
@@ -161,7 +154,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
           }
           return null;
         },
-            onSaved: (value) => itemVariationUnit = optionOf(value),
+        onSaved: (value) => itemVariationUnit = optionOf(value),
       ),
       Card(
         elevation: 5,
@@ -183,8 +176,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
                 }
                 return null;
               },
-                   onSaved: (value) =>
-                  purchasingPrice = value == null ? optionOf(double.tryParse(value ?? '')) : const Some(0),
+              onSaved: (value) => purchasingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -201,8 +193,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
                 }
                 return null;
               },
-                  onSaved: (value) =>
-                  sellingPrice = value == null ? optionOf(double.tryParse(value ?? '')) : const Some(0),
+              onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
             ),
           ]),
         ),

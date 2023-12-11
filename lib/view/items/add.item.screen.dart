@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,14 +40,24 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
     return false;
   }
 
+  _submit() async {
+    if (_validateAndSaveForm()) {
+      final itemVariations = ref.read(itemVariationListProvider);
+
+      final item = Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: "unit");
+
+      final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
+
+      if (isCreated && mounted) {
+        context.pop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(itemListControllerProvider);
     final itemVariationList = ref.watch(itemVariationListProvider);
-    log("item ${itemVariationList.length}");
-
-    ref.listen(itemVariationListProvider, (previous, next) {
-      log("next ${next.length}");
-    });
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -66,18 +74,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
       appBar: AppBar(
         title: const Text("Add Items"),
         actions: [
-          IconButton(
-              onPressed: () async {
-                if (_validateAndSaveForm()) {
-                  final itemVariations = ref.read(itemVariationListProvider);
-                  // final itemName = ite
-                  final item = Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: "unit");
-
-                  final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
-                  log("is cre $isCreated");
-                }
-              },
-              icon: const Icon(Icons.check)),
+          IconButton(onPressed: state.isLoading ? null : _submit, icon: const Icon(Icons.check)),
         ],
       ),
       body: Form(

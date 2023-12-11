@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:inventory_frontend/domain/bill.account/valueobject.dart';
+import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 
 class NumberFormatterUtils {
   static String currencyFormat({required double value, required CurrencyCode currencyCode}) {
