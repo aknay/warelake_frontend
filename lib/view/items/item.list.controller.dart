@@ -33,15 +33,6 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-  // Future<bool> submit({required String teamName, required tz.Location location, required Currency currency}) async {
-  //   final addedOrError =
-  //       await ref.read(onboardingServiceProvider).submit(teamName: teamName, location: location, currency: currency);
-  //   return addedOrError.fold((l) {
-  //     state = AsyncError("Unable to create a team", StackTrace.current);
-  //     return false;
-  //   }, (r) => true);
-  // }
-
   Future<Either<String, List<Item>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));

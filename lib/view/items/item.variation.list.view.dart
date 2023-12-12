@@ -17,8 +17,20 @@ class ItemVariationListView extends ConsumerWidget {
       children: itemVariationList
           .map((e) => ListTile(
                 title: Text(e.name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [_toSalePrice(e.salePriceMoney), _toPurchasePrice(e.purchasePriceMoney)],
+                ),
               ))
           .toList(),
     );
+  }
+
+  Text _toSalePrice(PriceMoney money) {
+    return Text("Sale Price: ${money.currency} ${money.amount / 1000}");
+  }
+
+  Text _toPurchasePrice(PriceMoney money) {
+    return Text("Purchase Price: ${money.currency} ${money.amount / 1000}");
   }
 }

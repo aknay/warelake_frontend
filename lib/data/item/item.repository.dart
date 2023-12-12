@@ -91,6 +91,12 @@ class ItemRepository extends ItemApi {
     // TODO: implement createImage
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<ErrorResponse, Item>> editVariation({required ItemVariation itemVariation, required String token}) {
+    // TODO: implement editVariation
+    throw UnimplementedError();
+  }
 }
 
 @Riverpod(keepAlive: true)
