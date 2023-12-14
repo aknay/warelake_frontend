@@ -28,3 +28,11 @@ doc/api/
 *.g.dart
 
 /.idea
+
+# Firebase configuration files
+lib/firebase_options.dart
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+macos/Runner/GoogleService-Info.plist
+macos/firebase_app_id_file.json
+android/app/google-services.json
