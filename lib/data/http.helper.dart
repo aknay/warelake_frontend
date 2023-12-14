@@ -45,9 +45,7 @@ class HttpHelper {
       map["team_id"] = teamId;
     }
     var request = http.MultipartRequest('POST', Uri.parse(url).replace(queryParameters: map));
-    // request = body == null ? request :   jsonToFormData(request, body);
     request.fields['json'] = jsonEncode(body);
-    // request = jsonToFormData(request, body!);
     request.files.add(
       await http.MultipartFile.fromPath(
         'image', // This should match the name expected by your server
@@ -57,14 +55,8 @@ class HttpHelper {
     );
 
     request.headers['Authorization'] = 'Bearer $token';
-    // request.fields = jsonEncode(object)
 
     return await request.send();
-
-    // return http.post(Uri.parse(url), headers: {
-    //   'Authorization': 'Bearer $token',
-    //   'Content-Type': 'application/json; charset=UTF-8',
-    // });
   }
 
   static patch({required String url, required Map<String, dynamic> body, required String token}) {
@@ -90,7 +82,13 @@ class HttpHelper {
     return http.get(uri, headers: {'Authorization': 'Bearer $token'});
   }
 
-  static delete({required String url, required String token, Map<String, dynamic>? body}) {
-    return http.delete(Uri.parse(url), headers: {'Authorization': 'Bearer $token'}, body: jsonEncode(body));
+  static delete({required String url, required String token, Map<String, dynamic>? body, String? teamId}) {
+    Map<String, String> map = {};
+    if (teamId != null) {
+      map["team_id"] = teamId;
+    }
+
+    final uri = teamId == null ? Uri.parse(url) : Uri.parse(url).replace(queryParameters: map);
+    return http.delete(uri, headers: {'Authorization': 'Bearer $token'}, body: jsonEncode(body));
   }
 }

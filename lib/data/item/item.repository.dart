@@ -116,6 +116,24 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<ErrorResponse, Unit>> deleteItem(
+      {required String itemId, required String teamId, required String token}) async {
+    try {
+      final response =
+          await HttpHelper.delete(url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId);
+      log("delete item response code ${response.statusCode}");
+      log("delete item response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return const Right(unit);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)

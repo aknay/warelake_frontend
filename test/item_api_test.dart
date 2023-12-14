@@ -128,6 +128,45 @@ void main() async {
     }
   });
 
+  test('you can delete the item', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    {
+      //check item list is not empty
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.isEmpty, false);
+    }
+
+    final deletedOrError = await itemRepo.deleteItem(
+        itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+    expect(deletedOrError.isRight(), true);
+
+    {
+      //check item list is empty
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.isEmpty, true);
+    }
+  });
+
   test('you can crate image for an item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);

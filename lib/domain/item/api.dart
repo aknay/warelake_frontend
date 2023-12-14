@@ -11,5 +11,8 @@ abstract class ItemApi {
   Future<Either<ErrorResponse, Item>> getItem({required String itemId, required String teamId, required String token});
   Future<Either<ErrorResponse, Item>> createImage({required ItemVariationImageRequest request, required String token});
   Future<Either<ErrorResponse, Item>> editVariation({required ItemVariation itemVariation, required String token});
-  Future<Either<ErrorResponse, Item>> editItem({required PayloadItem payloadItem, required String itemId, required String teamId,  required String token});
+  Future<Either<ErrorResponse, Item>> editItem(
+      {required PayloadItem payloadItem, required String itemId, required String teamId, required String token});
+  Future<Either<ErrorResponse, Unit>> deleteItem(
+      {required String itemId, required String teamId, required String token});
 }
