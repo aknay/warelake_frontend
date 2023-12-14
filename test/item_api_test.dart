@@ -7,6 +7,7 @@ import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/item/payload.item.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
@@ -90,6 +91,41 @@ void main() async {
     final retrievedItemOrError = await itemRepo.getItem(
         itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
     expect(retrievedItemOrError.isRight(), true);
+  });
+
+  test('you can update the item', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final updatedOrError = await itemRepo.editItem(
+        payloadItem: PayloadItem(name: "Mango"),
+        itemId: itemCreated.toIterable().first.itemId!,
+        teamId: team.id!,
+        token: firstUserAccessToken);
+    expect(updatedOrError.isRight(), true);
+
+    {
+      //check the updated name
+      final retrievedItemOrError = await itemRepo.getItem(
+          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      expect(retrievedItemOrError.toIterable().first.name, "Mango");
+    }
   });
 
   test('you can crate image for an item', () async {

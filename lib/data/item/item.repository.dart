@@ -7,6 +7,7 @@ import 'package:inventory_frontend/data/http.helper.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/item/api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/item/payload.item.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -91,11 +92,29 @@ class ItemRepository extends ItemApi {
     // TODO: implement createImage
     throw UnimplementedError();
   }
-  
+
   @override
   Future<Either<ErrorResponse, Item>> editVariation({required ItemVariation itemVariation, required String token}) {
     // TODO: implement editVariation
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<ErrorResponse, Item>> editItem(
+      {required PayloadItem payloadItem, required String itemId, required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.post(
+          url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId, body: payloadItem.toMap());
+      log("get item response code ${response.statusCode}");
+      log("get item response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return Right(Item.fromJson(jsonDecode(response.body)));
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
   }
 }
 
