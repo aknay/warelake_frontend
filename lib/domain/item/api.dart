@@ -15,4 +15,7 @@ abstract class ItemApi {
       {required PayloadItem payloadItem, required String itemId, required String teamId, required String token});
   Future<Either<ErrorResponse, Unit>> deleteItem(
       {required String itemId, required String teamId, required String token});
+
+  Future<Either<ErrorResponse, Unit>> deelteItemVariation(
+      {required String itemId, required String itemVariationId, required String teamId, required String token});
 }

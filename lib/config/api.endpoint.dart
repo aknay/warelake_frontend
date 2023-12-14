@@ -29,6 +29,11 @@ class ApiEndPoint {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
 
+    static String getItemVariationEndPoint({required String itemId, String? itemVariationId}) {
+    return itemVariationId == null ? "${getApiBaseUrl()}/v1/items/$itemId/item_variations" : "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId";
+  }
+
+
     static String getItemImageEndPoint({String? imageId}) {
     return imageId == null ? "${getApiBaseUrl()}/v1/items/images" : "${getApiBaseUrl()}/v1/items/images/$imageId";
   }
