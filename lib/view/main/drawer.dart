@@ -55,6 +55,17 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
+            title: const Text('Sale Orders'),
+            onTap: () {
+              log("are we going?");
+              context.goNamed(
+                AppRoute.saleOrders.name,
+              );
+
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
             title: const Text('School'),
             // selected: _selectedIndex == 2,
             onTap: () {
