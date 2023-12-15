@@ -109,25 +109,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
   List<Widget> _buildFormChildren() {
     return [
-      // TextFormField(
-      //   decoration: const InputDecoration(labelText: 'Job name'),
-      //   keyboardAppearance: Brightness.light,
-      //   // initialValue: _name,
-      //   validator: (value) =>
-      //       (value ?? '').isNotEmpty ? null : 'Name can\'t be empty',
-      //   onSaved: (value) => _name = value,
-      // ),
-      // TextFormField(
-      //   decoration: const InputDecoration(labelText: 'Rate per hour'),
-      //   keyboardAppearance: Brightness.light,
-      //   initialValue: _ratePerHour != null ? '$_ratePerHour' : null,
-      //   keyboardType: const TextInputType.numberWithOptions(
-      //     signed: false,
-      //     decimal: false,
-      //   ),
-      //   onSaved: (value) => _ratePerHour = int.tryParse(value ?? '') ?? 0,
-      // ),
-
       TextFormField(
         decoration: const InputDecoration(
           labelText: 'Item Variation Name *',

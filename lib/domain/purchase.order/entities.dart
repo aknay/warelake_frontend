@@ -182,6 +182,8 @@ class LineItem {
     // required this.itemTotal,
   });
 
+  double get purchaseRateInDouble => (purchaseRate / 1000).toDouble();
+
   factory LineItem.create(
       {required ItemVariation itemVariation,
       required double purchaseRate,

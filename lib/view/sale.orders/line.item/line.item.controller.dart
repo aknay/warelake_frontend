@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,6 +14,7 @@ class LineItemController extends _$LineItemController {
 
   void add(LineItem lineItem) {
     state = [...state, lineItem];
+    log("the state ${state.length}");
   }
 
   void remove(String todoId) {

@@ -28,7 +28,7 @@ class ItemVariationListView extends ConsumerWidget {
                 ),
                 onTap: () {
                   if (isToSelectItemVariation) {
-                    ref.read(selectedLineItemProvider.notifier).state = Some(e);
+                    ref.read(selectedItemVariationProvider.notifier).state = Some(e);
                             context.goNamed(
                 AppRoute.addLineItem.name,
               );

@@ -11,8 +11,8 @@ class SaleOrdersScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       drawer: const DrawerWidget(),
-      appBar: AppBar(title: Text("Sale Orders")),
-      body: Center(child: Text("Sale Orders")),
+      appBar: AppBar(title: const Text("Sale Orders")),
+      body: const Center(child: Text("Sale Orders")),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.goNamed(AppRoute.addSaleOrder.name);
