@@ -14,27 +14,29 @@ final itemProvider = FutureProvider.family<Item, String>((ref, id) async {
 });
 
 class ItemScreen extends ConsumerWidget {
-  const ItemScreen({super.key, required this.itemId});
+  const ItemScreen({super.key, required this.isToSelectItemVariation, required this.itemId});
 
   final String itemId;
+  final bool isToSelectItemVariation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final jobAsync = ref.watch(itemProvider(itemId));
     return ScaffoldAsyncValueWidget<Item>(
       value: jobAsync,
-      data: (job) => PageContents(item: job),
+      data: (job) => PageContents(item: job, isToSelectItemVariation: isToSelectItemVariation ),
     );
   }
 }
 
 class PageContents extends StatelessWidget {
-  const PageContents({super.key, required this.item});
+  const PageContents({super.key, required this.isToSelectItemVariation, required this.item});
   final Item item;
+  final bool isToSelectItemVariation;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(item.name)), body: ItemVariationListView(itemVariationList: item.variations));
+        appBar: AppBar(title: Text(item.name)), body: ItemVariationListView(itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation));
   }
 }

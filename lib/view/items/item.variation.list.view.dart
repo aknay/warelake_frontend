@@ -1,11 +1,16 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {
-  const ItemVariationListView({required this.itemVariationList, super.key});
+  const ItemVariationListView({required this.itemVariationList, required this.isToSelectItemVariation, super.key});
 
   final List<ItemVariation> itemVariationList;
+  final bool isToSelectItemVariation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,6 +26,14 @@ class ItemVariationListView extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [_toSalePrice(e.salePriceMoney), _toPurchasePrice(e.purchasePriceMoney)],
                 ),
+                onTap: () {
+                  if (isToSelectItemVariation) {
+                    ref.read(selectedLineItemProvider.notifier).state = Some(e);
+                            context.goNamed(
+                AppRoute.addLineItem.name,
+              );
+                  }
+                },
               ))
           .toList(),
     );

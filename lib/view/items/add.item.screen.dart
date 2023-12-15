@@ -96,7 +96,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
               onSaved: (value) => itemName = optionOf(value),
             ),
             Expanded(
-              child: ItemVariationListView(itemVariationList: itemVariationList.toList()),
+              child:
+                  ItemVariationListView(itemVariationList: itemVariationList.toList(), isToSelectItemVariation: false),
             )
           ],
         ),

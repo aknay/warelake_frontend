@@ -6,7 +6,8 @@ import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/utils/async_value_ui.dart';
 
 class ItemListView extends ConsumerWidget {
-  const ItemListView({super.key});
+  final bool isToSelectItemVariation;
+  const ItemListView({required this.isToSelectItemVariation, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,10 +25,17 @@ class ItemListView extends ConsumerWidget {
                   .map((e) => ListTile(
                         title: Text(e.name),
                         onTap: () {
-                          context.goNamed(
-                            AppRoute.viewItem.name,
-                            pathParameters: {'id': e.itemId!},
-                          );
+                          if (isToSelectItemVariation) {
+                                  context.goNamed(
+                              AppRoute.selectItem.name,
+                              pathParameters: {'id': e.itemId!},
+                            );
+                          } else {
+                            context.goNamed(
+                              AppRoute.viewItem.name,
+                              pathParameters: {'id': e.itemId!},
+                            );
+                          }
                         },
                       ))
                   .toList());

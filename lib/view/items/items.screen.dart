@@ -12,7 +12,7 @@ class ItemsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text("Items")),
-      body: const ItemListView(),
+      body: const ItemListView(isToSelectItemVariation: false),
       drawer: const DrawerWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
