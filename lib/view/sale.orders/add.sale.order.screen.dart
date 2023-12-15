@@ -15,7 +15,16 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Sale Order")),
+      appBar: AppBar(
+        title: const Text("New Sale Order"),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await _submit(ref: ref);
+              },
+              icon: const Icon(Icons.check)),
+        ],
+      ),
       body: Column(
         children: [
           TextButton(
@@ -30,5 +39,21 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _submit({required WidgetRef ref}) async {
+    //   if (_validateAndSaveForm()) {
+    //     final selectedItemVariationOrNone = ref.watch(selectedItemVariationProvider);
+    //     final itemVariation = selectedItemVariationOrNone.toIterable().first;
+    //     log("The rate is ${rate.toIterable().first}");
+    //    final lineItem = LineItem.create(
+    //         itemVariation: itemVariation,
+    //         purchaseRate: rate.toIterable().first,
+    //         purchaseQuantity: quantity.toIterable().first,
+    //         unit: "some unit");
+    //  ref.read(lineItemControllerProvider.notifier).add(lineItem);
+
+    //     context.pop();
+    //   }
   }
 }

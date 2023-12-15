@@ -90,6 +90,12 @@ void main() async {
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
     expect(createdPo.status, 'processing');
+
+    {
+      final saleOrderListOrError = await saleOrderApi.listSaleOrder(teamId: team.id!, token: firstUserAccessToken);
+
+      expect(saleOrderListOrError.toIterable().first.data.isNotEmpty, true);
+    }
   });
 
   test('you can change to delivered for so', () async {
