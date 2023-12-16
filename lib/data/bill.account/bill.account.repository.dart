@@ -8,8 +8,11 @@ import 'package:inventory_frontend/domain/bill.account/api.dart';
 import 'package:inventory_frontend/domain/bill.account/entities.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/responses.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class BillAccountRestApi extends BillAccountApi {
+part 'bill.account.repository.g.dart';
+
+class BillAccountRepository extends BillAccountApi {
   @override
   Future<Either<ErrorResponse, ListResponse<BillAccount>>> list({required String teamId, required String token}) async {
     try {
@@ -29,22 +32,10 @@ class BillAccountRestApi extends BillAccountApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  // @override
-  // Future<Either<ErrorResponse, ListResponse<Role>>> getRoleList({required String teamId, required String token}) async {
-  //   try {
-  //     Map<String, String> map = {};
-  //     map["team_id"] = teamId;
-  //     final response = await HttpHelper.getWithQuery(url: ApiEndPoint.getRoleEndPoint(), token: token, query: map);
-  //     log("team create response code ${response.statusCode}");
-  //     log("team create response ${jsonDecode(response.body)}");
-  //     if (response.statusCode == 200) {
-  //       final listResponse = ListResponse.fromJson(jsonDecode(response.body), Role.fromJson);
-  //       return Right(listResponse);
-  //     }
-  //     return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
-  //   } catch (e) {
-  //     log("the error is $e");
-  //     return Left(ErrorResponse.withOtherError(message: e.toString()));
-  //   }
-  // }
+}
+
+
+@Riverpod(keepAlive: true)
+BillAccountRepository billAccountRepository(BillAccountRepositoryRef ref) {
+  return BillAccountRepository();
 }

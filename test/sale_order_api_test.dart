@@ -3,12 +3,13 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:inventory_frontend/data/bill.account/rest.api.dart';
+import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/sale.order/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
@@ -18,7 +19,7 @@ void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRepository();
   final saleOrderApi = SaleOrderRestApi();
-  final billAccountApi = BillAccountRestApi();
+  final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -69,8 +70,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem =
-        SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
@@ -120,8 +120,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem =
-        SaleLineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2.7, purchaseQuantity: 5, unit: 'cm');
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.7, quantity: 5, unit: 'cm');
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);

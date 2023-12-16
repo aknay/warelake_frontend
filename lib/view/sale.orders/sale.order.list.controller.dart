@@ -1,8 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:inventory_frontend/data/item/item.service.dart';
 import 'package:inventory_frontend/data/sale.order/sale.order.service.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,18 +17,18 @@ class SaleOrderListController extends _$SaleOrderListController {
     return itemsOrError.toIterable().first;
   }
 
-  Future<bool> createItem(Item item) async {
+  Future<bool> createSaleOrder(SaleOrder saleOrder) async {
     state = const AsyncLoading();
-    final createdOrError = await ref.read(itemServiceProvider).createItem(item);
+    final createdOrError = await ref.read(saleOrderServiceProvider).createSaleOrder(saleOrder);
     return await createdOrError.fold((l) {
       state = AsyncError(l, StackTrace.current);
       return false;
     }, (r) async {
-      final itemsOrError = await _list();
-      if (itemsOrError.isLeft()) {
+      final saleOrdersOrError = await _list();
+      if (saleOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
+      state = AsyncValue.data(saleOrdersOrError.toIterable().first);
       return true;
     });
   }

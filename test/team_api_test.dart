@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:inventory_frontend/data/bill.account/rest.api.dart';
+import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
@@ -18,7 +18,7 @@ void main() async {
   final teamApi = TeamRestApi();
   final roleApi = RoleRestApi();
   final userApi = UserRestApi();
-  final billAccountApi = BillAccountRestApi();
+  final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {

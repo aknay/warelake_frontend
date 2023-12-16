@@ -166,8 +166,8 @@ class LineItem {
   int? itemId;
   int? lineItemId;
   String? description;
-  int purchaseRate;
-  int purchaseQuantity;
+  int rate;
+  int quantity;
   String unit;
   // int itemTotal;
 
@@ -176,24 +176,17 @@ class LineItem {
     required this.itemVariation,
     this.lineItemId,
     this.description,
-    required this.purchaseRate,
-    required this.purchaseQuantity,
+    required this.rate,
+    required this.quantity,
     required this.unit,
     // required this.itemTotal,
   });
 
-  double get purchaseRateInDouble => (purchaseRate / 1000).toDouble();
+  double get purchaseRateInDouble => (rate / 1000).toDouble();
 
   factory LineItem.create(
-      {required ItemVariation itemVariation,
-      required double purchaseRate,
-      required int purchaseQuantity,
-      required String unit}) {
-    return LineItem(
-        itemVariation: itemVariation,
-        purchaseRate: (purchaseRate * 1000).toInt(),
-        purchaseQuantity: purchaseQuantity,
-        unit: unit);
+      {required ItemVariation itemVariation, required double rate, required int quantity, required String unit}) {
+    return LineItem(itemVariation: itemVariation, rate: (rate * 1000).toInt(), quantity: quantity, unit: unit);
   }
 
   Map<String, dynamic> toJson() {
@@ -202,8 +195,8 @@ class LineItem {
       'item_id': itemId,
       'line_item_id': lineItemId,
       'description': description,
-      'purchase_rate': purchaseRate,
-      'purchase_quantity': purchaseQuantity,
+      'purchase_rate': rate,
+      'purchase_quantity': quantity,
       'unit': unit,
       // 'itemTotal': itemTotal,
     };
@@ -215,8 +208,8 @@ class LineItem {
       itemVariation: ItemVariation.fromJson(json['item_variation']),
       lineItemId: json['line_item_id'],
       description: json['description'],
-      purchaseRate: json['purchase_rate'],
-      purchaseQuantity: json['purchase_quantity'],
+      rate: json['rate'],
+      quantity: json['quantity'],
       unit: json['unit'],
       // itemTotal: json['itemTotal'],
     );

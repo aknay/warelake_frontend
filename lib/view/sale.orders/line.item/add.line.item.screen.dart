@@ -111,8 +111,8 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
       log("The rate is ${rate.toIterable().first}");
      final lineItem = LineItem.create(
           itemVariation: itemVariation,
-          purchaseRate: rate.toIterable().first,
-          purchaseQuantity: quantity.toIterable().first,
+          rate: rate.toIterable().first,
+          quantity: quantity.toIterable().first,
           unit: "some unit");
    ref.read(lineItemControllerProvider.notifier).add(lineItem);
 

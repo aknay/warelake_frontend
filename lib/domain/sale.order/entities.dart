@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 
 class SaleOrder {
   String? id;
@@ -14,7 +15,7 @@ class SaleOrder {
   int? contactPersons;
   String currencyCode;
   String? deliveryDate;
-  List<SaleLineItem> lineItems;
+  List<LineItem> lineItems;
   int subTotal; //before tax
   int total; //after tax
   List<Tax>? taxes;
@@ -52,7 +53,7 @@ class SaleOrder {
   factory SaleOrder.create(
       {required DateTime date,
       required CurrencyCode currencyCode,
-      required List<SaleLineItem> lineItems,
+      required List<LineItem> lineItems,
       required int subTotal,
       required int total,
       required String accountId}) {
@@ -85,11 +86,11 @@ class SaleOrder {
   static SaleOrder fromJson(Map<String, dynamic> json) {
     return SaleOrder(
       id: json['id'],
-      purchaseOrderNumber: json['purchaseorder_number'],
+      // purchaseOrderNumber: json['purchaseorder_number'],
       date: json['date'],
       status: json['status'],
       currencyCode: json['currency_code'],
-      lineItems: List<SaleLineItem>.from(json['line_items'].map((v) => SaleLineItem.fromJson(v))),
+      lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
       subTotal: json['sub_total'],
       total: json['total'],
       notes: json['notes'],
@@ -163,11 +164,11 @@ class SaleLineItem {
 
   factory SaleLineItem.create(
       {required ItemVariation itemVariation,
-      required double purchaseRate,
-      required int purchaseQuantity,
+      required double saleRate,
+      required int saleQuantity,
       required String unit}) {
     return SaleLineItem(
-        itemVariation: itemVariation, saleRate: (purchaseRate * 1000).toInt(), saleQuantity: purchaseQuantity, unit: unit);
+        itemVariation: itemVariation, saleRate: (saleRate * 1000).toInt(), saleQuantity: saleQuantity, unit: unit);
   }
 
   Map<String, dynamic> toJson() {

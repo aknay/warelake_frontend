@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:inventory_frontend/data/bill.account/rest.api.dart';
+import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/purchase.order/rest.api.dart';
@@ -18,7 +18,7 @@ void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRepository();
   final purchaseOrderApi = PurchaseOrderRestApi();
-  final billAccountApi = BillAccountRestApi();
+  final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -70,7 +70,7 @@ void main() async {
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
     final lineItem =
-        LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2, purchaseQuantity: 5, unit: 'cm');
+        LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
@@ -114,7 +114,7 @@ void main() async {
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
     final lineItem =
-        LineItem.create(itemVariation: retrievedWhiteShirt, purchaseRate: 2.5, purchaseQuantity: 5, unit: 'cm');
+        LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);

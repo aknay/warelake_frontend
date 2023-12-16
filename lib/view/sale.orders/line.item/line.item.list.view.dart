@@ -16,7 +16,7 @@ class LineItemListView extends ConsumerWidget {
           .map((e) => ListTile(
                 title: Text(e.itemVariation.name),
                 subtitle: Row(children: [
-                  Text(e.purchaseQuantity.toString()),
+                  Text(e.quantity.toString()),
                   const Text(" X "),
                   Text(e.purchaseRateInDouble.toString())
                 ]),
