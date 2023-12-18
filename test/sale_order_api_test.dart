@@ -83,7 +83,8 @@ void main() async {
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
-        total: 20, saleOrderNumber: "S0-00001");
+        total: 20,
+        saleOrderNumber: "S0-00001");
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
@@ -98,6 +99,57 @@ void main() async {
       final saleOrderListOrError = await saleOrderApi.listSaleOrder(teamId: team.id!, token: firstUserAccessToken);
 
       expect(saleOrderListOrError.toIterable().first.data.isNotEmpty, true);
+    }
+  });
+
+  test('you can get back so', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
+
+    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
+    expect(accountListOrError.toIterable().first.data.length == 1, true);
+    final account = accountListOrError.toIterable().first.data.first;
+
+    final so = SaleOrder.create(
+        accountId: account.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: [lineItem],
+        subTotal: 10,
+        total: 20,
+        saleOrderNumber: "S0-00001");
+    final soCreatedOrError =
+        await saleOrderApi.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(soCreatedOrError.isRight(), true);
+
+    {
+      final createdSo = soCreatedOrError.toIterable().first;
+
+      final soOrError =
+          await saleOrderApi.getSaleOrder(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+      expect(soOrError.isRight(), true);
     }
   });
 
@@ -136,7 +188,8 @@ void main() async {
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
-        total: 20, saleOrderNumber: "S0-00001");
+        total: 20,
+        saleOrderNumber: "S0-00001");
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 

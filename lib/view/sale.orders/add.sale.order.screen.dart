@@ -20,61 +20,97 @@ class AddSaleOrderScreen extends ConsumerStatefulWidget {
 }
 
 class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
+  final _formKey = GlobalKey<FormState>();
   Option<BillAccount> _billAccountOrNone = const None();
+  Option<String> _saleOrderNumberOrNone = const None();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("New Sale Order"),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                await _submit(ref: ref, billAccountOrNone: _billAccountOrNone);
-              },
-              icon: const Icon(Icons.check)),
-        ],
-      ),
-      body: Column(
-        children: [
-          TextButton(
-            onPressed: () async {
-              context.goNamed(
-                AppRoute.addLineItem.name,
-              );
-            },
-            child: const Text("Add Line Item"),
-          ),
-          BillAccountSelectionWidget(onValueChanged: (value) {
-            log("value ${value.isSome()}");
-            _billAccountOrNone = value;
-          }),
-          const Expanded(child: LineItemListView())
-        ],
+        appBar: AppBar(
+          title: const Text("New Sale Order"),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await _submit(ref: ref, billAccountOrNone: _billAccountOrNone);
+                },
+                icon: const Icon(Icons.check)),
+          ],
+        ),
+        body: _buildForm(ref: ref));
+  }
+
+  Widget _buildForm({required WidgetRef ref}) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _buildFormChildren(ref: ref),
       ),
     );
   }
 
+  List<Widget> _buildFormChildren({required WidgetRef ref}) {
+    return [
+      TextFormField(
+        decoration: const InputDecoration(
+          labelText: 'Sale Order # *',
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Enter a valid quantity';
+          }
+          return null;
+        },
+        onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
+      ),
+      TextButton(
+        onPressed: () async {
+          context.goNamed(
+            AppRoute.addLineItem.name,
+          );
+        },
+        child: const Text("Add Line Item"),
+      ),
+      BillAccountSelectionWidget(onValueChanged: (value) {
+        log("value ${value.isSome()}");
+        _billAccountOrNone = value;
+      }),
+      const Expanded(child: LineItemListView())
+    ];
+  }
+
   Future<void> _submit({required WidgetRef ref, required Option<BillAccount> billAccountOrNone}) async {
-    final lineItems = ref.read(lineItemControllerProvider);
-    final subTotal = lineItems
-        .map((e) => e.rate * e.quantity)
-        .fold(0, (previousValue, element) => previousValue + element);
+    if (_validateAndSaveForm()) {
+      final lineItems = ref.read(lineItemControllerProvider);
+      final subTotal =
+          lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
 
-    final billAccount = billAccountOrNone.toIterable().first;
+      final billAccount = billAccountOrNone.toIterable().first;
 
-    final saleOrder = SaleOrder.create(
-        date: DateTime.now(),
-        currencyCode: billAccount.currencyCodeAsEnum,
-        lineItems: lineItems,
-        subTotal: subTotal,
-        total: subTotal,
-        accountId: billAccount.id!);
+      final saleOrder = SaleOrder.create(
+          date: DateTime.now(),
+          currencyCode: billAccount.currencyCodeAsEnum,
+          lineItems: lineItems,
+          subTotal: subTotal,
+          total: subTotal,
+          accountId: billAccount.id!,
+          saleOrderNumber: _saleOrderNumberOrNone.toIterable().first);
 
-    final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
+      final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
 
-    if (success && context.mounted) {
-      context.goNamed(AppRoute.saleOrders.name);
+      if (success && context.mounted) {
+        context.goNamed(AppRoute.saleOrders.name);
+      }
     }
+  }
+
+  bool _validateAndSaveForm() {
+    final form = _formKey.currentState!;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
   }
 }

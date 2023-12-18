@@ -9,6 +9,6 @@ abstract class SaleOrderApi {
       {required SaleOrder saleOrder, required String teamId, required String token});
   Future<Either<ErrorResponse, SaleOrder>> deliveredItems(
       {required SaleOrder saleOrder, required String teamId, required String token});
-  // Future<Either<ErrorResponse, SaleOrder>> createSaleOrder(
-  //     {required SaleOrder saleOrder, required String teamId, required String token});
+        Future<Either<ErrorResponse, SaleOrder>> getSaleOrder(
+      {required String saleOrderId, required String teamId, required String token});
 }

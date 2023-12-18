@@ -18,6 +18,7 @@ import 'package:inventory_frontend/view/routing/go_router_refresh_stream.dart';
 import 'package:inventory_frontend/view/sale.orders/add.sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
+import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -34,6 +35,7 @@ enum AppRoute {
   onboardingError,
   profile,
   saleOrders,
+  saleOrder,
   addSaleOrder,
   addLineItem,
   itemsSelection,
@@ -123,6 +125,7 @@ GoRouter goRouter(GoRouterRef ref) {
             return const SaleOrdersScreen();
           },
           routes: <RouteBase>[
+       
             GoRoute(
                 name: AppRoute.addSaleOrder.name,
                 path: 'add',
@@ -155,6 +158,14 @@ GoRouter goRouter(GoRouterRef ref) {
                             ]),
                       ]),
                 ]),
+                     GoRoute(
+              name: AppRoute.saleOrder.name,
+              path: ':id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return SaleOrderScreen(saleOrderId: id, isToSelectItemVariation: false);
+              },
+            ),
           ]),
       GoRoute(
           name: AppRoute.items.name,

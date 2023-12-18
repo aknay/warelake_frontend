@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:inventory_frontend/domain/sale.order/entities.dart';
+import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
 import 'package:inventory_frontend/view/utils/async_value_ui.dart';
 
@@ -21,17 +24,27 @@ class SaleOrderListView extends ConsumerWidget {
             return const Center(child: Text("Empty Sale Order"));
           }
 
-          return ListView(
-              children: data
-                  .map((e) => ListTile(
-                        title: Text(e.id!),
-                        onTap: () {
-                          // Navigator.pop(context, e);
-                        },
-                      ))
-                  .toList());
+          return ListView(children: data.map((e) => _getListTitle(e, context)).toList());
         },
         error: (Object error, StackTrace stackTrace) => Text('Error: $error'),
         loading: () => const Center(child: CircularProgressIndicator()));
+  }
+
+  ListTile _getListTitle(SaleOrder so, BuildContext context) {
+    return ListTile(
+      title: Text(so.saleOrderNumber!),
+      subtitle: Text(so.status!.toUpperCase()),
+      onTap: () {
+        context.goNamed(
+          AppRoute.saleOrder.name,
+          pathParameters: {'id': so.id!},
+        );
+        // Navigator.pop(context, e);
+      },
+      trailing: Text(
+        " ${so.currencyCodeEnum.name} ${so.totalInDouble}",
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    );
   }
 }

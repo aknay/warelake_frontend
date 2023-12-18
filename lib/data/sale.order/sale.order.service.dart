@@ -28,6 +28,15 @@ class SaleOrderService {
     });
   }
 
+    Future<Either<String, SaleOrder>> getSaleOrder({required String saleOrderId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _saleOrderRepo.getSaleOrder(saleOrderId: saleOrderId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
+    });
+  }
+
   Future<Either<String, List<SaleOrder>>> list() async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
