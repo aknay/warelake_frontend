@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 
 class SaleOrder {
@@ -137,63 +136,6 @@ class Address {
       zip: json['zip'],
       country: json['country'],
       fax: json['fax'],
-    );
-  }
-}
-
-class SaleLineItem {
-  ItemVariation itemVariation;
-  int? itemId;
-  int? lineItemId;
-  String? description;
-  int saleRate;
-  int saleQuantity;
-  String unit;
-  // int itemTotal;
-
-  SaleLineItem({
-    this.itemId,
-    required this.itemVariation,
-    this.lineItemId,
-    this.description,
-    required this.saleRate,
-    required this.saleQuantity,
-    required this.unit,
-    // required this.itemTotal,
-  });
-
-  factory SaleLineItem.create(
-      {required ItemVariation itemVariation,
-      required double saleRate,
-      required int saleQuantity,
-      required String unit}) {
-    return SaleLineItem(
-        itemVariation: itemVariation, saleRate: (saleRate * 1000).toInt(), saleQuantity: saleQuantity, unit: unit);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'item_variation': itemVariation.toJson(),
-      'item_id': itemId,
-      'line_item_id': lineItemId,
-      'description': description,
-      'sale_rate': saleRate,
-      'sale_quantity': saleQuantity,
-      'unit': unit,
-      // 'itemTotal': itemTotal,
-    };
-  }
-
-  static SaleLineItem fromJson(Map<String, dynamic> json) {
-    return SaleLineItem(
-      itemId: json['item_id'],
-      itemVariation: ItemVariation.fromJson(json['item_variation']),
-      lineItemId: json['line_item_id'],
-      description: json['description'],
-      saleRate: json['sale_rate'],
-      saleQuantity: json['sale_quantity'],
-      unit: json['unit'],
-      // itemTotal: json['itemTotal'],
     );
   }
 }

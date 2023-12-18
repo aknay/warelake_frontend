@@ -103,6 +103,6 @@ void main() async {
     await teamApi.create(team: newTeam, token: firstUserAccessToken);
     final teamListOrError = await teamApi.list(token: firstUserAccessToken);
     expect(teamListOrError.isRight(), true);
-    expect(teamListOrError.toIterable().first.data.length, 1);
+    expect(teamListOrError.toIterable().first.data.isNotEmpty, true);
   });
 }

@@ -182,7 +182,7 @@ class LineItem {
     // required this.itemTotal,
   });
 
-  double get purchaseRateInDouble => (rate / 1000).toDouble();
+  double get rateInDouble => (rate / 1000).toDouble();
 
   factory LineItem.create(
       {required ItemVariation itemVariation, required double rate, required int quantity, required String unit}) {
@@ -195,8 +195,8 @@ class LineItem {
       'item_id': itemId,
       'line_item_id': lineItemId,
       'description': description,
-      'purchase_rate': rate,
-      'purchase_quantity': quantity,
+      'rate': rate,
+      'quantity': quantity,
       'unit': unit,
       // 'itemTotal': itemTotal,
     };

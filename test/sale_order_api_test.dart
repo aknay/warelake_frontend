@@ -90,6 +90,8 @@ void main() async {
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
     expect(createdPo.status, 'processing');
+    expect(createdPo.lineItems.first.quantity, 5);
+    expect(createdPo.lineItems.first.rateInDouble, 2);
 
     {
       final saleOrderListOrError = await saleOrderApi.listSaleOrder(teamId: team.id!, token: firstUserAccessToken);
