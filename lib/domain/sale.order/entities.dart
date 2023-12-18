@@ -4,7 +4,7 @@ import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 
 class SaleOrder {
   String? id;
-  String? purchaseOrderNumber;
+  String? saleOrderNumber;
   String date;
   String? expectedDeliveryDate;
   String? referenceNumber;
@@ -27,7 +27,7 @@ class SaleOrder {
 
   SaleOrder({
     this.id,
-    this.purchaseOrderNumber,
+    this.saleOrderNumber,
     required this.date,
     this.expectedDeliveryDate,
     this.referenceNumber,
@@ -55,7 +55,8 @@ class SaleOrder {
       required List<LineItem> lineItems,
       required int subTotal,
       required int total,
-      required String accountId}) {
+      required String accountId,
+      required String saleOrderNumber}) {
     final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return SaleOrder(
         accountId: accountId,
@@ -63,13 +64,14 @@ class SaleOrder {
         currencyCode: currencyCode.name,
         lineItems: lineItems,
         subTotal: subTotal,
-        total: total);
+        total: total,
+        saleOrderNumber: saleOrderNumber);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'purchaseorder_number': purchaseOrderNumber,
+      'sale_order_number': saleOrderNumber,
       'date': date,
       'expectedDeliveryDate': expectedDeliveryDate,
       'status': status,
@@ -85,7 +87,7 @@ class SaleOrder {
   static SaleOrder fromJson(Map<String, dynamic> json) {
     return SaleOrder(
       id: json['id'],
-      // purchaseOrderNumber: json['purchaseorder_number'],
+      saleOrderNumber: json['sale_order_number'],
       date: json['date'],
       status: json['status'],
       currencyCode: json['currency_code'],

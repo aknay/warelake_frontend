@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
-import 'package:inventory_frontend/data/sale.order/rest.api.dart';
+import 'package:inventory_frontend/data/sale.order/sale.order.repository.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
@@ -18,7 +18,7 @@ import 'helpers/sign.in.response.dart';
 void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRepository();
-  final saleOrderApi = SaleOrderRestApi();
+  final saleOrderApi = SaleOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 
@@ -83,7 +83,7 @@ void main() async {
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
-        total: 20);
+        total: 20, saleOrderNumber: "S0-00001");
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
@@ -92,6 +92,7 @@ void main() async {
     expect(createdPo.status, 'processing');
     expect(createdPo.lineItems.first.quantity, 5);
     expect(createdPo.lineItems.first.rateInDouble, 2);
+    expect(createdPo.saleOrderNumber, "S0-00001");
 
     {
       final saleOrderListOrError = await saleOrderApi.listSaleOrder(teamId: team.id!, token: firstUserAccessToken);
@@ -135,7 +136,7 @@ void main() async {
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
-        total: 20);
+        total: 20, saleOrderNumber: "S0-00001");
     final poCreatedOrError =
         await saleOrderApi.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
