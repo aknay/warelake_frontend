@@ -16,10 +16,21 @@ class SaleOrderRepository extends SaleOrderApi {
   SaleOrderRepository();
 
   @override
-  Future<Either<ErrorResponse, SaleOrder>> deliveredItems(
-      {required SaleOrder saleOrder, required String teamId, required String token}) {
-    // TODO: implement deliveredItems
-    throw UnimplementedError();
+  Future<Either<ErrorResponse, Unit>> deliveredItems(
+      {required String saleOrderId, required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.post(
+          url: ApiEndPoint.getDelieveredItemsSaleOrderEndPoint(saleOrderId: saleOrderId), token: token, teamId: teamId);
+      log("sale order delivered response code ${response.statusCode}");
+      log("sale order delivered  response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return const Right(unit);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
   }
 
   @override
@@ -57,10 +68,11 @@ class SaleOrderRepository extends SaleOrderApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<ErrorResponse, SaleOrder>> getSaleOrder({required String saleOrderId, required String teamId, required String token}) async {
-       try {
+  Future<Either<ErrorResponse, SaleOrder>> getSaleOrder(
+      {required String saleOrderId, required String teamId, required String token}) async {
+    try {
       final response = await HttpHelper.get(
           url: ApiEndPoint.getSaleOrderEndPoint(saleOrderId: saleOrderId), token: token, teamId: teamId);
       log("sale order get response code ${response.statusCode}");

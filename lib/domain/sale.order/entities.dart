@@ -2,6 +2,11 @@ import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 
+enum SaleOrderStatus {
+  processing,
+  delivered,
+}
+
 class SaleOrder {
   String? id;
   String? saleOrderNumber;
@@ -48,6 +53,8 @@ class SaleOrder {
     this.createdTime,
     this.modifiedAt,
   });
+
+  SaleOrderStatus get saleOrderStatus => SaleOrderStatus.values.byName(status!);
 
   factory SaleOrder.create(
       {required DateTime date,

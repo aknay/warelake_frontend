@@ -4,14 +4,20 @@ import 'package:inventory_frontend/data/sale.order/sale.order.service.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
+import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
 
 final saleOrderProvider = FutureProvider.family<SaleOrder, String>((ref, id) async {
-  final itemOrError = await ref.watch(saleOrderServiceProvider).getSaleOrder(saleOrderId: id);
-  if (itemOrError.isLeft()) {
+  final saleOrderOrError = await ref.watch(saleOrderServiceProvider).getSaleOrder(saleOrderId: id);
+  if (saleOrderOrError.isLeft()) {
     throw AssertionError("cannot item");
   }
-  return itemOrError.toIterable().first;
+  return saleOrderOrError.toIterable().first;
 });
+
+enum SaleOrderAction {
+  delivered,
+  delete,
+}
 
 class SaleOrderScreen extends ConsumerWidget {
   const SaleOrderScreen({super.key, required this.isToSelectItemVariation, required this.saleOrderId});
@@ -21,23 +27,57 @@ class SaleOrderScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final jobAsync = ref.watch(saleOrderProvider(saleOrderId));
+    final saleOrderAsync = ref.watch(saleOrderProvider(saleOrderId));
     return ScaffoldAsyncValueWidget<SaleOrder>(
-      value: jobAsync,
-      data: (job) => PageContents(so: job, isToSelectItemVariation: isToSelectItemVariation),
+      value: saleOrderAsync,
+      data: (job) => PageContents(so: job),
     );
   }
 }
 
-class PageContents extends StatelessWidget {
-  const PageContents({super.key, required this.isToSelectItemVariation, required this.so});
+class PageContents extends ConsumerWidget {
+  const PageContents({super.key, required this.so});
   final SaleOrder so;
-  final bool isToSelectItemVariation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.processing
+        ? [
+            const PopupMenuItem(
+              value: SaleOrderAction.delivered,
+              child: Text('Convert to Delivered'),
+            ),
+            const PopupMenuItem(
+              value: SaleOrderAction.delete,
+              child: Text('Delete'),
+            ),
+          ]
+        : [
+            const PopupMenuItem(
+              value: SaleOrderAction.delete,
+              child: Text('Delete'),
+            ),
+          ];
+
     return Scaffold(
-        appBar: AppBar(title: Text(so.saleOrderNumber!)),
+        appBar: AppBar(
+          title: Text(so.saleOrderNumber!),
+          actions: [
+            PopupMenuButton<SaleOrderAction>(
+                onSelected: (SaleOrderAction value) async {
+                  switch (value) {
+                    case SaleOrderAction.delivered:
+                      final isSuccess = await ref.read(saleOrderListControllerProvider.notifier).convertToDelivered(so);
+                      if (isSuccess) {
+                        ref.invalidate(saleOrderProvider(so.id!));
+                      }
+                    case SaleOrderAction.delete:
+                    // TODO: Handle this case.
+                  }
+                },
+                itemBuilder: (BuildContext context) => popupMenuItems)
+          ],
+        ),
         body: Column(
           children: [
             Row(

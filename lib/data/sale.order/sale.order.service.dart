@@ -45,6 +45,15 @@ class SaleOrderService {
       return items.fold((l) => Left(l.message), (r) => Right(r.data));
     });
   }
+
+    Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
 }
 
 @Riverpod(keepAlive: true)

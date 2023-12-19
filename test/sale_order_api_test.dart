@@ -200,7 +200,7 @@ void main() async {
     // testing receiving items
 
     final poItemsReceivedOrError =
-        await saleOrderApi.deliveredItems(saleOrder: createdSo, teamId: team.id!, token: firstUserAccessToken);
+        await saleOrderApi.deliveredItems(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
