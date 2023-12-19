@@ -86,6 +86,24 @@ class SaleOrderRepository extends SaleOrderApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<ErrorResponse, Unit>> delete(
+      {required String saleOrderId, required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.delete(
+          url: ApiEndPoint.getSaleOrderEndPoint(saleOrderId: saleOrderId), token: token, teamId: teamId);
+      log("sale order deleted response code ${response.statusCode}");
+      log("sale order deleted  response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return const Right(unit);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)
