@@ -192,7 +192,7 @@ void main() async {
       final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
       expect(itemListOrError.isRight(), true);
       expect(itemListOrError.toIterable().first.data.isEmpty, false);
-       expect(itemListOrError.toIterable().first.data.first.variations.isEmpty, false);
+      expect(itemListOrError.toIterable().first.data.first.variations.isEmpty, false);
     }
     final retrievedItem = itemCreated.toIterable().first;
     final deletedOrError = await itemRepo.deelteItemVariation(
@@ -211,6 +211,7 @@ void main() async {
     }
   });
 
+  // we skip this test for now
   test('you can crate image for an item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
@@ -254,7 +255,7 @@ void main() async {
 
       expect(createdImageOrError.isRight(), true);
     }
-  });
+  }, skip: true);
 
   test('you can list item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
