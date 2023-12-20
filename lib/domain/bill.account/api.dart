@@ -9,5 +9,5 @@ abstract class BillAccountApi {
   // Future<Either<ErrorResponse, BillAccount>> update(
   //     {required String existingAccountId, required AccountUpdateRequest request, required String token});
   // Future<Either<ErrorResponse, Unit>> delete({required String existingAccountId, required Token token});
-  // Future<Either<ErrorResponse, BillAccount>> get({required String existingAccountId, required Token token});
+  Future<Either<ErrorResponse, BillAccount>> get({required String billAccountId, required String teamId,  required String token});
 }
