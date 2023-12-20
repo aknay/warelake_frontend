@@ -11,7 +11,7 @@ abstract class PurchaseOrderApi {
   });
 
   Future<Either<ErrorResponse, PurchaseOrder>> receivedItems({
-    required PurchaseOrder purchaseOrder,
+    required String purchaseOrderId,
     required String teamId,
     required String token,
   });

@@ -23,17 +23,19 @@ class PurchaseOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _purchaseOrderRepo.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: token);
+      final createdOrError =
+          await _purchaseOrderRepo.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
 
-    Future<Either<String, PurchaseOrder>> getPurchaseOrder({required String purchaseOrderId}) async {
+  Future<Either<String, PurchaseOrder>> getPurchaseOrder({required String purchaseOrderId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _purchaseOrderRepo.get(purchaseOrderId: purchaseOrderId, teamId: teamId, token: token);
-      return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
+      final createdOrError =
+          await _purchaseOrderRepo.get(purchaseOrderId: purchaseOrderId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 
@@ -46,14 +48,15 @@ class PurchaseOrderService {
     });
   }
 
-  //   Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
-  //   final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
-  //   return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
-  //     final token = await _authRepo.shouldGetToken();
-  //     final items = await _purchaseOrderRepo.deliveredItems(saleOrderId: saleOrderId, teamId: teamId, token: token);
-  //     return items.fold((l) => Left(l.message), (r) => Right(r));
-  //   });
-  // }
+  Future<Either<String, Unit>> converteToReceived({required String purchaseOrderId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items =
+          await _purchaseOrderRepo.receivedItems(purchaseOrderId: purchaseOrderId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
 }
 
 @Riverpod(keepAlive: true)

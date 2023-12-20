@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_frontend/data/purchase.order/purchase.order.service.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
+import 'package:inventory_frontend/view/purchase.order/purchase.order.list.controller.dart';
 
 final purchaseOrderProvider = FutureProvider.family<PurchaseOrder, String>((ref, id) async {
   final saleOrderOrError = await ref.watch(purchaseOrderServiceProvider).getPurchaseOrder(purchaseOrderId: id);
@@ -43,7 +44,7 @@ class PageContents extends ConsumerWidget {
         ? [
             const PopupMenuItem(
               value: PurchaseOrderAction.delivered,
-              child: Text('Convert to Delivered'),
+              child: Text('Convert to Received'),
             ),
             const PopupMenuItem(
               value: PurchaseOrderAction.delete,
@@ -65,10 +66,11 @@ class PageContents extends ConsumerWidget {
                 onSelected: (PurchaseOrderAction value) async {
                   switch (value) {
                     case PurchaseOrderAction.delivered:
-                    // final isSuccess = await ref.read(purchaseOrderListControllerProvider.notifier).convertToDelivered(so);
-                    // if (isSuccess) {
-                    // ref.invalidate(purchaseOrderProvider(so.id!));
-                    // }
+                      final isSuccess =
+                          await ref.read(purchaseOrderListControllerProvider.notifier).convertToReceived(po);
+                      if (isSuccess) {
+                        ref.invalidate(purchaseOrderProvider(po.id!));
+                      }
                     case PurchaseOrderAction.delete:
                     // TODO: Handle this case.
                   }

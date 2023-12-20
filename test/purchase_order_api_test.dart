@@ -236,7 +236,7 @@ void main() async {
     // testing receiving items
 
     final poItemsReceivedOrError =
-        await purchaseOrderApi.receivedItems(purchaseOrder: createdPo, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.receivedItems(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
@@ -357,7 +357,7 @@ void main() async {
     expect(createdPo.status, 'issued');
 
     final poItemsReceivedOrError =
-        await purchaseOrderApi.receivedItems(purchaseOrder: createdPo, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.receivedItems(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));

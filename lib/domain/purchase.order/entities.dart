@@ -4,7 +4,7 @@ import 'package:inventory_frontend/domain/item/entities.dart';
 
 enum PurchaseOrderStatus {
   issued,
-  delivered,
+  received,
 }
 
 class PurchaseOrder {

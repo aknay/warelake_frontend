@@ -33,10 +33,10 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
 
   @override
   Future<Either<ErrorResponse, PurchaseOrder>> receivedItems(
-      {required PurchaseOrder purchaseOrder, required String teamId, required String token}) async {
+      {required String purchaseOrderId, required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.post(
-          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrder.id!),
+          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId),
           token: token,
           teamId: teamId);
       log("purchase order create response code ${response.statusCode}");
