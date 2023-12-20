@@ -40,7 +40,6 @@ class PageContents extends ConsumerWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Account Detail"),
-          actions: [],
         ),
         body: Column(
           children: [
@@ -53,7 +52,7 @@ class PageContents extends ConsumerWidget {
                   ],
                 ),
                 // const Spacer(),
-                Text(so.status!.toUpperCase())
+                Text(so.status.toUpperCase())
               ],
             ),
             // Expanded(child: _getListView(so.lineItems))

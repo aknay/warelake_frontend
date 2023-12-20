@@ -79,12 +79,11 @@ class ItemRepository extends ItemApi {
         token: token,
         body: request.toJson(),
         teamId: request.teamId);
-    print(await response.stream.bytesToString());
     if (response.statusCode == 200) {
-      print('Image uploaded successfully');
-      print(await response.stream.bytesToString());
+      log('Image uploaded successfully');
+      log(await response.stream.bytesToString());
     } else {
-      print('Image upload failed with status ${response.statusCode}');
+      log('Image upload failed with status ${response.statusCode}');
     }
 
     // var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
