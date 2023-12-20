@@ -14,6 +14,7 @@ import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.error.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.screen.dart';
+import 'package:inventory_frontend/view/purchase.order/purchase.orders.screen.dart';
 import 'package:inventory_frontend/view/routing/go_router_refresh_stream.dart';
 import 'package:inventory_frontend/view/sale.orders/add.sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.screen.dart';
@@ -40,6 +41,7 @@ enum AppRoute {
   addLineItem,
   itemsSelection,
   selectItem,
+  purchaseOrders
 }
 
 @riverpod
@@ -116,6 +118,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const ProfileScreen();
+        },
+      ),
+         GoRoute(
+        name: AppRoute.purchaseOrders.name,
+        path: '/purchase_orders',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PurchaseOrdersScreen();
         },
       ),
       GoRoute(

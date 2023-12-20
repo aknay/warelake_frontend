@@ -249,8 +249,6 @@ void main() async {
       final request = ItemVariationImageRequest(
           itemId: item.itemId!, itemVariationId: whiteShirt.id!, imagePath: File(imagePath), teamId: team.id!);
 
-      print("image parth $imagePath");
-
       final createdImageOrError = await itemRepo.createImage(request: request, token: firstUserAccessToken);
 
       expect(createdImageOrError.isRight(), true);

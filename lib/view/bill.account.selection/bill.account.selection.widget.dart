@@ -18,7 +18,7 @@ class BillAccountSelectionWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currencyOrNone = ref.watch(_billAccountProvider);
 
-    final currencyText = currencyOrNone.fold(() => "Select a bill account", (r) => "${r.name}");
+    final currencyText = currencyOrNone.fold(() => "Select a bill account", (r) => r.name);
 
     return GestureDetector(
       onTap: () async {

@@ -89,7 +89,6 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
                 return null;
               },
               onSaved: (value){
-                log("the value is ${value}");
                 rate = value != null ? optionOf(double.tryParse(value)) : const Some(0.0);
                   log("The rate gerer is ${rate.toIterable().first}");
               },

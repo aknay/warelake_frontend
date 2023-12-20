@@ -66,9 +66,12 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('School'),
+            title: const Text('Purchase Orders'),
             // selected: _selectedIndex == 2,
             onTap: () {
+                   context.goNamed(
+                AppRoute.purchaseOrders.name,
+              );
               // Update the state of the app
               // _onItemTapped(2);
               // Then close the drawer

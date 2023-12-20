@@ -7,8 +7,12 @@ import 'package:inventory_frontend/data/http.helper.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/purchase.order/api.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/responses.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class PurchaseOrderRestApi extends PurchaseOrderApi {
+part 'purchase.order.repository.g.dart';
+
+class PurchaseOrderRepository extends PurchaseOrderApi {
   @override
   Future<Either<ErrorResponse, PurchaseOrder>> issuedPurchaseOrder(
       {required PurchaseOrder purchaseOrder, required String teamId, required String token}) async {
@@ -69,7 +73,7 @@ class PurchaseOrderRestApi extends PurchaseOrderApi {
   Future<Either<ErrorResponse, PurchaseOrder>> get(
       {required String purchaseOrderId, required String teamId, required String token}) async {
     try {
-      final response = await HttpHelper.delete(
+      final response = await HttpHelper.get(
           url: ApiEndPoint.getPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId), token: token, teamId: teamId);
       log("sale order get response code ${response.statusCode}");
       log("sale order get response ${jsonDecode(response.body)}");
@@ -82,4 +86,27 @@ class PurchaseOrderRestApi extends PurchaseOrderApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<ErrorResponse, ListResponse<PurchaseOrder>>> list(
+      {required String teamId, required String token}) async {
+    try {
+      final response = await HttpHelper.get(url: ApiEndPoint.getPurchaseOrderEndPoint(), token: token, teamId: teamId);
+      log("list sale order response code ${response.statusCode}");
+      log("list sale order response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        final listResponse = ListResponse.fromJson(jsonDecode(response.body), PurchaseOrder.fromJson);
+        return Right(listResponse);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
+}
+
+@Riverpod(keepAlive: true)
+PurchaseOrderRepository purchaseOrderRepository(PurchaseOrderRepositoryRef ref) {
+  return PurchaseOrderRepository();
 }

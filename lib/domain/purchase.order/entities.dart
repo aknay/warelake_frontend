@@ -67,6 +67,10 @@ class PurchaseOrder {
         total: total);
   }
 
+  double get totalInDouble => (total / 1000).toDouble();
+
+  CurrencyCode get currencyCodeEnum => CurrencyCode.values.byName(currencyCode);
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

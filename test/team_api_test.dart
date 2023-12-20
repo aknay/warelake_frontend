@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -51,9 +52,9 @@ void main() async {
     // Get all time zones available in the timezone package
     tz.initializeTimeZones();
     var locations = tz.timeZoneDatabase.locations;
-    print(locations.length); // => 429
-    print(locations.keys.first); // => "Africa/Abidjan"
-    print(locations.keys.last); //
+    log("${locations.length}"); // => 429
+    log(locations.keys.first); // => "Africa/Abidjan"
+    log(locations.keys.last); //
   });
 
   test('creating team should be succeful', () async {
