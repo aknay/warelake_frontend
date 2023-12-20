@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
+import 'package:inventory_frontend/view/bill.account/bill.accounts.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
 import 'package:inventory_frontend/view/items/item.screen.dart';
@@ -48,7 +49,8 @@ enum AppRoute {
   purchaseOrders,
   purchaseOrder,
   addPurchaseOrder,
-  addLineItemForPurchaseOrder
+  addLineItemForPurchaseOrder,
+  billAccounts,
 }
 
 @riverpod
@@ -125,6 +127,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const ProfileScreen();
+        },
+      ),
+      GoRoute(
+        name: AppRoute.billAccounts.name,
+        path: '/bill_accounts',
+        builder: (BuildContext context, GoRouterState state) {
+          return const BillAccountsScreen();
         },
       ),
       GoRoute(
