@@ -81,6 +81,7 @@ void main() async {
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
+        purchaseOrderNumber: "PO-0001",
         total: 20);
     final poCreatedOrError =
         await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
@@ -122,6 +123,7 @@ void main() async {
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
+        purchaseOrderNumber: "PO-0001",
         lineItems: [lineItem],
         subTotal: 10,
         total: 20);
@@ -168,12 +170,14 @@ void main() async {
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
-        accountId: account.id!,
-        date: DateTime.now(),
-        currencyCode: CurrencyCode.AUD,
-        lineItems: [lineItem],
-        subTotal: 10,
-        total: 20);
+      accountId: account.id!,
+      date: DateTime.now(),
+      currencyCode: CurrencyCode.AUD,
+      lineItems: [lineItem],
+      subTotal: 10,
+      total: 20,
+      purchaseOrderNumber: "PO-0001",
+    );
     final poCreatedOrError =
         await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
@@ -215,6 +219,7 @@ void main() async {
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
@@ -284,6 +289,7 @@ void main() async {
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
@@ -336,6 +342,7 @@ void main() async {
     final account = accountListOrError.toIterable().first.data.first;
 
     final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,

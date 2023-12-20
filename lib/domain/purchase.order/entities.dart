@@ -2,6 +2,11 @@ import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 
+enum PurchaseOrderStatus {
+  issued,
+  delivered,
+}
+
 class PurchaseOrder {
   String? id;
   String? purchaseOrderNumber;
@@ -55,17 +60,21 @@ class PurchaseOrder {
       required List<LineItem> lineItems,
       required int subTotal,
       required int total,
-      required accountId}) {
+      required String accountId,
+      required String purchaseOrderNumber}) {
     final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return PurchaseOrder(
         accountId: accountId,
         date: dateInString,
         status: "issued",
-        currencyCode: currencyCode.toString(),
+        currencyCode: currencyCode.name,
         lineItems: lineItems,
         subTotal: subTotal,
-        total: total);
+        total: total,
+        purchaseOrderNumber: purchaseOrderNumber);
   }
+
+  PurchaseOrderStatus get orderStatus => PurchaseOrderStatus.values.byName(status);
 
   double get totalInDouble => (total / 1000).toDouble();
 
@@ -74,7 +83,7 @@ class PurchaseOrder {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'purchaseorder_number': purchaseOrderNumber,
+      'purchase_order_number': purchaseOrderNumber,
       'date': date,
       'expectedDeliveryDate': expectedDeliveryDate,
       // 'referenceNumber': referenceNumber,
@@ -100,7 +109,7 @@ class PurchaseOrder {
   static PurchaseOrder fromJson(Map<String, dynamic> json) {
     return PurchaseOrder(
       id: json['id'],
-      purchaseOrderNumber: json['purchaseorder_number'],
+      purchaseOrderNumber: json['purchase_order_number'],
       date: json['date'],
       // expectedDeliveryDate: json['expectedDeliveryDate'],
       // referenceNumber: json['referenceNumber'],

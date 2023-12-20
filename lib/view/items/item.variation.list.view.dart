@@ -29,9 +29,19 @@ class ItemVariationListView extends ConsumerWidget {
                 onTap: () {
                   if (isToSelectItemVariation) {
                     ref.read(selectedItemVariationProvider.notifier).state = Some(e);
-                            context.goNamed(
-                AppRoute.addLineItem.name,
-              );
+
+                    final router = GoRouter.of(context);
+                    final uri = router.routeInformationProvider.value.uri;
+
+                    if (uri.path.contains('purchase_order')) {
+                      context.goNamed(
+                        AppRoute.addLineItemForPurchaseOrder.name,
+                      );
+                    } else {
+                      context.goNamed(
+                        AppRoute.addLineItemForSaleOrder.name,
+                      );
+                    }
                   }
                 },
               ))

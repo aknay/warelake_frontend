@@ -36,7 +36,7 @@ class PurchaseOrderListView extends ConsumerWidget {
       subtitle: Text(po.status.toUpperCase()),
       onTap: () {
         context.goNamed(
-          AppRoute.saleOrder.name,
+          AppRoute.purchaseOrder.name,
           pathParameters: {'id': po.id!},
         );
         // Navigator.pop(context, e);

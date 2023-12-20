@@ -5,21 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/bill.account/entities.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/view/bill.account.selection/bill.account.selection.widget.dart';
+import 'package:inventory_frontend/view/purchase.order/purchase.order.list.controller.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/line.item.controller.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/line.item.list.view.dart';
-import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
 
-class AddSaleOrderScreen extends ConsumerStatefulWidget {
-  const AddSaleOrderScreen({super.key});
+class AddPurchaseOrderScreen extends ConsumerStatefulWidget {
+  const AddPurchaseOrderScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddSaleOrderScreenState();
 }
 
-class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
+class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<BillAccount> _billAccountOrNone = const None();
   Option<String> _saleOrderNumberOrNone = const None();
@@ -28,7 +28,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("New Sale Order"),
+          title: const Text("New Purchase Order"),
           actions: [
             IconButton(
                 onPressed: () async {
@@ -54,7 +54,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
     return [
       TextFormField(
         decoration: const InputDecoration(
-          labelText: 'Sale Order # *',
+          labelText: 'Purchase Order # *',
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -66,18 +66,9 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
       ),
       TextButton(
         onPressed: () async {
-          final router = GoRouter.of(context);
-          final uri = router.routeInformationProvider.value.uri;
-
-          if (uri.path.contains('purchase_order')) {
-            context.goNamed(
-              AppRoute.addLineItemForPurchaseOrder.name,
-            );
-          } else {
-            context.goNamed(
-              AppRoute.addLineItemForSaleOrder.name,
-            );
-          }
+          context.goNamed(
+            AppRoute.addLineItemForPurchaseOrder.name,
+          );
         },
         child: const Text("Add Line Item"),
       ),
@@ -97,19 +88,19 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
 
       final billAccount = billAccountOrNone.toIterable().first;
 
-      final saleOrder = SaleOrder.create(
+      final saleOrder = PurchaseOrder.create(
           date: DateTime.now(),
           currencyCode: billAccount.currencyCodeAsEnum,
           lineItems: lineItems,
           subTotal: subTotal,
           total: subTotal,
           accountId: billAccount.id!,
-          saleOrderNumber: _saleOrderNumberOrNone.toIterable().first);
+          purchaseOrderNumber: _saleOrderNumberOrNone.toIterable().first);
 
-      final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
+      final success = await ref.read(purchaseOrderListControllerProvider.notifier).createPurchaseOrder(saleOrder);
 
       if (success && context.mounted) {
-        context.goNamed(AppRoute.saleOrders.name);
+        context.goNamed(AppRoute.purchaseOrders.name);
       }
     }
   }

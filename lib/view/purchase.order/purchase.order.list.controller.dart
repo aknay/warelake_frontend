@@ -17,6 +17,22 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
     return itemsOrError.toIterable().first;
   }
 
+    Future<bool> createPurchaseOrder(PurchaseOrder po) async {
+    state = const AsyncLoading();
+    final createdOrError = await ref.read(purchaseOrderServiceProvider).createPurchaseOrder(po);
+    return await createdOrError.fold((l) {
+      state = AsyncError(l, StackTrace.current);
+      return false;
+    }, (r) async {
+      final saleOrdersOrError = await _list();
+      if (saleOrdersOrError.isLeft()) {
+        throw AssertionError("error while fetching items");
+      }
+      state = AsyncValue.data(saleOrdersOrError.toIterable().first);
+      return true;
+    });
+  }
+
   Future<Either<String, List<PurchaseOrder>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));

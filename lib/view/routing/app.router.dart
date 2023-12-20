@@ -14,6 +14,8 @@ import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.error.screen.dart';
 import 'package:inventory_frontend/view/onboarding/onboarding.screen.dart';
+import 'package:inventory_frontend/view/purchase.order/add.purchase.order.screen.dart';
+import 'package:inventory_frontend/view/purchase.order/purchase.order.screen.dart';
 import 'package:inventory_frontend/view/purchase.order/purchase.orders.screen.dart';
 import 'package:inventory_frontend/view/routing/go_router_refresh_stream.dart';
 import 'package:inventory_frontend/view/sale.orders/add.sale.order.screen.dart';
@@ -38,10 +40,15 @@ enum AppRoute {
   saleOrders,
   saleOrder,
   addSaleOrder,
-  addLineItem,
-  itemsSelection,
-  selectItem,
-  purchaseOrders
+  addLineItemForSaleOrder,
+  itemsSelectionForSaleOrder,
+  itemsSelectionForPurchaseOrder,
+  selectItemForSaleOrder,
+  selectItemForPurchaseOrder,
+  purchaseOrders,
+  purchaseOrder,
+  addPurchaseOrder,
+  addLineItemForPurchaseOrder
 }
 
 @riverpod
@@ -120,44 +127,36 @@ GoRouter goRouter(GoRouterRef ref) {
           return const ProfileScreen();
         },
       ),
-         GoRoute(
-        name: AppRoute.purchaseOrders.name,
-        path: '/purchase_orders',
-        builder: (BuildContext context, GoRouterState state) {
-          return const PurchaseOrdersScreen();
-        },
-      ),
       GoRoute(
-          name: AppRoute.saleOrders.name,
-          path: '/sale_orders',
+          name: AppRoute.purchaseOrders.name,
+          path: '/purchase_orders',
           builder: (BuildContext context, GoRouterState state) {
-            return const SaleOrdersScreen();
+            return const PurchaseOrdersScreen();
           },
           routes: <RouteBase>[
-       
             GoRoute(
-                name: AppRoute.addSaleOrder.name,
+                name: AppRoute.addPurchaseOrder.name,
                 path: 'add',
                 builder: (context, state) {
-                  return const AddSaleOrderScreen();
+                  return const AddPurchaseOrderScreen();
                 },
                 routes: <RouteBase>[
                   GoRoute(
-                      name: AppRoute.addLineItem.name,
+                      name: AppRoute.addLineItemForPurchaseOrder.name,
                       path: 'line_item',
                       builder: (BuildContext context, GoRouterState state) {
                         return const AddLineItemScreen();
                       },
                       routes: <RouteBase>[
                         GoRoute(
-                            name: AppRoute.itemsSelection.name,
+                            name: AppRoute.itemsSelectionForPurchaseOrder.name,
                             path: 'item_selection',
                             builder: (BuildContext context, GoRouterState state) {
                               return const ItemSelectionScreen();
                             },
                             routes: [
                               GoRoute(
-                                name: AppRoute.selectItem.name,
+                                name: AppRoute.selectItemForPurchaseOrder.name,
                                 path: ':id',
                                 builder: (context, state) {
                                   final id = state.pathParameters['id']!;
@@ -167,7 +166,55 @@ GoRouter goRouter(GoRouterRef ref) {
                             ]),
                       ]),
                 ]),
-                     GoRoute(
+            GoRoute(
+              name: AppRoute.purchaseOrder.name,
+              path: ':id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return PurchaseOrderScreen(pruchaseOrderId: id, isToSelectItemVariation: false);
+              },
+            ),
+          ]),
+      GoRoute(
+          name: AppRoute.saleOrders.name,
+          path: '/sale_orders',
+          builder: (BuildContext context, GoRouterState state) {
+            return const SaleOrdersScreen();
+          },
+          routes: <RouteBase>[
+            GoRoute(
+                name: AppRoute.addSaleOrder.name,
+                path: 'add',
+                builder: (context, state) {
+                  return const AddSaleOrderScreen();
+                },
+                routes: <RouteBase>[
+                  GoRoute(
+                      name: AppRoute.addLineItemForSaleOrder.name,
+                      path: 'line_item',
+                      builder: (BuildContext context, GoRouterState state) {
+                        return const AddLineItemScreen();
+                      },
+                      routes: <RouteBase>[
+                        GoRoute(
+                            name: AppRoute.itemsSelectionForSaleOrder.name,
+                            path: 'item_selection',
+                            builder: (BuildContext context, GoRouterState state) {
+                              return const ItemSelectionScreen();
+                            },
+                            routes: [
+                              GoRoute(
+                                name: AppRoute.selectItemForSaleOrder.name,
+                                path: ':id',
+                                builder: (context, state) {
+                                  final id = state.pathParameters['id']!;
+                                  return ItemScreen(itemId: id, isToSelectItemVariation: true);
+                                },
+                              ),
+                            ]),
+                      ]),
+                ]),
+            GoRoute(
               name: AppRoute.saleOrder.name,
               path: ':id',
               builder: (context, state) {

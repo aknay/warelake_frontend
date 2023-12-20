@@ -54,7 +54,13 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
     return [
       TextButton(
           onPressed: () {
-            context.goNamed(AppRoute.itemsSelection.name);
+            final router = GoRouter.of(context);
+            final uri = router.routeInformationProvider.value.uri;
+            if (uri.path.contains('purchase_order')) {
+              context.goNamed(AppRoute.itemsSelectionForPurchaseOrder.name);
+            } else {
+              context.goNamed(AppRoute.itemsSelectionForSaleOrder.name);
+            }
           },
           child: Text(buttonText)),
       Row(
@@ -88,9 +94,9 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
                 }
                 return null;
               },
-              onSaved: (value){
+              onSaved: (value) {
                 rate = value != null ? optionOf(double.tryParse(value)) : const Some(0.0);
-                  log("The rate gerer is ${rate.toIterable().first}");
+                log("The rate gerer is ${rate.toIterable().first}");
               },
               keyboardType: const TextInputType.numberWithOptions(
                 signed: false,
@@ -108,12 +114,12 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
       final selectedItemVariationOrNone = ref.watch(selectedItemVariationProvider);
       final itemVariation = selectedItemVariationOrNone.toIterable().first;
       log("The rate is ${rate.toIterable().first}");
-     final lineItem = LineItem.create(
+      final lineItem = LineItem.create(
           itemVariation: itemVariation,
           rate: rate.toIterable().first,
           quantity: quantity.toIterable().first,
           unit: "some unit");
-   ref.read(lineItemControllerProvider.notifier).add(lineItem);
+      ref.read(lineItemControllerProvider.notifier).add(lineItem);
 
       context.pop();
     }

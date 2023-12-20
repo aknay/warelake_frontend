@@ -19,23 +19,23 @@ class PurchaseOrderService {
         _teamIdSharedRefRepository = teamIdSharedRefRepository,
         _authRepo = authRepo;
 
-  // Future<Either<String, Unit>> createSaleOrder(SaleOrder saleOrder) async {
-  //   final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
-  //   return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
-  //     final token = await _authRepo.shouldGetToken();
-  //     final createdOrError = await _purchaseOrderRepo.issuedSaleOrder(saleOrder: saleOrder, teamId: teamId, token: token);
-  //     return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
-  //   });
-  // }
+  Future<Either<String, Unit>> createPurchaseOrder(PurchaseOrder po) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _purchaseOrderRepo.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
 
-  //   Future<Either<String, SaleOrder>> getSaleOrder({required String saleOrderId}) async {
-  //   final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
-  //   return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
-  //     final token = await _authRepo.shouldGetToken();
-  //     final createdOrError = await _purchaseOrderRepo.getSaleOrder(saleOrderId: saleOrderId, teamId: teamId, token: token);
-  //     return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
-  //   });
-  // }
+    Future<Either<String, PurchaseOrder>> getPurchaseOrder({required String purchaseOrderId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _purchaseOrderRepo.get(purchaseOrderId: purchaseOrderId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
+    });
+  }
 
   Future<Either<String, List<PurchaseOrder>>> list() async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;

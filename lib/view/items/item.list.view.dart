@@ -26,10 +26,20 @@ class ItemListView extends ConsumerWidget {
                         title: Text(e.name),
                         onTap: () {
                           if (isToSelectItemVariation) {
-                                  context.goNamed(
-                              AppRoute.selectItem.name,
-                              pathParameters: {'id': e.itemId!},
-                            );
+                            final router = GoRouter.of(context);
+                            final uri = router.routeInformationProvider.value.uri;
+
+                            if (uri.path.contains('purchase_order')) {
+                              context.goNamed(
+                                AppRoute.selectItemForPurchaseOrder.name,
+                                pathParameters: {'id': e.itemId!},
+                              );
+                            } else {
+                              context.goNamed(
+                                AppRoute.selectItemForSaleOrder.name,
+                                pathParameters: {'id': e.itemId!},
+                              );
+                            }
                           } else {
                             context.goNamed(
                               AppRoute.viewItem.name,
