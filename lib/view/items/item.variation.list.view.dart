@@ -42,6 +42,11 @@ class ItemVariationListView extends ConsumerWidget {
                         AppRoute.addLineItemForSaleOrder.name,
                       );
                     }
+                  } else {
+                    context.goNamed(
+                      AppRoute.variationItem.name,
+                      pathParameters: {'id': e.itemId!, 'variation_item_id': e.id!},
+                    );
                   }
                 },
               ))

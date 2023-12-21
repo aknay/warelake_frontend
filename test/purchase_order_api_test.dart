@@ -89,6 +89,7 @@ void main() async {
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
     expect(createdPo.status, 'issued');
+    expect(createdPo.purchaseOrderNumber, "PO-0001");
   });
 
   test('you can get po', () async {

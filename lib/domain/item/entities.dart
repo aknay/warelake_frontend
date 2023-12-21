@@ -1,4 +1,5 @@
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:inventory_frontend/domain/valueobject.dart';
 import 'package:uuid/uuid.dart';
 
 class Item {
@@ -152,6 +153,8 @@ class PriceMoney {
     required this.amount,
     required this.currency,
   });
+
+  Amount get amountInDouble => (amount / 1000).toDouble();
 
   factory PriceMoney.from({required double amount, required CurrencyCode currencyCode}) {
     return PriceMoney(amount: (amount * 1000).toInt(), currency: currencyCode.name);

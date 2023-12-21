@@ -11,6 +11,7 @@ import 'package:inventory_frontend/view/bill.account/bill.accounts.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.screen.dart';
 import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
 import 'package:inventory_frontend/view/items/item.screen.dart';
+import 'package:inventory_frontend/view/items/item.variaton.screen.dart';
 import 'package:inventory_frontend/view/items/items.screen.dart';
 import 'package:inventory_frontend/view/main/main.screen.dart';
 import 'package:inventory_frontend/view/main/profile/profile.screen.dart';
@@ -53,6 +54,7 @@ enum AppRoute {
   addLineItemForPurchaseOrder,
   billAccounts,
   billAccount,
+  variationItem
 }
 
 @riverpod
@@ -243,6 +245,7 @@ GoRouter goRouter(GoRouterRef ref) {
               },
             ),
           ]),
+          
       GoRoute(
           name: AppRoute.items.name,
           path: '/items',
@@ -272,6 +275,17 @@ GoRouter goRouter(GoRouterRef ref) {
                 final id = state.pathParameters['id']!;
                 return ItemScreen(itemId: id, isToSelectItemVariation: false);
               },
+            routes: [
+                   GoRoute(
+              name: AppRoute.variationItem.name,
+              path: ':variation_item_id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                final variationItemId = state.pathParameters['variation_item_id']!;
+                return ItemVariationScreen(itemId: id, itemVariationId: variationItemId);
+              },
+            ),
+            ]
             ),
           ]),
     ],
