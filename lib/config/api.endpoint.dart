@@ -63,4 +63,10 @@ class ApiEndPoint {
         ? "${getApiBaseUrl()}/v1/accounts"
         : "${getApiBaseUrl()}/v1/accounts/$billAccountId";
   }
+
+    static String getMonthlySummaryEndPoint({required String billAccountId,  String? monthlySummary}) {
+    return monthlySummary == null
+        ? "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId"
+        : "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId/$monthlySummary";
+  }
 }
