@@ -11,7 +11,7 @@ import 'package:inventory_frontend/domain/responses.dart';
 
 class MonthlySummaryRepository extends MonthlySummaryApi {
   @override
-  Future<Either<ErrorResponse, List<MonthlySummary>>> get(
+  Future<Either<ErrorResponse, List<MonthlySummary>>> list(
       {required String teamId, required String billAccountId, required String token}) async {
     try {
       final response = await HttpHelper.get(
