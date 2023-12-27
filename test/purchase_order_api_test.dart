@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
@@ -235,10 +236,19 @@ void main() async {
     expect(createdPo.status, 'issued');
 
     // testing receiving items
+    {
+      final now = DateTime.now();
+      await purchaseOrderApi.receivedItems(
+          purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
 
-    final poItemsReceivedOrError =
-        await purchaseOrderApi.receivedItems(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
-    expect(poItemsReceivedOrError.isRight(), true);
+      await Future.delayed(const Duration(seconds: 2));
+
+      final poOrError =
+          await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+      final po = poOrError.toIterable().first;
+      expect(po.receivedAt, DateFormat('yyyy-MM-dd').format(now));
+    }
+
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 
@@ -356,9 +366,8 @@ void main() async {
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
     expect(createdPo.status, 'issued');
-
-    final poItemsReceivedOrError =
-        await purchaseOrderApi.receivedItems(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+    final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+        purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));

@@ -48,12 +48,12 @@ class PurchaseOrderService {
     });
   }
 
-  Future<Either<String, Unit>> converteToReceived({required String purchaseOrderId}) async {
+  Future<Either<String, Unit>> converteToReceived({required String purchaseOrderId, required DateTime date}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items =
-          await _purchaseOrderRepo.receivedItems(purchaseOrderId: purchaseOrderId, teamId: teamId, token: token);
+      final items = await _purchaseOrderRepo.receivedItems(
+          purchaseOrderId: purchaseOrderId, date: date, teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }

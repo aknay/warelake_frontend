@@ -104,12 +104,11 @@ void main() async {
     }
 
     // // testing receiving items
-
     final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
-        purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+        date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     {
       // test monthly inventory// we should get first monthly summary
@@ -136,9 +135,11 @@ void main() async {
           subTotal: 10,
           total: 20);
 
-      await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final poOrError =
+          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final createdPo = poOrError.toIterable().first;
       await purchaseOrderApi.receivedItems(
-          purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     }
     {
       //sleep a while to update correctly
@@ -151,6 +152,54 @@ void main() async {
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
       expect(monthlySummary.incomingAmount, 0);
       expect(monthlySummary.outgoingAmount, 25.0);
+    }
+
+    {
+      //create third po
+      final now = DateTime.now();
+      final po = PurchaseOrder.create(
+          purchaseOrderNumber: "PO-0003",
+          accountId: account.id!,
+          date: now,
+          currencyCode: CurrencyCode.AUD,
+          lineItems: [lineItem],
+          subTotal: 10,
+          total: 20);
+
+      final poOrError =
+          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final createdPo = poOrError.toIterable().first;
+      await purchaseOrderApi.receivedItems(
+          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+
+      DateTime previousMonth = DateTime(now.year, now.month - 1, now.day);
+
+      // Handling edge case for January
+      if (now.month == 1) {
+        previousMonth = DateTime(now.year - 1, 12, now.day);
+      }
+
+      await purchaseOrderApi.receivedItems(
+          date: previousMonth, purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+
+      DateTime firstDayOfMonth = DateTime(previousMonth.year, previousMonth.month, 1);
+
+      // Using intl package to format the date
+      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      // check outgoing amount is accumulated
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.length, 2);
+      final monthlySummaryList = monthlySummaryListOrError.toIterable().first;
+
+      final monthlySummary = monthlySummaryList.where((element) => element.monthYear == formattedDate).first;
+
+      expect(monthlySummary.incomingAmount, 0);
+      expect(monthlySummary.outgoingAmount, 12.5);
     }
   });
 
@@ -247,6 +296,42 @@ void main() async {
           teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
+      final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
+      expect(monthlySummary.incomingAmount, 27.0);
+      expect(monthlySummary.outgoingAmount, 0);
+    }
+
+    {
+      final now = DateTime.now();
+      DateTime previousMonth = DateTime(now.year, now.month - 1, now.day);
+
+      // Handling edge case for January
+      if (now.month == 1) {
+        previousMonth = DateTime(now.year - 1, 12, now.day);
+      }
+
+      // create second so
+      final so = SaleOrder.create(
+          accountId: account.id!,
+          date: previousMonth,
+          currencyCode: CurrencyCode.AUD,
+          lineItems: [lineItem],
+          subTotal: 10,
+          total: 20,
+          saleOrderNumber: "S0-00003");
+
+      await saleOrderRepo.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      await saleOrderRepo.deliveredItems(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+    }
+
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 2));
+      // test monthly inventory// we should get first monthly summary
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.length, 2);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
       expect(monthlySummary.incomingAmount, 27.0);
       expect(monthlySummary.outgoingAmount, 0);

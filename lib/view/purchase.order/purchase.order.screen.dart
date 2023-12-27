@@ -66,8 +66,10 @@ class PageContents extends ConsumerWidget {
                 onSelected: (PurchaseOrderAction value) async {
                   switch (value) {
                     case PurchaseOrderAction.delivered:
+                      //TODO need to get a date from users
+                      final now = DateTime.now();
                       final isSuccess =
-                          await ref.read(purchaseOrderListControllerProvider.notifier).convertToReceived(po);
+                          await ref.read(purchaseOrderListControllerProvider.notifier).convertToReceived(po, now);
                       if (isSuccess) {
                         ref.invalidate(purchaseOrderProvider(po.id!));
                       }

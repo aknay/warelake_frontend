@@ -29,6 +29,7 @@ class PurchaseOrder {
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
+  String? receivedAt;
 
   PurchaseOrder({
     this.id,
@@ -52,6 +53,7 @@ class PurchaseOrder {
     required this.accountId,
     this.createdTime,
     this.modifiedAt,
+    this.receivedAt,
   });
 
   factory PurchaseOrder.create(
@@ -130,6 +132,7 @@ class PurchaseOrder {
       accountId: json['account_id'],
       createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      receivedAt: json['received_at'],
     );
   }
 }

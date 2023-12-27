@@ -33,9 +33,9 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
     });
   }
 
-  Future<bool> convertToReceived(PurchaseOrder po) async {
+  Future<bool> convertToReceived(PurchaseOrder po, DateTime date) async {
     state = const AsyncLoading();
-    final delieveredOrError = await ref.read(purchaseOrderServiceProvider).converteToReceived(purchaseOrderId: po.id!);
+    final delieveredOrError = await ref.read(purchaseOrderServiceProvider).converteToReceived(purchaseOrderId: po.id!, date: date);
     return await delieveredOrError.fold((l) {
       state = AsyncError(l, StackTrace.current);
       return false;

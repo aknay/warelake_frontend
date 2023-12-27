@@ -12,6 +12,7 @@ abstract class PurchaseOrderApi {
 
   Future<Either<ErrorResponse, PurchaseOrder>> receivedItems({
     required String purchaseOrderId,
+    required DateTime date,
     required String teamId,
     required String token,
   });

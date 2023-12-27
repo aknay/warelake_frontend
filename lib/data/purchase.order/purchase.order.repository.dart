@@ -7,6 +7,7 @@ import 'package:inventory_frontend/data/http.helper.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/purchase.order/api.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/payloads.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -33,10 +34,12 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
 
   @override
   Future<Either<ErrorResponse, PurchaseOrder>> receivedItems(
-      {required String purchaseOrderId, required String teamId, required String token}) async {
+      {required String purchaseOrderId, required DateTime date, required String teamId, required String token}) async {
     try {
+      final payload = PurchaseOrderUpdatePayload.create(date: date);
+
       final response = await HttpHelper.post(
-          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId),
+          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId),body: payload.toMap(),
           token: token,
           teamId: teamId);
       log("purchase order create response code ${response.statusCode}");
