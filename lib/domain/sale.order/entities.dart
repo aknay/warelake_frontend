@@ -29,6 +29,7 @@ class SaleOrder {
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
+  String? deliveredAt;
 
   SaleOrder({
     this.id,
@@ -52,6 +53,7 @@ class SaleOrder {
     required this.accountId,
     this.createdTime,
     this.modifiedAt,
+    this.deliveredAt,
   });
 
   SaleOrderStatus get saleOrderStatus => SaleOrderStatus.values.byName(status!);
@@ -109,6 +111,7 @@ class SaleOrder {
       accountId: json['account_id'],
       createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      deliveredAt: json['delivered_at']
     );
   }
 }

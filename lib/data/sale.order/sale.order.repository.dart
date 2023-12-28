@@ -8,6 +8,7 @@ import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/sale.order/api.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
+import 'package:inventory_frontend/domain/sale.order/payloads.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sale.order.repository.g.dart';
@@ -16,11 +17,20 @@ class SaleOrderRepository extends SaleOrderApi {
   SaleOrderRepository();
 
   @override
-  Future<Either<ErrorResponse, Unit>> deliveredItems(
-      {required String saleOrderId, required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> deliveredItems({
+    required String saleOrderId,
+    required DateTime date,
+    required String teamId,
+    required String token,
+  }) async {
     try {
+      final payload = SaleOrderUpdatePayload.create(date: date);
+
       final response = await HttpHelper.post(
-          url: ApiEndPoint.getDelieveredItemsSaleOrderEndPoint(saleOrderId: saleOrderId), token: token, teamId: teamId);
+          url: ApiEndPoint.getDelieveredItemsSaleOrderEndPoint(saleOrderId: saleOrderId),
+          body: payload.toMap(),
+          token: token,
+          teamId: teamId);
       log("sale order delivered response code ${response.statusCode}");
       log("sale order delivered  response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {

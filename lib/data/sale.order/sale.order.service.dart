@@ -50,7 +50,7 @@ class SaleOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, teamId: teamId, token: token);
+      final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }

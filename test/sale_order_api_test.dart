@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
@@ -182,9 +183,11 @@ void main() async {
     expect(accountListOrError.toIterable().first.data.length == 1, true);
     final account = accountListOrError.toIterable().first.data.first;
 
+    final date = DateTime.now();
+
     final po = SaleOrder.create(
         accountId: account.id!,
-        date: DateTime.now(),
+        date: date,
         currencyCode: CurrencyCode.AUD,
         lineItems: [lineItem],
         subTotal: 10,
@@ -199,11 +202,22 @@ void main() async {
 
     // testing receiving items
 
-    final poItemsReceivedOrError =
-        await saleOrderApi.deliveredItems(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+    final poItemsReceivedOrError = await saleOrderApi.deliveredItems(
+        saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
+
+    {
+      //test delivered date
+      final soOrError = await saleOrderApi.getSaleOrder(
+        saleOrderId: createdSo.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken,
+      );
+      final so = soOrError.toIterable().first;
+      expect(so.deliveredAt, DateFormat('yyyy-MM-dd').format(date));
+    }
 
     {
       //test item increased after received
@@ -326,8 +340,8 @@ void main() async {
     expect(soCreatedOrError.isRight(), true);
 
     final createdSo = soCreatedOrError.toIterable().first;
-    final poItemsReceivedOrError =
-        await saleOrderApi.deliveredItems(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+    final poItemsReceivedOrError = await saleOrderApi.deliveredItems(
+        saleOrderId: createdSo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
