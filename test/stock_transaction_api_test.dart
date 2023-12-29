@@ -80,6 +80,11 @@ void main() async {
 
     expect(stCreatedOrError.isRight(), true);
 
+    final stx = stCreatedOrError.toIterable().first;
+    expect(stx.lineItems.first.quantity, 7);
+    expect(stx.lineItems.first.oldStockLevel, 0);
+    expect(stx.lineItems.first.newStockLevel, 7);
+
     {
       //check item stock is updated
       final itemOrError =
@@ -87,6 +92,187 @@ void main() async {
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
+    }
+  });
+
+  test('creating stx with stock out should be successful', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    final tShirtItem = itemCreated.toIterable().first;
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: [lineItem],
+      stockMovement: StockMovement.stockIn,
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+
+    final stx = stCreatedOrError.toIterable().first;
+    expect(stx.lineItems.first.quantity, 7);
+    expect(stx.lineItems.first.oldStockLevel, 0);
+    expect(stx.lineItems.first.newStockLevel, 7);
+
+    {
+      //check item stock is updated
+      final itemOrError =
+          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final item = itemOrError.toIterable().first;
+      final whiteTShirt = item.variations.first;
+      expect(whiteTShirt.itemCount, 7);
+    }
+
+    {
+      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: [lineItem],
+        stockMovement: StockMovement.stockOut,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+      expect(stCreatedOrError.isRight(), true);
+
+      final stx = stCreatedOrError.toIterable().first;
+      expect(stx.lineItems.first.quantity, 3);
+      expect(stx.lineItems.first.oldStockLevel, 7);
+      expect(stx.lineItems.first.newStockLevel, 4);
+
+      {
+        //check item stock is updated
+        final itemOrError =
+            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+        final item = itemOrError.toIterable().first;
+        final whiteTShirt = item.variations.first;
+        expect(whiteTShirt.itemCount, 4);
+      }
+    }
+  });
+
+  test('creating stx with stock adjust should be successful', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    final tShirtItem = itemCreated.toIterable().first;
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: [lineItem],
+      stockMovement: StockMovement.stockIn,
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+
+    final stx = stCreatedOrError.toIterable().first;
+    expect(stx.lineItems.first.quantity, 7);
+    expect(stx.lineItems.first.oldStockLevel, 0);
+    expect(stx.lineItems.first.newStockLevel, 7);
+
+    {
+      //check item stock is updated
+      final itemOrError =
+          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final item = itemOrError.toIterable().first;
+      final whiteTShirt = item.variations.first;
+      expect(whiteTShirt.itemCount, 7);
+    }
+
+    {
+      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: [lineItem],
+        stockMovement: StockMovement.stockOut,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+      expect(stCreatedOrError.isRight(), true);
+
+      final stx = stCreatedOrError.toIterable().first;
+      expect(stx.lineItems.first.quantity, 3);
+      expect(stx.lineItems.first.oldStockLevel, 7);
+      expect(stx.lineItems.first.newStockLevel, 4);
+
+      {
+        //check item stock is updated
+        final itemOrError =
+            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+        final item = itemOrError.toIterable().first;
+        final whiteTShirt = item.variations.first;
+        expect(whiteTShirt.itemCount, 4);
+      }
+    }
+
+    {
+      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 10);
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: [lineItem],
+        stockMovement: StockMovement.stockAdjust,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+      expect(stCreatedOrError.isRight(), true);
+
+      final stx = stCreatedOrError.toIterable().first;
+      expect(stx.lineItems.first.quantity, 10);
+      expect(stx.lineItems.first.oldStockLevel, 4);
+      expect(stx.lineItems.first.newStockLevel, 10);
+
+      {
+        //check item stock is updated
+        final itemOrError =
+            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+        final item = itemOrError.toIterable().first;
+        final whiteTShirt = item.variations.first;
+        expect(whiteTShirt.itemCount, 10);
+      }
     }
   });
 }

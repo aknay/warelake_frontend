@@ -9,14 +9,12 @@ extension StockMovementExtension on StockMovement {
   String toFormattedString() {
     final exp = RegExp('(?<=[a-z])[A-Z]');
     return name.replaceAllMapped(exp, (m) => '_${m.group(0)}').toLowerCase();
-
-    // return toString().split('.').last.replaceAll('_', '-');
   }
 
   static StockMovement fromFormattedString(String formattedString) {
-    log("strin for is ${formattedString}");
+    log("strin for is $formattedString");
     String enumString = _snakeCaseToCamelCase(formattedString);
-    log("enum is ${enumString}");
+    log("enum is $enumString");
     return StockMovement.values.firstWhere((e) => e.name == enumString);
   }
 
@@ -90,6 +88,7 @@ class LineItem {
   String? description;
   int quantity;
   int? newStockLevel;
+  int? oldStockLevel;
 
   LineItem(
       {this.itemId,
@@ -97,7 +96,8 @@ class LineItem {
       this.lineItemId,
       this.description,
       required this.quantity,
-      this.newStockLevel});
+      this.newStockLevel,
+      this.oldStockLevel});
 
   factory LineItem.create({required ItemVariation itemVariation, required int quantity}) {
     return LineItem(itemVariation: itemVariation, quantity: quantity);
@@ -115,11 +115,13 @@ class LineItem {
 
   static LineItem fromJson(Map<String, dynamic> json) {
     return LineItem(
-        itemId: json['item_id'],
-        itemVariation: ItemVariation.fromJson(json['item_variation']),
-        lineItemId: json['line_item_id'],
-        description: json['description'],
-        quantity: json['quantity'],
-        newStockLevel: json['new_stock_level']);
+      itemId: json['item_id'],
+      itemVariation: ItemVariation.fromJson(json['item_variation']),
+      lineItemId: json['line_item_id'],
+      description: json['description'],
+      quantity: json['quantity'],
+      newStockLevel: json['new_stock_level'],
+      oldStockLevel: json['old_stock_level'],
+    );
   }
 }
