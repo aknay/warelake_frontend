@@ -40,7 +40,9 @@ class StockTransactionRepository extends StockTransactionApi {
   }) async {
     try {
       final response = await HttpHelper.get(
-          url: ApiEndPoint.getStockTransacitonEndPoint(stockTransactionId: stockTransactionId), token: token, teamId: teamId);
+          url: ApiEndPoint.getStockTransacitonEndPoint(stockTransactionId: stockTransactionId),
+          token: token,
+          teamId: teamId);
       log("stock transaction get response code ${response.statusCode}");
       log("stock transaction get response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
@@ -51,6 +53,33 @@ class StockTransactionRepository extends StockTransactionApi {
       log("the error is $e");
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
+  }
+
+  @override
+  Future<Either<ErrorResponse, Unit>> delete({
+    required String stockTransactionId,
+    required String teamId,
+    required String token,
+  }) async {
+
+
+    try {
+      final response = await HttpHelper.delete(
+          url: ApiEndPoint.getStockTransacitonEndPoint(stockTransactionId: stockTransactionId),
+          token: token,
+          teamId: teamId);
+      log("stock transaction delete response code ${response.statusCode}");
+      log("stock transaction delete response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return const Right(unit);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+
+
   }
 }
 

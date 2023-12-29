@@ -14,4 +14,10 @@ abstract class StockTransactionApi {
     required String teamId,
     required String token,
   });
+
+    Future<Either<ErrorResponse, Unit>> delete({
+    required String stockTransactionId,
+    required String teamId,
+    required String token,
+  });
 }
