@@ -469,4 +469,123 @@ void main() async {
       expect(monthlySummary.outgoingAmount, 0);
     }
   });
+
+
+  test('you can get updated monthly summary after deleting a so', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
+
+    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
+    final account = accountListOrError.toIterable().first.data.first;
+    final now = DateTime.now();
+    final so = SaleOrder.create(
+        saleOrderNumber: "SO-0001",
+        accountId: account.id!,
+        date: now,
+        currencyCode: CurrencyCode.AUD,
+        lineItems: [lineItem],
+        subTotal: 10,
+        total: 20);
+    final soCreatedOrError =
+        await saleOrderRepo.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final firstSo = soCreatedOrError.toIterable().first;
+    {
+      // test monthly inventory// it should be emtpy as we havent receive the order yet
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.isEmpty, true);
+    }
+
+    // // testing receiving items
+    final poItemsReceivedOrError = await saleOrderRepo.deliveredItems(
+        date: DateTime.now(), saleOrderId: firstSo.id!, teamId: team.id!, token: firstUserAccessToken);
+    expect(poItemsReceivedOrError.isRight(), true);
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      // test monthly inventory// we should get first monthly summary
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.isNotEmpty, true);
+      final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
+      expect(monthlySummary.incomingAmount, 12.5);
+      expect(monthlySummary.outgoingAmount, 0);
+
+      DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+      expect(monthlySummary.monthYear, formattedDate);
+      expect(monthlySummary.incomingAmount, 12.5);
+      expect(monthlySummary.outgoingAmount, 0);
+    }
+    SaleOrder secondPo;
+    {
+      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 3.5, quantity: 6, unit: 'cm');
+      //create second po
+      final po = SaleOrder.create(
+          saleOrderNumber: "SO-0002",
+          accountId: account.id!,
+          date: now,
+          currencyCode: CurrencyCode.AUD,
+          lineItems: [lineItem],
+          subTotal: 10,
+          total: 20);
+
+      final soOrError =
+          await saleOrderRepo.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      secondPo = soOrError.toIterable().first;
+      await saleOrderRepo.deliveredItems(
+          date: DateTime.now(), saleOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
+    }
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 2));
+      // check outgoing amount is accumulated
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.length, 1);
+      final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
+      expect(monthlySummary.incomingAmount, 33.5);
+      expect(monthlySummary.outgoingAmount, 0);
+    }
+
+    {
+      //delete first po
+      await saleOrderRepo.delete(saleOrderId: firstSo.id!, teamId: team.id!, token: firstUserAccessToken);
+      await Future.delayed(const Duration(seconds: 1));
+
+      // check outgoing amount is reduced
+      final monthlySummaryListOrError = await monthlySummaryRepository.list(
+          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      expect(monthlySummaryListOrError.isRight(), true);
+      expect(monthlySummaryListOrError.toIterable().first.length, 1);
+      final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
+      expect(monthlySummary.incomingAmount, 21.0);
+      expect(monthlySummary.outgoingAmount, 0);
+    }
+  });
 }
