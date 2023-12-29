@@ -69,4 +69,10 @@ class ApiEndPoint {
         ? "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId"
         : "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId/$monthlySummary";
   }
+
+      static String getStockTransacitonEndPoint({String? stockTransactionId}) {
+    return stockTransactionId == null
+        ? "${getApiBaseUrl()}/v1/stock_transactions"
+        : "${getApiBaseUrl()}/v1/stock_transactions/$stockTransactionId";
+  }
 }
