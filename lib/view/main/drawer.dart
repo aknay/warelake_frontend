@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
@@ -51,6 +52,50 @@ class DrawerWidget extends StatelessWidget {
 
               // context.go("/items");
 
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Stock In'),
+            leading: const FaIcon(FontAwesomeIcons.arrowDown),
+            // selected: _selectedIndex == 1,
+            onTap: () {
+              context.goNamed(
+                AppRoute.stockIn.name,
+              );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Stock Out'),
+            leading: const FaIcon(FontAwesomeIcons.arrowUp),
+            // selected: _selectedIndex == 1,
+            onTap: () {
+              context.goNamed(
+                AppRoute.items.name,
+              );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const FaIcon(FontAwesomeIcons.arrowDownUpAcrossLine),
+            title: const Text('Stock Adjust'),
+            // selected: _selectedIndex == 1,
+            onTap: () {
+              context.goNamed(
+                AppRoute.items.name,
+              );
+              Navigator.pop(context);
+            },
+          ),
+            ListTile(
+            leading: const FaIcon(FontAwesomeIcons.arrowsRotate),
+            title: const Text('Transactions'),
+            // selected: _selectedIndex == 1,
+            onTap: () {
+              context.goNamed(
+                AppRoute.items.name,
+              );
               Navigator.pop(context);
             },
           ),

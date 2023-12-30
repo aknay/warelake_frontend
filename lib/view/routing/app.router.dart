@@ -26,6 +26,9 @@ import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.scre
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
+import 'package:inventory_frontend/view/stock/add.stock.line.item.screen.dart';
+import 'package:inventory_frontend/view/stock/stock.in/stock.in.screen.dart';
+import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
@@ -54,7 +57,9 @@ enum AppRoute {
   addLineItemForPurchaseOrder,
   billAccounts,
   billAccount,
-  variationItem
+  variationItem,
+  stockIn,
+  selectStockLineItemForStockIn
 }
 
 @riverpod
@@ -133,6 +138,28 @@ GoRouter goRouter(GoRouterRef ref) {
           return const ProfileScreen();
         },
       ),
+      GoRoute(
+          name: AppRoute.stockIn.name,
+          path: '/stock_in',
+          builder: (BuildContext context, GoRouterState state) {
+            return const StockInScreen();
+          },
+          routes: [
+                       GoRoute(
+              name: AppRoute.selectStockLineItemForStockIn.name,
+              path: 'select',
+              builder: (BuildContext context, GoRouterState state) {
+                return const StockItemSelectionScreen();
+              },
+            ),
+            // GoRoute(
+            //   name: AppRoute.addStockLineItemForStockIn.name,
+            //   path: 'add',
+            //   builder: (BuildContext context, GoRouterState state) {
+            //     return const AddStockLineItemScreen();
+            //   },
+            // ),
+          ]),
       GoRoute(
           name: AppRoute.billAccounts.name,
           path: '/bill_accounts',
@@ -245,7 +272,6 @@ GoRouter goRouter(GoRouterRef ref) {
               },
             ),
           ]),
-          
       GoRoute(
           name: AppRoute.items.name,
           path: '/items',
@@ -269,24 +295,23 @@ GoRouter goRouter(GoRouterRef ref) {
                   ),
                 ]),
             GoRoute(
-              name: AppRoute.viewItem.name,
-              path: ':id',
-              builder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return ItemScreen(itemId: id, isToSelectItemVariation: false);
-              },
-            routes: [
-                   GoRoute(
-              name: AppRoute.variationItem.name,
-              path: ':variation_item_id',
-              builder: (context, state) {
-                final id = state.pathParameters['id']!;
-                final variationItemId = state.pathParameters['variation_item_id']!;
-                return ItemVariationScreen(itemId: id, itemVariationId: variationItemId);
-              },
-            ),
-            ]
-            ),
+                name: AppRoute.viewItem.name,
+                path: ':id',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ItemScreen(itemId: id, isToSelectItemVariation: false);
+                },
+                routes: [
+                  GoRoute(
+                    name: AppRoute.variationItem.name,
+                    path: ':variation_item_id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      final variationItemId = state.pathParameters['variation_item_id']!;
+                      return ItemVariationScreen(itemId: id, itemVariationId: variationItemId);
+                    },
+                  ),
+                ]),
           ]),
     ],
   );
