@@ -5,7 +5,7 @@ import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 
-final itemProvider = FutureProvider.family<Item, String>((ref, id) async {
+final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
   final itemOrError = await ref.watch(itemServiceProvider).getItem(itemId: id);
   if (itemOrError.isLeft()) {
     throw AssertionError("cannot item");
@@ -24,7 +24,7 @@ class ItemScreen extends ConsumerWidget {
     final jobAsync = ref.watch(itemProvider(itemId));
     return ScaffoldAsyncValueWidget<Item>(
       value: jobAsync,
-      data: (job) => PageContents(item: job, isToSelectItemVariation: isToSelectItemVariation ),
+      data: (job) => PageContents(item: job, isToSelectItemVariation: isToSelectItemVariation),
     );
   }
 }
@@ -37,6 +37,8 @@ class PageContents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(item.name)), body: ItemVariationListView(itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation));
+        appBar: AppBar(title: Text(item.name)),
+        body: ItemVariationListView(
+            itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation));
   }
 }

@@ -6,7 +6,7 @@ import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
 import 'package:inventory_frontend/view/constants/app.sizes.dart';
 
-final itemProvider = FutureProvider.family<Item, String>((ref, id) async {
+final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
   if (foundation.kDebugMode) {
     await Future.delayed(const Duration(seconds: 1));
   }

@@ -26,7 +26,7 @@ class ItemVariationListView extends ConsumerWidget {
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [_toSalePrice(e.salePriceMoney), _toPurchasePrice(e.purchasePriceMoney)],
+                  children: [_toSalePrice(e.salePriceMoney), _toPurchasePrice(e.purchasePriceMoney), Text("Stock on hand: ${e.itemCount}")],
                 ),
                 onTap: () {
                   if (isToSelectItemVariation) {
