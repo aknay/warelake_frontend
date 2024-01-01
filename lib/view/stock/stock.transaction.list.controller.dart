@@ -30,7 +30,6 @@ class StockTransactionListController extends _$StockTransactionListController {
         throw AssertionError("error while fetching items");
       }
       state = AsyncValue.data(itemsOrError.toIterable().first);
-      // state = AsyncValue.data([]);
       return true;
     });
   }

@@ -76,9 +76,7 @@ class DrawerWidget extends StatelessWidget {
             leading: const FaIcon(FontAwesomeIcons.rightLeft),
             title: const Text('Stock Adjust'),
             onTap: () {
-              context.goNamed(
-                AppRoute.stockAdjust.name,
-              );
+              context.goNamed(AppRoute.stockAdjust.name);
               Navigator.pop(context);
             },
           ),

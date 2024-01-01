@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
+import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/bill.account/bill.account.screen.dart';
 import 'package:inventory_frontend/view/bill.account/bill.accounts.screen.dart';
@@ -26,10 +27,8 @@ import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.scre
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
-import 'package:inventory_frontend/view/stock/stock.adjust/stock.adjust.screen.dart';
-import 'package:inventory_frontend/view/stock/stock.in/stock.in.screen.dart';
+import 'package:inventory_frontend/view/stock/stock.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
-import 'package:inventory_frontend/view/stock/stock.out/stock.out.screen.dart';
 import 'package:inventory_frontend/view/stock/transactions/stock.transaction.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -159,7 +158,7 @@ GoRouter goRouter(GoRouterRef ref) {
           name: AppRoute.stockIn.name,
           path: '/stock_in',
           builder: (BuildContext context, GoRouterState state) {
-            return const StockInScreen();
+            return const StockScreen(stockMovement: StockMovement.stockIn);
           },
           routes: [
             GoRoute(
@@ -183,7 +182,7 @@ GoRouter goRouter(GoRouterRef ref) {
           name: AppRoute.stockOut.name,
           path: '/stock_out',
           builder: (BuildContext context, GoRouterState state) {
-            return const StockOutScreen();
+            return const StockScreen(stockMovement: StockMovement.stockOut);
           },
           routes: [
             GoRoute(
@@ -207,7 +206,7 @@ GoRouter goRouter(GoRouterRef ref) {
           name: AppRoute.stockAdjust.name,
           path: '/stock_adjust',
           builder: (BuildContext context, GoRouterState state) {
-            return const StockAdjustScreen();
+            return const StockScreen(stockMovement: StockMovement.stockAdjust);
           },
           routes: [
             GoRoute(
