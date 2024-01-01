@@ -42,6 +42,20 @@ class ItemVariationListView extends ConsumerWidget {
                       context.goNamed(
                         AppRoute.stockIn.name,
                       );
+                    } else if (uri.path.contains('stock_out')) {
+                      ref
+                          .read(stockLineItemControllerProvider.notifier)
+                          .add(StockLineItem.create(itemVariation: e, quantity: 1));
+                      context.goNamed(
+                        AppRoute.stockOut.name,
+                      );
+                    } else if (uri.path.contains('stock_adjust')) {
+                      ref
+                          .read(stockLineItemControllerProvider.notifier)
+                          .add(StockLineItem.create(itemVariation: e, quantity: 1));
+                      context.goNamed(
+                        AppRoute.stockAdjust.name,
+                      );
                     } else if (uri.path.contains('purchase_order')) {
                       context.goNamed(
                         AppRoute.addLineItemForPurchaseOrder.name,

@@ -58,33 +58,26 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Stock In'),
-            leading: const FaIcon(FontAwesomeIcons.arrowDown),
-            // selected: _selectedIndex == 1,
+            leading: const FaIcon(FontAwesomeIcons.arrowRightToBracket),
             onTap: () {
-              context.goNamed(
-                AppRoute.stockIn.name,
-              );
+              context.goNamed(AppRoute.stockIn.name);
               Navigator.pop(context);
             },
           ),
           ListTile(
             title: const Text('Stock Out'),
-            leading: const FaIcon(FontAwesomeIcons.arrowUp),
-            // selected: _selectedIndex == 1,
+            leading: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
             onTap: () {
-              context.goNamed(
-                AppRoute.items.name,
-              );
+              context.goNamed(AppRoute.stockOut.name);
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: const FaIcon(FontAwesomeIcons.arrowDownUpAcrossLine),
+            leading: const FaIcon(FontAwesomeIcons.rightLeft),
             title: const Text('Stock Adjust'),
-            // selected: _selectedIndex == 1,
             onTap: () {
               context.goNamed(
-                AppRoute.items.name,
+                AppRoute.stockAdjust.name,
               );
               Navigator.pop(context);
             },

@@ -38,7 +38,19 @@ class ItemListView extends ConsumerWidget {
                                 AppRoute.selectItemForStockIn.name,
                                 pathParameters: {'id': e.itemId!},
                               );
-                            } else if (uri.path.contains('purchase_order')) {
+                            } else if (uri.path.contains('stock_out')) {
+                              context.goNamed(
+                                AppRoute.selectItemForStockOut.name,
+                                pathParameters: {'id': e.itemId!},
+                              );
+                              
+                            } else if (uri.path.contains('stock_adjust')) {
+                              context.goNamed(
+                                AppRoute.selectItemForStockAdjust.name,
+                                pathParameters: {'id': e.itemId!},
+                              );
+                              
+                            }else if (uri.path.contains('purchase_order')) {
                               context.goNamed(
                                 AppRoute.selectItemForPurchaseOrder.name,
                                 pathParameters: {'id': e.itemId!},

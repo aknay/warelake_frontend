@@ -34,13 +34,13 @@ class StockTransactionListView extends ConsumerWidget {
     String stockMovementText;
     switch (stx.stockMovement) {
       case StockMovement.stockIn:
-        icon = const FaIcon(FontAwesomeIcons.arrowDown);
+        icon = const FaIcon(FontAwesomeIcons.arrowRightToBracket);
         stockMovementText = "Stock In";
       case StockMovement.stockOut:
-        icon = const FaIcon(FontAwesomeIcons.arrowUp);
+        icon = const FaIcon(FontAwesomeIcons.arrowRightFromBracket);
         stockMovementText = "Stock Out";
       case StockMovement.stockAdjust:
-        icon = const FaIcon(FontAwesomeIcons.arrowDownUpAcrossLine);
+        icon = const FaIcon(FontAwesomeIcons.rightLeft);
         stockMovementText = "Stock Adjust";
     }
 

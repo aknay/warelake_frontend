@@ -26,8 +26,10 @@ import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.scre
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
+import 'package:inventory_frontend/view/stock/stock.adjust/stock.adjust.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.in/stock.in.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
+import 'package:inventory_frontend/view/stock/stock.out/stock.out.screen.dart';
 import 'package:inventory_frontend/view/stock/transactions/stock.transaction.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -61,7 +63,13 @@ enum AppRoute {
   stockIn,
   selectStockLineItemForStockIn,
   selectItemForStockIn,
-  stockTransactions
+  stockTransactions,
+  stockOut,
+  selectStockLineItemForStockOut,
+  selectItemForStockOut,
+  stockAdjust,
+  selectStockLineItemForStockAdjust,
+  selectItemForStockAdjust,
 }
 
 @riverpod
@@ -170,13 +178,54 @@ GoRouter goRouter(GoRouterRef ref) {
                     },
                   ),
                 ]),
-            // GoRoute(
-            //   name: AppRoute.addStockLineItemForStockIn.name,
-            //   path: 'add',
-            //   builder: (BuildContext context, GoRouterState state) {
-            //     return const AddStockLineItemScreen();
-            //   },
-            // ),
+          ]),
+      GoRoute(
+          name: AppRoute.stockOut.name,
+          path: '/stock_out',
+          builder: (BuildContext context, GoRouterState state) {
+            return const StockOutScreen();
+          },
+          routes: [
+            GoRoute(
+                name: AppRoute.selectStockLineItemForStockOut.name,
+                path: 'select',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const StockItemSelectionScreen();
+                },
+                routes: [
+                  GoRoute(
+                    name: AppRoute.selectItemForStockOut.name,
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return ItemScreen(itemId: id, isToSelectItemVariation: true);
+                    },
+                  ),
+                ]),
+          ]),
+      GoRoute(
+          name: AppRoute.stockAdjust.name,
+          path: '/stock_adjust',
+          builder: (BuildContext context, GoRouterState state) {
+            return const StockAdjustScreen();
+          },
+          routes: [
+            GoRoute(
+                name: AppRoute.selectStockLineItemForStockAdjust.name,
+                path: 'select',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const StockItemSelectionScreen();
+                },
+                routes: [
+                  GoRoute(
+                    name: AppRoute.selectItemForStockAdjust.name,
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return ItemScreen(itemId: id, isToSelectItemVariation: true);
+                    },
+                  ),
+                ]),
           ]),
       GoRoute(
           name: AppRoute.billAccounts.name,
