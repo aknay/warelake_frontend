@@ -26,7 +26,7 @@ class _AddLineItemScreenState extends ConsumerState<AddStockLineItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Add Line Item"),
+          title: const Text("Add Stock Line Item"),
           actions: [
             IconButton(
                 onPressed: () async {

@@ -1,14 +1,12 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
+import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/main/drawer.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
+import 'package:inventory_frontend/view/stock/stock.line.item.controller.dart';
 import 'package:inventory_frontend/view/stock/stock.line.item.list.view.dart';
+import 'package:inventory_frontend/view/stock/stock.transaction.list.controller.dart';
 
 class StockInScreen extends ConsumerStatefulWidget {
   const StockInScreen({super.key});
@@ -19,9 +17,6 @@ class StockInScreen extends ConsumerStatefulWidget {
 
 class _StockInScreenState extends ConsumerState<StockInScreen> {
   final _formKey = GlobalKey<FormState>();
-  Option<BillAccount> _billAccountOrNone = const None();
-  Option<String> _saleOrderNumberOrNone = const None();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +32,7 @@ class _StockInScreenState extends ConsumerState<StockInScreen> {
           actions: [
             IconButton(
                 onPressed: () async {
-                  await _submit(ref: ref, billAccountOrNone: _billAccountOrNone);
+                  await _submit(ref: ref);
                 },
                 icon: const Icon(Icons.check)),
           ],
@@ -59,28 +54,38 @@ class _StockInScreenState extends ConsumerState<StockInScreen> {
     return [const Expanded(child: StockLineItemListView())];
   }
 
-  Future<void> _submit({required WidgetRef ref, required Option<BillAccount> billAccountOrNone}) async {
+  Future<void> _submit({required WidgetRef ref}) async {
     if (_validateAndSaveForm()) {
-      final lineItems = ref.read(lineItemControllerProvider);
-      final subTotal =
-          lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
+      final stockLineItemList = ref.read(stockLineItemControllerProvider);
 
-      final billAccount = billAccountOrNone.toIterable().first;
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: stockLineItemList,
+        stockMovement: StockMovement.stockIn,
+      );
 
-      final saleOrder = SaleOrder.create(
-          date: DateTime.now(),
-          currencyCode: billAccount.currencyCodeAsEnum,
-          lineItems: lineItems,
-          subTotal: subTotal,
-          total: subTotal,
-          accountId: billAccount.id!,
-          saleOrderNumber: _saleOrderNumberOrNone.toIterable().first);
+      final success = await ref.read(stockTransactionListControllerProvider.notifier).create(rawTx);
 
-      final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
+      // final lineItems = ref.read(lineItemControllerProvider);
+      // final subTotal =
+      //     lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
 
-      if (success && context.mounted) {
-        context.goNamed(AppRoute.saleOrders.name);
-      }
+      // final billAccount = billAccountOrNone.toIterable().first;
+
+      // final saleOrder = SaleOrder.create(
+      //     date: DateTime.now(),
+      //     currencyCode: billAccount.currencyCodeAsEnum,
+      //     lineItems: lineItems,
+      //     subTotal: subTotal,
+      //     total: subTotal,
+      //     accountId: billAccount.id!,
+      //     saleOrderNumber: _saleOrderNumberOrNone.toIterable().first);
+
+      // final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
+
+      // if (success && context.mounted) {
+      //   context.goNamed(AppRoute.saleOrders.name);
+      // }
     }
   }
 

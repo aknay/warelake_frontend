@@ -68,7 +68,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
@@ -118,7 +118,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
@@ -145,7 +145,7 @@ void main() async {
     }
 
     {
-      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
+      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: [lineItem],
@@ -195,7 +195,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
@@ -222,7 +222,7 @@ void main() async {
     }
 
     {
-      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
+      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: [lineItem],
@@ -249,7 +249,7 @@ void main() async {
     }
 
     {
-      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 10);
+      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 10);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: [lineItem],
@@ -299,7 +299,7 @@ void main() async {
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
@@ -326,7 +326,7 @@ void main() async {
     }
     StockTransaction stxWithStockOut;
     {
-      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
+      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: [lineItem],
@@ -353,7 +353,7 @@ void main() async {
     }
     StockTransaction stxWithStockAdjust;
     {
-      final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, quantity: 10);
+      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 10);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: [lineItem],

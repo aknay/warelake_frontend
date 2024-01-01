@@ -26,7 +26,6 @@ import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.scre
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
-import 'package:inventory_frontend/view/stock/add.stock.line.item.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.in/stock.in.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -59,7 +58,8 @@ enum AppRoute {
   billAccount,
   variationItem,
   stockIn,
-  selectStockLineItemForStockIn
+  selectStockLineItemForStockIn,
+  selectItemForStockIn
 }
 
 @riverpod
@@ -145,13 +145,22 @@ GoRouter goRouter(GoRouterRef ref) {
             return const StockInScreen();
           },
           routes: [
-                       GoRoute(
-              name: AppRoute.selectStockLineItemForStockIn.name,
-              path: 'select',
-              builder: (BuildContext context, GoRouterState state) {
-                return const StockItemSelectionScreen();
-              },
-            ),
+            GoRoute(
+                name: AppRoute.selectStockLineItemForStockIn.name,
+                path: 'select',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const StockItemSelectionScreen();
+                },
+                routes: [
+                  GoRoute(
+                    name: AppRoute.selectItemForStockIn.name,
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return ItemScreen(itemId: id, isToSelectItemVariation: true);
+                    },
+                  ),
+                ]),
             // GoRoute(
             //   name: AppRoute.addStockLineItemForStockIn.name,
             //   path: 'add',

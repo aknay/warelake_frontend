@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +31,14 @@ class ItemListView extends ConsumerWidget {
                             final router = GoRouter.of(context);
                             final uri = router.routeInformationProvider.value.uri;
 
-                            if (uri.path.contains('purchase_order')) {
+                            log("item list ${uri.path}");
+
+                            if (uri.path.contains('stock_in')) {
+                              context.goNamed(
+                                AppRoute.selectItemForStockIn.name,
+                                pathParameters: {'id': e.itemId!},
+                              );
+                            } else if (uri.path.contains('purchase_order')) {
                               context.goNamed(
                                 AppRoute.selectItemForPurchaseOrder.name,
                                 pathParameters: {'id': e.itemId!},

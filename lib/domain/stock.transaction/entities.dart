@@ -35,7 +35,7 @@ class StockTransaction {
   String date;
   StockMovement stockMovement;
   String? updatedBy;
-  List<LineItem> lineItems;
+  List<StockLineItem> lineItems;
   String? notes;
   DateTime? createdTime;
   DateTime? modifiedAt;
@@ -52,7 +52,7 @@ class StockTransaction {
   });
 
   factory StockTransaction.create(
-      {required DateTime date, required List<LineItem> lineItems, required StockMovement stockMovement}) {
+      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement}) {
     final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return StockTransaction(date: dateInString, lineItems: lineItems, stockMovement: stockMovement);
   }
@@ -72,7 +72,7 @@ class StockTransaction {
         id: json['id'],
         date: json['date'],
         stockMovement: StockMovementExtension.fromFormattedString(json['stock_movement']),
-        lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
+        lineItems: List<StockLineItem>.from(json['line_items'].map((v) => StockLineItem.fromJson(v))),
         // lineItems: [],
         updatedBy: json['updated_by'],
         notes: json['notes'],
@@ -81,7 +81,7 @@ class StockTransaction {
   }
 }
 
-class LineItem {
+class StockLineItem {
   ItemVariation itemVariation;
   int? itemId;
   int? lineItemId;
@@ -90,7 +90,7 @@ class LineItem {
   int? newStockLevel;
   int? oldStockLevel;
 
-  LineItem(
+  StockLineItem(
       {this.itemId,
       required this.itemVariation,
       this.lineItemId,
@@ -99,8 +99,8 @@ class LineItem {
       this.newStockLevel,
       this.oldStockLevel});
 
-  factory LineItem.create({required ItemVariation itemVariation, required int quantity}) {
-    return LineItem(itemVariation: itemVariation, quantity: quantity);
+  factory StockLineItem.create({required ItemVariation itemVariation, required int quantity}) {
+    return StockLineItem(itemVariation: itemVariation, quantity: quantity);
   }
 
   Map<String, dynamic> toJson() {
@@ -113,8 +113,8 @@ class LineItem {
     };
   }
 
-  static LineItem fromJson(Map<String, dynamic> json) {
-    return LineItem(
+  static StockLineItem fromJson(Map<String, dynamic> json) {
+    return StockLineItem(
       itemId: json['item_id'],
       itemVariation: ItemVariation.fromJson(json['item_variation']),
       lineItemId: json['line_item_id'],
