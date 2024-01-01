@@ -43,6 +43,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Items'),
+            leading: const FaIcon(FontAwesomeIcons.cubesStacked),
             // selected: _selectedIndex == 1,
             onTap: () {
               log("are we going?");
@@ -88,14 +89,12 @@ class DrawerWidget extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-            ListTile(
+          ListTile(
             leading: const FaIcon(FontAwesomeIcons.arrowsRotate),
             title: const Text('Transactions'),
             // selected: _selectedIndex == 1,
             onTap: () {
-              context.goNamed(
-                AppRoute.items.name,
-              );
+              context.goNamed(AppRoute.stockTransactions.name);
               Navigator.pop(context);
             },
           ),

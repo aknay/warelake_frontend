@@ -28,6 +28,7 @@ import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.in/stock.in.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
+import 'package:inventory_frontend/view/stock/transactions/stock.transaction.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
@@ -59,7 +60,8 @@ enum AppRoute {
   variationItem,
   stockIn,
   selectStockLineItemForStockIn,
-  selectItemForStockIn
+  selectItemForStockIn,
+  stockTransactions
 }
 
 @riverpod
@@ -136,6 +138,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const ProfileScreen();
+        },
+      ),
+      GoRoute(
+        name: AppRoute.stockTransactions.name,
+        path: '/stock_transactions',
+        builder: (BuildContext context, GoRouterState state) {
+          return const StockTransactionScreen();
         },
       ),
       GoRoute(

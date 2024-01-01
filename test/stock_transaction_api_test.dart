@@ -425,4 +425,60 @@ void main() async {
       expect(whiteTShirt.itemCount, 0);
     }
   });
+
+  test('you can list stock transactions', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    final tShirtItem = itemCreated.toIterable().first;
+
+    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: [lineItem],
+      stockMovement: StockMovement.stockIn,
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+
+    final stx = stCreatedOrError.toIterable().first;
+    expect(stx.lineItems.first.quantity, 7);
+    expect(stx.lineItems.first.oldStockLevel, 0);
+    expect(stx.lineItems.first.newStockLevel, 7);
+
+    {
+      //check item stock is updated
+      final itemOrError =
+          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final item = itemOrError.toIterable().first;
+      final whiteTShirt = item.variations.first;
+      expect(whiteTShirt.itemCount, 7);
+    }
+    {
+        final stockTransactionListOrError =
+        await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken);
+        expect(stockTransactionListOrError.isRight(), true);
+    }
+  });
+
 }
