@@ -36,11 +36,26 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({
+    required String teamId,
+    required String token,
+    String? startingAfterItemId,
+  }) async {
     try {
-      final response = await HttpHelper.get(url: ApiEndPoint.getItemEndPoint(), token: token, teamId: teamId);
-      log("team create response code ${response.statusCode}");
-      log("team create response ${jsonDecode(response.body)}");
+      Map<String, String> additionalQuery = {};
+      if (startingAfterItemId != null) {
+        additionalQuery["starting_after"] = startingAfterItemId;
+      }
+
+      final response = await HttpHelper.get(
+        url: ApiEndPoint.getItemEndPoint(),
+        token: token,
+        teamId: teamId,
+        additionalQuery: additionalQuery,
+      );
+
+      log("item list response code ${response.statusCode}");
+      log("item list response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), Item.fromJson);
         return Right(listResponse);

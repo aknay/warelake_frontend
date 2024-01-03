@@ -282,4 +282,96 @@ void main() async {
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 1);
   });
+
+  test('you can list item with pagination', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    {
+      for (int i = 0; i < 6; i++) {
+        final whiteShrt = ItemVariation.create(
+            name: "White shirt",
+            stockable: true,
+            sku: '$i sku 123',
+            salePriceMoney: salePriceMoney,
+            purchasePriceMoney: purchasePriceMoney);
+        final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+        final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+        expect(itemCreated.isRight(), true);
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    {
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      final itemList = itemListOrError.toIterable().first;
+      expect(itemList.data.length, 6);
+      expect(itemList.hasMore, false);
+    }
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreatedOrError.isRight(), true);
+    final itemToCheck = itemCreatedOrError.toIterable().first;
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      final itemList = itemListOrError.toIterable().first;
+      expect(itemList.data.length, 7);
+      expect(itemList.hasMore, false);
+    }
+
+    {
+      final itemListOrError = await itemRepo.getItemList(
+          teamId: team.id!, token: firstUserAccessToken, startingAfterItemId: itemToCheck.itemId);
+      final itemList = itemListOrError.toIterable().first;
+      expect(itemList.data.length, 6);
+      expect(itemList.hasMore, false);
+    }
+
+    {
+      for (int i = 0; i < 5; i++) {
+        final whiteShrt = ItemVariation.create(
+            name: "White shirt",
+            stockable: true,
+            sku: '$i sku 123',
+            salePriceMoney: salePriceMoney,
+            purchasePriceMoney: purchasePriceMoney);
+        final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+        final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+        expect(itemCreated.isRight(), true);
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    {
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      final itemList = itemListOrError.toIterable().first;
+      expect(itemList.data.length, 10);
+      expect(itemList.hasMore, true);
+    }
+
+    {
+      final itemListOrError = await itemRepo.getItemList(
+          teamId: team.id!, token: firstUserAccessToken, startingAfterItemId: itemToCheck.itemId);
+      final itemList = itemListOrError.toIterable().first;
+      expect(itemList.data.length, 6);
+      expect(itemList.hasMore, false);
+    }
+  });
 }
