@@ -80,13 +80,19 @@ class StockTransactionRepository extends StockTransactionApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<StockTransaction>>> list({
-    required String teamId,
-    required String token,
-  }) async {
+  Future<Either<ErrorResponse, ListResponse<StockTransaction>>> list(
+      {required String teamId, required String token, String? startingAfterStockTransactionId}) async {
     try {
-      final response =
-          await HttpHelper.get(url: ApiEndPoint.getStockTransacitonEndPoint(), token: token, teamId: teamId);
+      Map<String, String> additionalQuery = {};
+      if (startingAfterStockTransactionId != null) {
+        additionalQuery["starting_after"] = startingAfterStockTransactionId;
+      }
+
+      final response = await HttpHelper.get(
+          url: ApiEndPoint.getStockTransacitonEndPoint(),
+          token: token,
+          teamId: teamId,
+          additionalQuery: additionalQuery);
       log("list stock transaction response code ${response.statusCode}");
       log("list stock transaction response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {

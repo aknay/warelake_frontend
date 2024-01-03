@@ -68,11 +68,15 @@ class HttpHelper {
         body: jsonEncode(body));
   }
 
-  static get({required String url, required String token, String? teamId}) {
+  static get({required String url, required String token, String? teamId, Map<String, String>? additionalQuery}) {
     Map<String, String> map = {};
     if (teamId != null) {
       map["team_id"] = teamId;
     }
+    if (additionalQuery != null) {
+      map.addAll(additionalQuery);
+    }
+
     final uri = teamId == null ? Uri.parse(url) : Uri.parse(url).replace(queryParameters: map);
     return http.get(uri, headers: {'Authorization': 'Bearer $token'});
   }
