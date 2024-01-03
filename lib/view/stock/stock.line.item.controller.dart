@@ -13,7 +13,22 @@ class StockLineItemController extends _$StockLineItemController {
   }
 
   void add(StockLineItem lineItem) {
-    state = [...state, lineItem];
+    StockLineItem getStockLineItemIfThereAreSame(StockLineItem item, String id) {
+      if (item.itemVariation.id != id) {
+        return item;
+      }
+      item.quantity += 1;
+      return item;
+    }
+
+    final isAreadyInTheList =
+        state.where((element) => element.itemVariation.id == lineItem.itemVariation.id).isNotEmpty;
+    if (isAreadyInTheList) {
+      state = state.map((e) => getStockLineItemIfThereAreSame(e, lineItem.itemVariation.id!)).toList();
+    } else {
+      state = [...state, lineItem];
+    }
+
     log("the state ${state.length}");
   }
 
@@ -24,30 +39,15 @@ class StockLineItemController extends _$StockLineItemController {
     ];
   }
 
-  void edit({required String itemVariationId, required int value}){
-
-    StockLineItem setValueToItemIfFound(StockLineItem item ){
-      if( item.itemVariation.id == itemVariationId){
-         item.quantity = value;
-         return item;
+  void edit({required String itemVariationId, required int value}) {
+    StockLineItem setValueToItemIfFound(StockLineItem item) {
+      if (item.itemVariation.id == itemVariationId) {
+        item.quantity = value;
+        return item;
       }
       return item;
     }
 
-
-   state = state.map((e) => setValueToItemIfFound(e)).toList();
-
-    // for (var element in state) { 
-
-
-
-    // }
-    //     state = [
-    //   for (final todo in state)
-    //     if (todo.itemVariation.id != itemVariationId) {
-    //       todo.quantity = value; 
-    //       return todo
-    //       }
-    // ];
+    state = state.map((e) => setValueToItemIfFound(e)).toList();
   }
 }

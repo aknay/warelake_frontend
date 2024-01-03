@@ -27,9 +27,10 @@ import 'package:inventory_frontend/view/sale.orders/line.item/add.line.item.scre
 import 'package:inventory_frontend/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.screen.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.orders.screen.dart';
-import 'package:inventory_frontend/view/stock/stock.screen.dart';
 import 'package:inventory_frontend/view/stock/stock.item.selection.dart';
+import 'package:inventory_frontend/view/stock/stock.screen.dart';
 import 'package:inventory_frontend/view/stock/transactions/stock.transaction.screen.dart';
+import 'package:inventory_frontend/view/stock/transactions/stock.transactions.screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
@@ -63,6 +64,7 @@ enum AppRoute {
   selectStockLineItemForStockIn,
   selectItemForStockIn,
   stockTransactions,
+  stockTransactionDetail,
   stockOut,
   selectStockLineItemForStockOut,
   selectItemForStockOut,
@@ -148,12 +150,21 @@ GoRouter goRouter(GoRouterRef ref) {
         },
       ),
       GoRoute(
-        name: AppRoute.stockTransactions.name,
-        path: '/stock_transactions',
-        builder: (BuildContext context, GoRouterState state) {
-          return const StockTransactionScreen();
-        },
-      ),
+          name: AppRoute.stockTransactions.name,
+          path: '/stock_transactions',
+          builder: (BuildContext context, GoRouterState state) {
+            return const StockTransactionsScreen();
+          },
+          routes: [
+            GoRoute(
+              name: AppRoute.stockTransactionDetail.name,
+              path: ':id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return StockTransactionScreen(stockTransactionId: id);
+              },
+            ),
+          ]),
       GoRoute(
           name: AppRoute.stockIn.name,
           path: '/stock_in',

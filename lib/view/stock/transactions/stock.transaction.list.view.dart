@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/stock/stock.transaction.list.controller.dart';
 import 'package:inventory_frontend/view/utils/async_value_ui.dart';
 
@@ -49,11 +51,11 @@ class StockTransactionListView extends ConsumerWidget {
       title: Text(stockMovementText),
       trailing: Text(stx.date),
       onTap: () {
-        // context.goNamed(
-        //   AppRoute.saleOrder.name,
-        //   pathParameters: {'id': stx.id!},
-        // );
-        // Navigator.pop(context, e);
+        context.goNamed(
+          AppRoute.stockTransactionDetail.name,
+          pathParameters: {'id': stx.id!},
+        );
+        // Navigator.pop(context);
       },
       // trailing: Text(
       // " ${stx.currencyCodeEnum.name} ${stx.totalInDouble}",

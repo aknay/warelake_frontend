@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,21 +20,22 @@ class StockLineItemListView extends ConsumerWidget {
           .map((e) => ListTile(
                 title: Text(e.itemVariation.name),
                 trailing: SizedBox(
-                    width: 80,
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      initialValue: '1',
-                      onChanged: (value) {
-                        optionOf(int.tryParse(value)).fold(
-                            () => null,
-                            (a) => ref
-                                .read(stockLineItemControllerProvider.notifier)
-                                .edit(itemVariationId: e.itemVariation.id!, value: a));
-                      },
-                    )),
+                  width: 80,
+                  child: TextFormField(
+                    //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
+                    key: Key('${Random().nextInt(100000)}'),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                    initialValue: e.quantity.toString(),
+                    onChanged: (value) {
+                      optionOf(int.tryParse(value)).fold(
+                          () => null,
+                          (a) => ref
+                              .read(stockLineItemControllerProvider.notifier)
+                              .edit(itemVariationId: e.itemVariation.id!, value: a));
+                    },
+                  ),
+                ),
                 // subtitle: ,
                 onTap: () {},
               ))
