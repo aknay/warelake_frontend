@@ -100,7 +100,8 @@ class ItemVariation {
       required bool stockable,
       required String sku,
       required PriceMoney salePriceMoney,
-      required PriceMoney purchasePriceMoney}) {
+      required PriceMoney purchasePriceMoney,
+      int? itemCount}) {
     var uuid = const Uuid();
     String newUuid = uuid.v4();
 
@@ -110,7 +111,25 @@ class ItemVariation {
         stockable: stockable,
         sku: sku,
         salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+        purchasePriceMoney: purchasePriceMoney,
+        itemCount: itemCount);
+  }
+
+  ItemVariation copyWith(
+      {String? name,
+       bool? stockable,
+      String? sku,
+       PriceMoney? salePriceMoney,
+       PriceMoney? purchasePriceMoney,
+       int? itemCount}) {
+    return ItemVariation(
+        id: id,
+        stockable: stockable ?? this.stockable,
+        name: name ?? this.name,
+        sku: sku ?? this.sku,
+        salePriceMoney: salePriceMoney ?? this.salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney ?? this.purchasePriceMoney,
+        itemCount: itemCount ?? this.itemCount);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {

@@ -1,9 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
+import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
 import 'package:inventory_frontend/view/stock/stock.line.item.controller.dart';
@@ -26,9 +29,16 @@ class ItemVariationListView extends ConsumerWidget {
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [_toSalePrice(e.salePriceMoney), _toPurchasePrice(e.purchasePriceMoney), Text("Stock on hand: ${e.itemCount}")],
+                  children: [
+                    _toPurchasePrice(e.purchasePriceMoney),
+                    _toSalePrice(e.salePriceMoney),
+                    Text("Stock on hand: ${e.itemCount}")
+                  ],
                 ),
-                onTap: () {
+                trailing: e.itemId == null ? IconButton(onPressed: () {
+                    ref.read(itemVariationListControllerProvider.notifier).delete(e);  
+                }, icon: const FaIcon(FontAwesomeIcons.xmark)) : null,
+                onTap: () async {
                   if (isToSelectItemVariation) {
                     ref.read(selectedItemVariationProvider.notifier).state = Some(e);
 
@@ -66,10 +76,23 @@ class ItemVariationListView extends ConsumerWidget {
                       );
                     }
                   } else {
-                    context.goNamed(
-                      AppRoute.variationItem.name,
-                      pathParameters: {'id': e.itemId!, 'variation_item_id': e.id!},
-                    );
+                    if (e.itemId == null) {
+                      //we want to edit local item variation
+                      final ItemVariation? itemVariation = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddItemVariationScreen(itemVariation: e),
+                        ),
+                      );
+                      if (itemVariation != null) {
+                        ref.read(itemVariationListControllerProvider.notifier).upset(itemVariation);
+                      }
+                    } else {
+                      context.goNamed(
+                        AppRoute.variationItem.name,
+                        pathParameters: {'id': e.itemId!, 'variation_item_id': e.id!},
+                      );
+                    }
                   }
                 },
               ))

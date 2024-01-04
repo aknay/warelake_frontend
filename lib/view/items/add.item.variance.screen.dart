@@ -8,11 +8,16 @@ import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
+import 'package:inventory_frontend/view/constants/app.sizes.dart';
 import 'package:inventory_frontend/view/constants/breakpoints.dart';
 import 'package:inventory_frontend/view/utils/currency.input.formatter.dart';
 
 class AddItemVariationScreen extends ConsumerStatefulWidget {
-  const AddItemVariationScreen({super.key});
+  const AddItemVariationScreen({
+    super.key,
+    this.itemVariation,
+  });
+  final ItemVariation? itemVariation;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddItemVariationScreenState();
@@ -21,13 +26,21 @@ class AddItemVariationScreen extends ConsumerStatefulWidget {
 class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<String> itemVariationName = const None();
-  Option<String> itemVariationUnit = const None();
   Option<double> purchasingPrice = const None();
   Option<double> sellingPrice = const None();
   Option<int> currentStockLevel = const Some(0);
   Option<int> reorderStockLevel = const Some(0);
   final currencyCode = CurrencyCode.AED;
   late final currencyFormatter = CurrencyTextInputFormatter(currencyCode: currencyCode);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.itemVariation != null) {
+      final itemVariation = widget.itemVariation!;
+      itemVariationName = Some(itemVariation.name);
+    }
+  }
 
   bool _validateAndSaveForm() {
     final form = _formKey.currentState!;
@@ -40,10 +53,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
   Future<void> _submit() async {
     if (_validateAndSaveForm()) {
-      if (itemVariationName.isSome() &&
-          itemVariationUnit.isSome() &&
-          purchasingPrice.isSome() &&
-          sellingPrice.isSome()) {
+      if (itemVariationName.isSome() && purchasingPrice.isSome() && sellingPrice.isSome()) {
         final salePrice = sellingPrice.fold(() => 0.0, (a) => a);
         final salePriceMoney = PriceMoney.from(amount: salePrice, currencyCode: currencyCode);
 
@@ -52,14 +62,29 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         log("sale price money ${salePriceMoney.amount}");
         log("purchase price money ${purchasePriceMoney.amount}");
 
-        final itemVariation = ItemVariation.create(
-            name: itemVariationName.fold(() => '', (a) => a),
-            stockable: true,
-            sku: 'abc',
-            salePriceMoney: salePriceMoney,
-            purchasePriceMoney: purchasePriceMoney);
+        final itemCount = currentStockLevel.fold(() => 0, (a) => a);
 
-        context.pop(itemVariation);
+        if (widget.itemVariation == null) {
+          final itemVariation = ItemVariation.create(
+              name: itemVariationName.fold(() => '', (a) => a),
+              stockable: true,
+              sku: 'abc',
+              salePriceMoney: salePriceMoney,
+              purchasePriceMoney: purchasePriceMoney,
+              itemCount: itemCount);
+
+          context.pop(itemVariation);
+        } else {
+          final itemVariation = widget.itemVariation!.copyWith(
+              name: itemVariationName.fold(() => '', (a) => a),
+              stockable: true,
+              sku: 'abc',
+              salePriceMoney: salePriceMoney,
+              purchasePriceMoney: purchasePriceMoney,
+              itemCount: itemCount);
+
+          context.pop(itemVariation);
+        }
       }
     }
   }
@@ -68,8 +93,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(widget.job == null ? 'New Job' : 'Edit Job'),
-        title: const Text('Item Variation'),
+        title: Text(widget.itemVariation == null ? 'New Item Variation' : 'Edit Item Variation'),
         actions: [
           IconButton(
               onPressed: () async {
@@ -87,12 +111,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
       child: ResponsiveCenter(
         maxContentWidth: Breakpoint.tablet,
         padding: const EdgeInsets.all(16.0),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _buildForm(),
-          ),
-        ),
+        child: _buildForm(),
       ),
     );
   }
@@ -110,10 +129,10 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   List<Widget> _buildFormChildren() {
     return [
       TextFormField(
+        initialValue: widget.itemVariation == null ? null : widget.itemVariation!.name,
         decoration: const InputDecoration(
           labelText: 'Item Variation Name *',
           hintText: 'Enter your username',
-          suffixIcon: Icon(Icons.person),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -123,308 +142,78 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         },
         onSaved: (value) => itemVariationName = optionOf(value),
       ),
-      TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Unit *',
-          hintText: 'Enter your username',
-          suffixIcon: Icon(Icons.person),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter your username';
-          }
-          return null;
-        },
-        onSaved: (value) => itemVariationUnit = optionOf(value),
-      ),
-      Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
-            const Text("Sales Information"),
-            TextFormField(
-              inputFormatters: <TextInputFormatter>[currencyFormatter],
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Purchase Price*',
-                hintText: 'Enter your username',
-                suffixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-              onSaved: (value) => purchasingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              inputFormatters: <TextInputFormatter>[currencyFormatter],
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Selling Price *',
-                hintText: 'Enter your username',
-                suffixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-              onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
-            ),
-          ]),
-        ),
-      ),
-      Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
-            const Text("Inventory Information"),
-            TextFormField(
-              initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
-              decoration: const InputDecoration(
-                labelText: 'Current Stock Level',
-                hintText: 'Enter your username',
-                suffixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
-              decoration: const InputDecoration(
-                labelText: 'Reorder Stock Level',
-                hintText: 'Enter your username',
-                suffixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-              keyboardType: const TextInputType.numberWithOptions(
-                signed: false,
-                decimal: false,
-              ),
-              onSaved: (value) =>
-                  reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
-            ),
-          ]),
-        ),
-      )
-    ];
-  }
-}
-
-class AddItemVariationScreenf extends ConsumerWidget {
-  AddItemVariationScreenf({super.key});
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Option<String> itemVariationName = const None();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     context.goNamed(AppRoute.addItem.name);
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
-      appBar: AppBar(
-        title: const Text("Add Item Variation"),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                // if (_validateAndSaveForm()) {
-                //   if (currency.isNone()) {
-                //     showAlertDialog(
-                //         context: context,
-                //         title: "Currency",
-                //         defaultActionText: "OK",
-                //         content: "Please select a currency.");
-                //     return;
-                //   }
-                //   if (location.isNone()) {
-                //     showAlertDialog(
-                //         context: context,
-                //         title: "Timezone",
-                //         defaultActionText: "OK",
-                //         content: "Please select a timezone.");
-                //     return;
-                //   }
-
-                //   final success = await ref.read(teamListControllerProvider.notifier).submit(
-                //       teamName: teamName.toNullable()!,
-                //       location: location.toIterable().first,
-                //       currency: currency.toIterable().first);
-
-                //   if (success && context.mounted) {
-                //     context.goNamed(AppRoute.dashboard.name);
-                //   }
-                // }
-              },
-              icon: const Icon(Icons.check)),
-        ],
-      ),
-      body: SingleChildScrollView(
-          // child: _buildForm(),
-          child: Column(
-        children: [
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Item Variation Name *',
-              hintText: 'Enter your username',
-              suffixIcon: Icon(Icons.person),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your username';
-              }
-              return null;
-            },
+      Column(children: [
+        gapH8,
+        TextFormField(
+          initialValue:
+              widget.itemVariation == null ? null : widget.itemVariation!.salePriceMoney.amountInDouble.toString(),
+          inputFormatters: <TextInputFormatter>[currencyFormatter],
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Purchase Price*',
+            hintText: 'Enter your username',
           ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Unit *',
-              hintText: 'Enter your username',
-              suffixIcon: Icon(Icons.person),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your username';
-              }
-              return null;
-            },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your username';
+            }
+            return null;
+          },
+          onSaved: (value) => purchasingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
+        ),
+        gapH8,
+        TextFormField(
+          initialValue:
+              widget.itemVariation == null ? null : widget.itemVariation!.purchasePriceMoney.amountInDouble.toString(),
+          inputFormatters: <TextInputFormatter>[currencyFormatter],
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Selling Price *',
+            hintText: 'Enter your username',
           ),
-          Card(
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(children: [
-                const Text("Sales Information"),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Purchase Price*',
-                    hintText: 'Enter your username',
-                    suffixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Selling Price *',
-                    hintText: 'Enter your username',
-                    suffixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-              ]),
-            ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your username';
+            }
+            return null;
+          },
+          onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
+        ),
+        gapH8,
+        TextFormField(
+          initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
+          decoration: const InputDecoration(
+            labelText: 'Current Stock Level',
+            hintText: 'Enter your username',
           ),
-          Card(
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(children: [
-                const Text("Inventory Information"),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Current Stock Level',
-                    hintText: 'Enter your username',
-                    suffixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Reorder Stock Level',
-                    hintText: 'Enter your username',
-                    suffixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-              ]),
-            ),
-          )
-        ],
-      )),
-      // )
-    );
-  }
-
-  Widget _buildForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildFormChildren(),
-      ),
-    );
-  }
-
-  bool _validateAndSaveForm() {
-    final form = _formKey.currentState!;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  List<Widget> _buildFormChildren() {
-    return [
-      TextFormField(
-        decoration: const InputDecoration(labelText: 'Team name', prefixIcon: Icon(Icons.person)),
-        keyboardAppearance: Brightness.light,
-        // initialValue: _name,
-        validator: (value) => (value ?? '').isNotEmpty ? null : 'Name can\'t be empty',
-        onSaved: (value) => itemVariationName = optionOf(value),
-      ),
-      // CurrencySelectionWidget(onValueChanged: (value) => currency = value),
-      // TimeZoneSelectionWidget(onValueChanged: (value) => location = value),
-      // TextFormField(
-      //   decoration: const InputDecoration(labelText: 'Rate per hour'),
-      //   keyboardAppearance: Brightness.light,
-      //   // initialValue: _ratePerHour != null ? '$_ratePerHour' : null,
-      //   keyboardType: const TextInputType.numberWithOptions(
-      //     signed: false,
-      //     decimal: false,
-      //   ),
-      //   // onSaved: (value) => _ratePerHour = int.tryParse(value ?? '') ?? 0,
-      // ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your username';
+            }
+            return null;
+          },
+          onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
+        ),
+        gapH8,
+        TextFormField(
+          initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
+          decoration: const InputDecoration(
+            labelText: 'Reorder Stock Level',
+            hintText: 'Enter your username',
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your username';
+            }
+            return null;
+          },
+          keyboardType: const TextInputType.numberWithOptions(
+            signed: false,
+            decimal: false,
+          ),
+          onSaved: (value) => reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
+        ),
+      ]),
     ];
   }
 }

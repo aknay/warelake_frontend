@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/view/constants/app.sizes.dart';
 import 'package:inventory_frontend/view/items/item.list.controller.dart';
+import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
-
-final itemVariationListProvider = StateProvider<List<ItemVariation>>(
-  // only list works, not map
-  (ref) => [],
-);
 
 class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key, required this.item});
@@ -22,6 +19,7 @@ class AddItemScreen extends ConsumerStatefulWidget {
 class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<String> itemName = const None();
+  Option<String> itemUnit = const None();
 
   @override
   void initState() {
@@ -42,9 +40,10 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
 
   _submit() async {
     if (_validateAndSaveForm()) {
-      final itemVariations = ref.read(itemVariationListProvider);
+      final itemVariations = ref.read(itemVariationListControllerProvider);
 
-      final item = Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: "unit");
+      final item =
+          Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: itemUnit.toIterable().first);
 
       final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
 
@@ -57,16 +56,14 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(itemListControllerProvider);
-    final itemVariationList = ref.watch(itemVariationListProvider);
+    final itemVariationList = ref.watch(itemVariationListControllerProvider);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final ItemVariation? itemVariation = await context.pushNamed(AppRoute.addItemVariation.name);
           if (itemVariation != null) {
-            ref.read(itemVariationListProvider.notifier).update((state) {
-              return [...state, itemVariation];
-            });
+            ref.read(itemVariationListControllerProvider.notifier).upset(itemVariation);
           }
         },
         child: const Icon(Icons.add),
@@ -81,19 +78,34 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
         key: _formKey,
         child: Column(
           children: [
+            gapH8,
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Item Name *',
                 hintText: 'Enter Item Name',
-                suffixIcon: Icon(Icons.person),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please Item Name';
+                  return 'Please enter a item name';
                 }
                 return null;
               },
               onSaved: (value) => itemName = optionOf(value),
+            ),
+            gapH8,
+            TextFormField(
+              // initialValue: widget.itemVariation == null ? null : widget.itemVariation!.type,
+              decoration: const InputDecoration(
+                labelText: 'Unit *',
+                hintText: 'Enter unit',
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a unit';
+                }
+                return null;
+              },
+              onSaved: (value) => itemUnit = optionOf(value),
             ),
             Expanded(
               child:
