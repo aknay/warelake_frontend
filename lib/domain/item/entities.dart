@@ -3,7 +3,7 @@ import 'package:inventory_frontend/domain/valueobject.dart';
 import 'package:uuid/uuid.dart';
 
 class Item {
-  String? itemId;
+  String? id;
   String name;
   String? description;
   String? abbreviation;
@@ -20,7 +20,7 @@ class Item {
       required this.variations,
       this.productType,
       required this.unit,
-      this.itemId});
+      this.id});
 
   factory Item.create(
       {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
@@ -43,7 +43,7 @@ class Item {
     );
 
     return Item(
-        itemId: json['item_id'],
+        id: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
@@ -117,11 +117,11 @@ class ItemVariation {
 
   ItemVariation copyWith(
       {String? name,
-       bool? stockable,
+      bool? stockable,
       String? sku,
-       PriceMoney? salePriceMoney,
-       PriceMoney? purchasePriceMoney,
-       int? itemCount}) {
+      PriceMoney? salePriceMoney,
+      PriceMoney? purchasePriceMoney,
+      int? itemCount}) {
     return ItemVariation(
         id: id,
         stockable: stockable ?? this.stockable,
@@ -143,8 +143,8 @@ class ItemVariation {
         name: json['name'],
         stockable: json['stockable'],
         sku: json['sku'],
-        salePriceMoney: PriceMoney.fromJson(json['sale_price_money']),
-        purchasePriceMoney: PriceMoney.fromJson(json['purchase_price_money']),
+        salePriceMoney: PriceMoney.fromJson(json['sale_price']),
+        purchasePriceMoney: PriceMoney.fromJson(json['purchase_price']),
         itemCount: json['item_count']);
   }
 
@@ -158,8 +158,8 @@ class ItemVariation {
       'name': name,
       'stockable': stockable,
       'sku': sku,
-      'sale_price_money': salePriceMoney.toJson(),
-      'purchase_price_money': purchasePriceMoney.toJson()
+      'sale_price': salePriceMoney.toJson(),
+      'purchase_price': purchasePriceMoney.toJson()
     };
   }
 }

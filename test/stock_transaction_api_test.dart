@@ -87,8 +87,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -137,8 +136,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -164,7 +162,7 @@ void main() async {
       {
         //check item stock is updated
         final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
         final item = itemOrError.toIterable().first;
         final whiteTShirt = item.variations.first;
         expect(whiteTShirt.itemCount, 4);
@@ -214,8 +212,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -241,7 +238,7 @@ void main() async {
       {
         //check item stock is updated
         final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
         final item = itemOrError.toIterable().first;
         final whiteTShirt = item.variations.first;
         expect(whiteTShirt.itemCount, 4);
@@ -268,7 +265,7 @@ void main() async {
       {
         //check item stock is updated
         final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
         final item = itemOrError.toIterable().first;
         final whiteTShirt = item.variations.first;
         expect(whiteTShirt.itemCount, 10);
@@ -318,8 +315,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -345,7 +341,7 @@ void main() async {
       {
         //check item stock is updated
         final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
         final item = itemOrError.toIterable().first;
         final whiteTShirt = item.variations.first;
         expect(whiteTShirt.itemCount, 4);
@@ -372,7 +368,7 @@ void main() async {
       {
         //check item stock is updated
         final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
         final item = itemOrError.toIterable().first;
         final whiteTShirt = item.variations.first;
         expect(whiteTShirt.itemCount, 10);
@@ -386,8 +382,7 @@ void main() async {
       expect(deletedOrError.isRight(), true);
 
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 4);
@@ -402,8 +397,7 @@ void main() async {
       expect(deletedOrError.isRight(), true);
 
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -418,8 +412,7 @@ void main() async {
       expect(deletedOrError.isRight(), true);
 
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 0);
@@ -468,8 +461,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;
       expect(whiteTShirt.itemCount, 7);
@@ -537,8 +529,7 @@ void main() async {
 
     {
       //check item stock is updated
-      final itemOrError =
-          await itemApi.getItem(itemId: tShirtItem.itemId!, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
       expect(itemOrError.isRight(), true);
       final item = itemOrError.toIterable().first;
       final whiteTShirt = item.variations.first;

@@ -3,6 +3,7 @@ import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.service.g.dart';
@@ -43,6 +44,20 @@ class ItemService {
       final token = await _authRepo.shouldGetToken();
       final items = await _itemRepo.getItemList(teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r.data));
+    });
+  }
+
+  Future<Either<String, Unit>> updateItemVariation({
+    required ItemVariationPayload payload,
+    required String itemId,
+    required String itemVariationId,
+  }) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.updateItemVariation(
+          payload: payload, itemId: itemId, itemVariationId: itemVariationId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
 }

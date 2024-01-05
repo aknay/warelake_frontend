@@ -13,11 +13,9 @@ import 'package:inventory_frontend/view/constants/breakpoints.dart';
 import 'package:inventory_frontend/view/utils/currency.input.formatter.dart';
 
 class AddItemVariationScreen extends ConsumerStatefulWidget {
-  const AddItemVariationScreen({
-    super.key,
-    this.itemVariation,
-  });
+  const AddItemVariationScreen({super.key, this.itemVariation, this.hideStockLevelUi});
   final ItemVariation? itemVariation;
+  final bool? hideStockLevelUi;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddItemVariationScreenState();
@@ -32,6 +30,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Option<int> reorderStockLevel = const Some(0);
   final currencyCode = CurrencyCode.AED;
   late final currencyFormatter = CurrencyTextInputFormatter(currencyCode: currencyCode);
+  late final bool hideStockLevelUi = widget.hideStockLevelUi == null ? false : widget.hideStockLevelUi!;
 
   @override
   void initState() {
@@ -180,21 +179,24 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
           onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
         ),
         gapH8,
-        TextFormField(
-          initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
-          decoration: const InputDecoration(
-            labelText: 'Current Stock Level',
-            hintText: 'Enter your username',
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your username';
-            }
-            return null;
-          },
-          onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
-        ),
-        gapH8,
+        hideStockLevelUi
+            ?  const SizedBox.shrink() : TextFormField(
+                initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
+                decoration: const InputDecoration(
+                  labelText: 'Current Stock Level',
+                  hintText: 'Enter your username',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
+                onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
+              )
+        ,
+        hideStockLevelUi ? const SizedBox.shrink() : gapH8,
+        hideStockLevelUi ? const SizedBox.shrink() : 
         TextFormField(
           initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
           decoration: const InputDecoration(

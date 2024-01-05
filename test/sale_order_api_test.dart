@@ -222,7 +222,7 @@ void main() async {
     {
       //test item increased after received
       final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
       log("the item is $item");
       expect(item.variations.first.itemCount, -5);
@@ -349,7 +349,7 @@ void main() async {
     {
       //test item increased after received
       final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
       log("the item is $item");
       expect(item.variations.first.itemCount, -5);
@@ -373,7 +373,7 @@ void main() async {
     {
       //test item count is back to zero
       final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.itemId!, teamId: team.id!, token: firstUserAccessToken);
+          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
       log("the item is $item");
       expect(item.variations.first.itemCount, 0);
