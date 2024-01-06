@@ -195,7 +195,7 @@ void main() async {
       expect(itemListOrError.toIterable().first.data.first.variations.isEmpty, false);
     }
     final retrievedItem = itemCreated.toIterable().first;
-    final deletedOrError = await itemRepo.deelteItemVariation(
+    final deletedOrError = await itemRepo.deleteItemVariation(
         itemId: retrievedItem.id!,
         teamId: team.id!,
         token: firstUserAccessToken,

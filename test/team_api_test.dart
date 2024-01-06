@@ -5,9 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/data/user/rest.api.dart';
+import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -20,6 +22,7 @@ void main() async {
   final roleApi = RoleRestApi();
   final userApi = UserRestApi();
   final billAccountApi = BillAccountRepository();
+  final itemRepo = ItemRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -105,5 +108,102 @@ void main() async {
     final teamListOrError = await teamApi.list(token: firstUserAccessToken);
     expect(teamListOrError.isRight(), true);
     expect(teamListOrError.toIterable().first.data.isNotEmpty, true);
+  });
+
+  test('item varaition count will be updated when you create an item', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    {
+      final teamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
+      final newTeam = teamOrError.toIterable().first;
+      expect(newTeam.itemVariationCount, 0);
+    }
+
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt, blackShirt], unit: 'kg');
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    {
+      final teamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
+      final newTeam = teamOrError.toIterable().first;
+      expect(newTeam.itemVariationCount, 2);
+    }
+  });
+
+  test('item variation count will be updated when you delete the item variation', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt, blackShirt], unit: 'kg');
+
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    {
+      //check item list is not empty
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.isEmpty, false);
+      expect(itemListOrError.toIterable().first.data.first.variations.isEmpty, false);
+    }
+
+    {
+      final teamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
+      final newTeam = teamOrError.toIterable().first;
+      expect(newTeam.itemVariationCount, 2);
+    }
+
+    final retrievedItem = itemCreated.toIterable().first;
+    final deletedOrError = await itemRepo.deleteItemVariation(
+        itemId: retrievedItem.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken,
+        itemVariationId: retrievedItem.variations.first.id!);
+    expect(deletedOrError.isRight(), true);
+
+    {
+      final teamOrError = await teamApi.get(teamId: team.id!, token: firstUserAccessToken);
+      final newTeam = teamOrError.toIterable().first;
+      expect(newTeam.itemVariationCount, 1);
+    }
   });
 }

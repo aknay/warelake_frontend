@@ -144,7 +144,7 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, Unit>> deelteItemVariation({
+  Future<Either<ErrorResponse, Unit>> deleteItemVariation({
     required String itemId,
     required String itemVariationId,
     required String teamId,
