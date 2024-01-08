@@ -29,12 +29,15 @@ class ApiEndPoint {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
 
-    static String getItemVariationEndPoint({required String itemId, String? itemVariationId}) {
-    return itemVariationId == null ? "${getApiBaseUrl()}/v1/items/$itemId/item_variations" : "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId";
+  static String get itemSerchEndPoint => "${getApiBaseUrl()}/v1/items/search";
+
+  static String getItemVariationEndPoint({required String itemId, String? itemVariationId}) {
+    return itemVariationId == null
+        ? "${getApiBaseUrl()}/v1/items/$itemId/item_variations"
+        : "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId";
   }
 
-
-    static String getItemImageEndPoint({String? imageId}) {
+  static String getItemImageEndPoint({String? imageId}) {
     return imageId == null ? "${getApiBaseUrl()}/v1/items/images" : "${getApiBaseUrl()}/v1/items/images/$imageId";
   }
 
@@ -48,29 +51,25 @@ class ApiEndPoint {
     return "${getApiBaseUrl()}/v1/purchase_orders/$purchaseOrderId/received";
   }
 
-    static String getSaleOrderEndPoint({String? saleOrderId}) {
-    return saleOrderId == null
-        ? "${getApiBaseUrl()}/v1/sale_orders"
-        : "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId";
+  static String getSaleOrderEndPoint({String? saleOrderId}) {
+    return saleOrderId == null ? "${getApiBaseUrl()}/v1/sale_orders" : "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId";
   }
 
-    static String getDelieveredItemsSaleOrderEndPoint({required String saleOrderId}) {
+  static String getDelieveredItemsSaleOrderEndPoint({required String saleOrderId}) {
     return "${getApiBaseUrl()}/v1/sale_orders/$saleOrderId/delivered";
   }
 
   static String getBillAccountEndPoint({String? billAccountId}) {
-    return billAccountId == null
-        ? "${getApiBaseUrl()}/v1/accounts"
-        : "${getApiBaseUrl()}/v1/accounts/$billAccountId";
+    return billAccountId == null ? "${getApiBaseUrl()}/v1/accounts" : "${getApiBaseUrl()}/v1/accounts/$billAccountId";
   }
 
-    static String getMonthlySummaryEndPoint({required String billAccountId,  String? monthlySummary}) {
+  static String getMonthlySummaryEndPoint({required String billAccountId, String? monthlySummary}) {
     return monthlySummary == null
         ? "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId"
         : "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId/$monthlySummary";
   }
 
-      static String getStockTransacitonEndPoint({String? stockTransactionId}) {
+  static String getStockTransacitonEndPoint({String? stockTransactionId}) {
     return stockTransactionId == null
         ? "${getApiBaseUrl()}/v1/stock_transactions"
         : "${getApiBaseUrl()}/v1/stock_transactions/$stockTransactionId";

@@ -630,37 +630,8 @@ void main() async {
 
     final retrievedWhiteShirt =
         itemCreated.toIterable().first.variations.where((element) => element.name == 'White Shirt').first;
-    // final retrievedBlackShirt = itemCreated.toIterable().first.variations.where((element) => element.name == 'Black Shirt').first;
 
     final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
-
-    {
-      for (int i = 0; i < 2; i++) {
-        final rawTx = StockTransaction.create(
-          date: DateTime.now(),
-          lineItems: [lineItem],
-          stockMovement: StockMovement.stockIn,
-        );
-        final stCreatedOrError =
-            await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-        expect(stCreatedOrError.isRight(), true);
-        await Future.delayed(const Duration(seconds: 1));
-      }
-    }
-
-    {
-      for (int i = 0; i < 3; i++) {
-        final rawTx = StockTransaction.create(
-          date: DateTime.now(),
-          lineItems: [lineItem],
-          stockMovement: StockMovement.stockOut,
-        );
-        final stCreatedOrError =
-            await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-        expect(stCreatedOrError.isRight(), true);
-        await Future.delayed(const Duration(seconds: 1));
-      }
-    }
 
     {
       for (int i = 0; i < 1; i++) {
@@ -692,11 +663,21 @@ void main() async {
     }
     {
       // you can search transaction with black shirt
-      final searchField = StockTransactionSearchField(itemVaraiationName: "lac");
+      final searchField = StockTransactionSearchField(itemVaraiationName: "lack");
       final stockTransactionListOrError =
           await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       final stockTransactionList = stockTransactionListOrError.toIterable().first;
       expect(stockTransactionList.data.length, 1);
+      expect(stockTransactionList.hasMore, false);
+    }
+
+    {
+      // you can search transaction with any shirt
+      final searchField = StockTransactionSearchField(itemVaraiationName: "irt");
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      final stockTransactionList = stockTransactionListOrError.toIterable().first;
+      expect(stockTransactionList.data.length, 2);
       expect(stockTransactionList.hasMore, false);
     }
   });
