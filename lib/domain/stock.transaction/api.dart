@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
 
 abstract class StockTransactionApi {
   Future<Either<ErrorResponse, StockTransaction>> create({
@@ -22,8 +23,9 @@ abstract class StockTransactionApi {
     required String token,
   });
 
-    Future<Either<ErrorResponse, ListResponse<StockTransaction>>> list({
+  Future<Either<ErrorResponse, ListResponse<StockTransaction>>> list({
     required String teamId,
     required String token,
+    StockTransactionSearchField? searchField,
   });
 }

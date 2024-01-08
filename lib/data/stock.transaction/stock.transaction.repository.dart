@@ -8,6 +8,7 @@ import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/stock.transaction/api.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stock.transaction.repository.g.dart';
@@ -81,11 +82,20 @@ class StockTransactionRepository extends StockTransactionApi {
 
   @override
   Future<Either<ErrorResponse, ListResponse<StockTransaction>>> list(
-      {required String teamId, required String token, String? startingAfterStockTransactionId}) async {
+      {required String teamId, required String token, StockTransactionSearchField? searchField}) async {
     try {
       Map<String, String> additionalQuery = {};
-      if (startingAfterStockTransactionId != null) {
-        additionalQuery["starting_after"] = startingAfterStockTransactionId;
+
+      if (searchField != null) {
+        if (searchField.startingAfterStockTransactionId != null) {
+          additionalQuery["starting_after"] = searchField.startingAfterStockTransactionId!;
+        }
+        if (searchField.stockMovement != null) {
+          additionalQuery["stock_movement"] = searchField.stockMovement!.toFormattedString();
+        }
+        if (searchField.itemVaraiationName != null) {
+          additionalQuery["item_variation_name"] = searchField.itemVaraiationName!;
+        }
       }
 
       final response = await HttpHelper.get(

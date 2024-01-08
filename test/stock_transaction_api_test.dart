@@ -8,6 +8,7 @@ import 'package:inventory_frontend/data/stock.transaction/stock.transaction.repo
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
@@ -512,21 +513,6 @@ void main() async {
       }
     }
 
-    // final rawTx = StockTransaction.create(
-    //   date: DateTime.now(),
-    //   lineItems: [lineItem],
-    //   stockMovement: StockMovement.stockIn,
-    // );
-    // final stCreatedOrError =
-    //     await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-
-    // expect(stCreatedOrError.isRight(), true);
-
-    // final stx = stCreatedOrError.toIterable().first;
-    // expect(stx.lineItems.first.quantity, 7);
-    // expect(stx.lineItems.first.oldStockLevel, 0);
-    // expect(stx.lineItems.first.newStockLevel, 7);
-
     {
       //check item stock is updated
       final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
@@ -569,11 +555,9 @@ void main() async {
 
     {
       //check the list with starting after
-      final stockTransactionListOrError = await stockTransactionRepo.list(
-        teamId: team.id!,
-        token: firstUserAccessToken,
-        startingAfterStockTransactionId: stockTransactionToCheck.id!,
-      );
+      final searchField = StockTransactionSearchField(startingAfterStockTransactionId: stockTransactionToCheck.id);
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       final stockTransactionList = stockTransactionListOrError.toIterable().first;
       expect(stockTransactionList.data.length, 5);
       expect(stockTransactionList.hasMore, false);
@@ -606,13 +590,113 @@ void main() async {
 
     {
       //check the list with starting after
-      final stockTransactionListOrError = await stockTransactionRepo.list(
-        teamId: team.id!,
-        token: firstUserAccessToken,
-        startingAfterStockTransactionId: stockTransactionToCheck.id!,
-      );
+      final searchField = StockTransactionSearchField(startingAfterStockTransactionId: stockTransactionToCheck.id);
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       final stockTransactionList = stockTransactionListOrError.toIterable().first;
       expect(stockTransactionList.data.length, 5);
+      expect(stockTransactionList.hasMore, false);
+    }
+  });
+
+  test('you can search stock transactions', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final blackShirt = ItemVariation.create(
+        name: "Black Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt, blackShirt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    final tShirtItem = itemCreated.toIterable().first;
+
+    final retrievedWhiteShirt =
+        itemCreated.toIterable().first.variations.where((element) => element.name == 'White Shirt').first;
+    // final retrievedBlackShirt = itemCreated.toIterable().first.variations.where((element) => element.name == 'Black Shirt').first;
+
+    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
+
+    {
+      for (int i = 0; i < 2; i++) {
+        final rawTx = StockTransaction.create(
+          date: DateTime.now(),
+          lineItems: [lineItem],
+          stockMovement: StockMovement.stockIn,
+        );
+        final stCreatedOrError =
+            await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+        expect(stCreatedOrError.isRight(), true);
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    {
+      for (int i = 0; i < 3; i++) {
+        final rawTx = StockTransaction.create(
+          date: DateTime.now(),
+          lineItems: [lineItem],
+          stockMovement: StockMovement.stockOut,
+        );
+        final stCreatedOrError =
+            await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+        expect(stCreatedOrError.isRight(), true);
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    {
+      for (int i = 0; i < 1; i++) {
+        final rawTx = StockTransaction.create(
+          date: DateTime.now(),
+          lineItems: [lineItem],
+          stockMovement: StockMovement.stockAdjust,
+        );
+        final stCreatedOrError =
+            await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+        expect(stCreatedOrError.isRight(), true);
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+    {
+      //create a black shirt with stock in
+      final retrievedBlackShirt =
+          itemCreated.toIterable().first.variations.where((element) => element.name == 'Black Shirt').first;
+      final lineItem = StockLineItem.create(itemVariation: retrievedBlackShirt, quantity: 7);
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: [lineItem],
+        stockMovement: StockMovement.stockIn,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+      expect(stCreatedOrError.isRight(), true);
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    {
+      // you can search transaction with black shirt
+      final searchField = StockTransactionSearchField(itemVaraiationName: "lac");
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      final stockTransactionList = stockTransactionListOrError.toIterable().first;
+      expect(stockTransactionList.data.length, 1);
       expect(stockTransactionList.hasMore, false);
     }
   });
