@@ -34,8 +34,8 @@ abstract class ItemApi {
     required String teamId,
     required String token,
   });
-  Future<Either<ErrorResponse, Item>> editItem({
-    required PayloadItem payloadItem,
+  Future<Either<ErrorResponse, Item>> updateItem({
+    required ItemUpdatePayload payload,
     required String itemId,
     required String teamId,
     required String token,

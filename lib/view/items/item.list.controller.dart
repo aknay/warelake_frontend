@@ -56,6 +56,24 @@ class ItemListController extends _$ItemListController {
     });
   }
 
+  Future<bool> updateItem({String? name, required String itemId}) async {
+    state = const AsyncLoading();
+    final payload = ItemUpdatePayload(name: name);
+
+    final createdOrError = await ref.read(itemServiceProvider).updateItem(payload: payload, itemId: itemId);
+    return await createdOrError.fold((l) {
+      state = AsyncError(l, StackTrace.current);
+      return false;
+    }, (r) async {
+      final itemsOrError = await _list();
+      if (itemsOrError.isLeft()) {
+        throw AssertionError("error while fetching items");
+      }
+      state = AsyncValue.data(itemsOrError.toIterable().first);
+      return true;
+    });
+  }
+
   Future<Either<String, List<Item>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));

@@ -114,11 +114,14 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, Item>> editItem(
-      {required PayloadItem payloadItem, required String itemId, required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, Item>> updateItem(
+      {required ItemUpdatePayload payload,
+      required String itemId,
+      required String teamId,
+      required String token}) async {
     try {
       final response = await HttpHelper.post(
-          url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId, body: payloadItem.toMap());
+          url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId, body: payload.toMap());
       log("get item response code ${response.statusCode}");
       log("get item response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {

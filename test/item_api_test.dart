@@ -114,8 +114,8 @@ void main() async {
     final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
-    final updatedOrError = await itemRepo.editItem(
-        payloadItem: PayloadItem(name: "Mango"),
+    final updatedOrError = await itemRepo.updateItem(
+        payload: ItemUpdatePayload(name: "Mango"),
         itemId: itemCreated.toIterable().first.id!,
         teamId: team.id!,
         token: firstUserAccessToken);
@@ -489,6 +489,69 @@ void main() async {
       expect(updatedItemVariation.name, "Blue shirt");
       expect(updatedItemVariation.salePriceMoney.amountInDouble, 2.5);
       expect(updatedItemVariation.purchasePriceMoney.amountInDouble, 4.7);
+    }
+  });
+
+  test('you can still search the item by name after the name is changed', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "Shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    {
+      //you can search a shirt
+      final searchField = ItemSearchField(itemName: 'irt');
+      final itemListOrError = await itemRepo.getItemList(
+        teamId: team.id!,
+        itemSearchField: searchField,
+        token: firstUserAccessToken,
+      );
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 1);
+      expect(itemListOrError.toIterable().first.data.first.name, 'Shirt');
+    }
+    {
+      //we updated the item name as Mango
+      final updatedOrError = await itemRepo.updateItem(
+          payload: ItemUpdatePayload(name: "Mango"),
+          itemId: itemCreated.toIterable().first.id!,
+          teamId: team.id!,
+          token: firstUserAccessToken);
+      expect(updatedOrError.isRight(), true);
+    }
+
+    {
+      //check the updated name is Mango
+      final retrievedItemOrError = await itemRepo.getItem(
+          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
+      expect(retrievedItemOrError.toIterable().first.name, "Mango");
+    }
+
+    {
+      //you can search a Mango as updated name
+      final searchField = ItemSearchField(itemName: 'ang');
+      final itemListOrError = await itemRepo.getItemList(
+        teamId: team.id!,
+        itemSearchField: searchField,
+        token: firstUserAccessToken,
+      );
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 1);
+      expect(itemListOrError.toIterable().first.data.first.name, 'Mango');
     }
   });
 }

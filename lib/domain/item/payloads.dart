@@ -1,6 +1,6 @@
-class PayloadItem {
+class ItemUpdatePayload {
   String? name;
-  PayloadItem({this.name});
+  ItemUpdatePayload({this.name});
 
   Map<String, dynamic> toMap() {
     return {

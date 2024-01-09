@@ -60,6 +60,15 @@ class ItemService {
       return items.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
+
+  Future<Either<String, Unit>> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.updateItem(payload: payload, itemId: itemId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
 }
 
 @Riverpod(keepAlive: true)
