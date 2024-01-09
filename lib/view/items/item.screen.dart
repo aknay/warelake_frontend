@@ -1,8 +1,14 @@
+import 'dart:developer';
+
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_frontend/data/item/item.service.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
+import 'package:inventory_frontend/view/items/edit.item.screen.dart';
+import 'package:inventory_frontend/view/items/item.list.controller.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 
 final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
@@ -29,15 +35,39 @@ class ItemScreen extends ConsumerWidget {
   }
 }
 
-class PageContents extends StatelessWidget {
+class PageContents extends ConsumerWidget {
   const PageContents({super.key, required this.isToSelectItemVariation, required this.item});
   final Item item;
   final bool isToSelectItemVariation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-        appBar: AppBar(title: Text(item.name)),
+        appBar: AppBar(
+          title: Text(item.name),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  ItemUpdatePayload? payload = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditItemScreen(item: Some(item)),
+                    ),
+                  );
+
+                  if (payload != null) {
+                    log("payload is okay");
+                    final isSuccessful = await ref
+                        .read(itemListControllerProvider.notifier)
+                        .updateItem(payload: payload, itemId: item.id!);
+                    if (isSuccessful) {
+                      ref.invalidate(itemProvider);
+                    }
+                  }
+                },
+                icon: const Icon(Icons.edit)),
+          ],
+        ),
         body: ItemVariationListView(
             itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation));
   }
