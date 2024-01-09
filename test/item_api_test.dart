@@ -9,6 +9,7 @@ import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
+import 'package:inventory_frontend/domain/item/search.fields.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
@@ -336,8 +337,9 @@ void main() async {
     }
 
     {
-      final itemListOrError = await itemRepo.getItemList(
-          teamId: team.id!, token: firstUserAccessToken, startingAfterItemId: itemToCheck.id);
+      final searchField = ItemSearchField(startingAfterItemId: itemToCheck.id);
+      final itemListOrError =
+          await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken, itemSearchField: searchField);
       final itemList = itemListOrError.toIterable().first;
       expect(itemList.data.length, 6);
       expect(itemList.hasMore, false);
@@ -367,14 +369,85 @@ void main() async {
     }
 
     {
+      final searchField = ItemSearchField(startingAfterItemId: itemToCheck.id);
       final itemListOrError = await itemRepo.getItemList(
         teamId: team.id!,
         token: firstUserAccessToken,
-        startingAfterItemId: itemToCheck.id,
+        itemSearchField: searchField,
       );
       final itemList = itemListOrError.toIterable().first;
       expect(itemList.data.length, 6);
       expect(itemList.hasMore, false);
+    }
+  });
+
+  test('you can find items', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    {
+      final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+      final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+      final whiteShrt = ItemVariation.create(
+          name: "White shirt",
+          stockable: true,
+          sku: 'sku 123',
+          salePriceMoney: salePriceMoney,
+          purchasePriceMoney: purchasePriceMoney);
+      final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'pcs');
+
+      final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      expect(itemCreated.isRight(), true);
+    }
+    {
+      final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+      final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+      final dryMango = ItemVariation.create(
+          name: "Dry Mango",
+          stockable: true,
+          sku: 'sku 123',
+          salePriceMoney: salePriceMoney,
+          purchasePriceMoney: purchasePriceMoney);
+      final shirt = Item.create(name: "Mango", variations: [dryMango], unit: 'kg');
+
+      final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      expect(itemCreated.isRight(), true);
+    }
+    {
+      //you can list all
+      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 2);
+    }
+
+    {
+      //you can search a shirt
+      final searchField = ItemSearchField(itemName: 'hir');
+      final itemListOrError = await itemRepo.getItemList(
+        teamId: team.id!,
+        itemSearchField: searchField,
+        token: firstUserAccessToken,
+      );
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 1);
+      expect(itemListOrError.toIterable().first.data.first.name, 'shirt');
+    }
+
+    {
+      //you can search a mango
+      final searchField = ItemSearchField(itemName: 'ang');
+      final itemListOrError = await itemRepo.getItemList(
+        teamId: team.id!,
+        itemSearchField: searchField,
+        token: firstUserAccessToken,
+      );
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 1);
+      expect(itemListOrError.toIterable().first.data.first.name, 'Mango');
     }
   });
 

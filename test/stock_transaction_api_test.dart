@@ -626,7 +626,6 @@ void main() async {
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
-    final tShirtItem = itemCreated.toIterable().first;
 
     final retrievedWhiteShirt =
         itemCreated.toIterable().first.variations.where((element) => element.name == 'White Shirt').first;
@@ -668,6 +667,27 @@ void main() async {
           await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       final stockTransactionList = stockTransactionListOrError.toIterable().first;
       expect(stockTransactionList.data.length, 1);
+      expect(stockTransactionList.hasMore, false);
+    }
+
+    {
+      // you can one transactions when searching with black shirt and stock in
+      final searchField = StockTransactionSearchField(itemVaraiationName: "lack", stockMovement: StockMovement.stockIn);
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      final stockTransactionList = stockTransactionListOrError.toIterable().first;
+      expect(stockTransactionList.data.length, 1);
+      expect(stockTransactionList.hasMore, false);
+    }
+
+    {
+      // you can empty transactions when searching with black shirt and stock out
+      final searchField =
+          StockTransactionSearchField(itemVaraiationName: "lack", stockMovement: StockMovement.stockOut);
+      final stockTransactionListOrError =
+          await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      final stockTransactionList = stockTransactionListOrError.toIterable().first;
+      expect(stockTransactionList.data.length, 0);
       expect(stockTransactionList.hasMore, false);
     }
 

@@ -9,6 +9,7 @@ import 'package:inventory_frontend/domain/item/api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/domain/item/requests.dart';
+import 'package:inventory_frontend/domain/item/search.fields.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,12 +40,17 @@ class ItemRepository extends ItemApi {
   Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({
     required String teamId,
     required String token,
-    String? startingAfterItemId,
+    ItemSearchField? itemSearchField,
   }) async {
     try {
       Map<String, String> additionalQuery = {};
-      if (startingAfterItemId != null) {
-        additionalQuery["starting_after"] = startingAfterItemId;
+      if (itemSearchField != null) {
+        if (itemSearchField.startingAfterItemId != null) {
+          additionalQuery["starting_after"] = itemSearchField.startingAfterItemId!;
+        }
+        if (itemSearchField.itemName != null) {
+          additionalQuery["item_name"] = itemSearchField.itemName!;
+        }
       }
 
       final response = await HttpHelper.get(
