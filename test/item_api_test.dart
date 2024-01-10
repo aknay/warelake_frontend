@@ -109,13 +109,13 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'pcs');
 
     final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(name: "Mango"),
+        payload: ItemUpdatePayload(name: "Mango", unit: "Kg"),
         itemId: itemCreated.toIterable().first.id!,
         teamId: team.id!,
         token: firstUserAccessToken);
@@ -126,6 +126,7 @@ void main() async {
       final retrievedItemOrError = await itemRepo.getItem(
           itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       expect(retrievedItemOrError.toIterable().first.name, "Mango");
+      expect(retrievedItemOrError.toIterable().first.unit, "Kg");
     }
   });
 

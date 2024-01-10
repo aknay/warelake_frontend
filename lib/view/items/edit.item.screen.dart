@@ -6,7 +6,6 @@ import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/view/constants/app.sizes.dart';
 import 'package:inventory_frontend/view/items/item.list.controller.dart';
-import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
 
 class EditItemScreen extends ConsumerStatefulWidget {
   const EditItemScreen({super.key, required this.item});
@@ -40,17 +39,7 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
 
   _submit() async {
     if (_validateAndSaveForm()) {
-      context.pop(ItemUpdatePayload(name: itemName.toNullable()));
-      // final itemVariations = ref.read(itemVariationListControllerProvider);
-
-      // final item =
-      //     Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: itemUnit.toIterable().first);
-
-      // final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
-
-      // if (isCreated && mounted) {
-      //   context.pop();
-      // }
+      context.pop(ItemUpdatePayload(name: itemName.toNullable(), unit: itemUnit.toNullable()));
     }
   }
 
@@ -60,7 +49,6 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
     // final itemVariationList = ref.watch(itemVariationListControllerProvider);
 
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Edit Item"),
         actions: [
@@ -101,7 +89,6 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
               },
               onSaved: (value) => itemUnit = optionOf(value),
             ),
-
           ],
         ),
       ),

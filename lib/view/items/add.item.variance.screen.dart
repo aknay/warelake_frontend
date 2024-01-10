@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
 import 'package:inventory_frontend/view/constants/app.sizes.dart';
@@ -28,13 +29,16 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Option<double> sellingPrice = const None();
   Option<int> currentStockLevel = const Some(0);
   Option<int> reorderStockLevel = const Some(0);
-  final currencyCode = CurrencyCode.AED;
+  late final CurrencyCode currencyCode;
   late final currencyFormatter = CurrencyTextInputFormatter(currencyCode: currencyCode);
   late final bool hideStockLevelUi = widget.hideStockLevelUi == null ? false : widget.hideStockLevelUi!;
 
   @override
   void initState() {
     super.initState();
+
+    final currencyCodeOrNone = ref.read(teamIdSharedReferenceRepositoryProvider).currencyCode;
+    currencyCode = currencyCodeOrNone.toNullable()!;
     if (widget.itemVariation != null) {
       final itemVariation = widget.itemVariation!;
       itemVariationName = Some(itemVariation.name);
@@ -180,7 +184,8 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         ),
         gapH8,
         hideStockLevelUi
-            ?  const SizedBox.shrink() : TextFormField(
+            ? const SizedBox.shrink()
+            : TextFormField(
                 initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
                 decoration: const InputDecoration(
                   labelText: 'Current Stock Level',
@@ -193,28 +198,29 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
                   return null;
                 },
                 onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
-              )
-        ,
+              ),
         hideStockLevelUi ? const SizedBox.shrink() : gapH8,
-        hideStockLevelUi ? const SizedBox.shrink() : 
-        TextFormField(
-          initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
-          decoration: const InputDecoration(
-            labelText: 'Reorder Stock Level',
-            hintText: 'Enter your username',
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter your username';
-            }
-            return null;
-          },
-          keyboardType: const TextInputType.numberWithOptions(
-            signed: false,
-            decimal: false,
-          ),
-          onSaved: (value) => reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
-        ),
+        hideStockLevelUi
+            ? const SizedBox.shrink()
+            : TextFormField(
+                initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
+                decoration: const InputDecoration(
+                  labelText: 'Reorder Stock Level',
+                  hintText: 'Enter your username',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
+                keyboardType: const TextInputType.numberWithOptions(
+                  signed: false,
+                  decimal: false,
+                ),
+                onSaved: (value) =>
+                    reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
+              ),
       ]),
     ];
   }

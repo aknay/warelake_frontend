@@ -38,7 +38,7 @@ class OnboardingService {
 
       return await teamIdOrNone.fold(() async {
         if (teamList.length == 1) {
-          teamIdSharedRefRepository.setOnboardingComplete(teamId: teamList.first.id!);
+          teamIdSharedRefRepository.setOnboardingComplete(team: teamList.first);
         }
         return right(some(teamList));
       }, (existingTeamId) async {
@@ -60,7 +60,7 @@ class OnboardingService {
     final token = await authRepo.shouldGetToken();
     final newTeamOrError = await teamRepository.teamApi.create(team: team, token: token);
     await newTeamOrError.fold((l) => null, (r) async {
-      await teamIdSharedRefRepository.setOnboardingComplete(teamId: r.id!);
+      await teamIdSharedRefRepository.setOnboardingComplete(team: r);
     });
 
     return newTeamOrError;

@@ -101,10 +101,10 @@ class ItemVariationListView extends ConsumerWidget {
   }
 
   Text _toSalePrice(PriceMoney money) {
-    return Text("Sale Price: ${money.currency} ${money.amount / 1000}");
+    return Text("Sale Price: ${money.currency} ${money.amountInDouble}");
   }
 
   Text _toPurchasePrice(PriceMoney money) {
-    return Text("Purchase Price: ${money.currency} ${money.amount / 1000}");
+    return Text("Purchase Price: ${money.currency} ${money.amountInDouble}");
   }
 }

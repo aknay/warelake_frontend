@@ -1,10 +1,12 @@
 class ItemUpdatePayload {
   String? name;
-  ItemUpdatePayload({this.name});
+  String? unit;
+  ItemUpdatePayload({this.name, this.unit});
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'unit' : unit
     };
   }
 }

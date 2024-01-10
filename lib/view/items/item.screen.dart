@@ -68,7 +68,21 @@ class PageContents extends ConsumerWidget {
                 icon: const Icon(Icons.edit)),
           ],
         ),
-        body: ItemVariationListView(
-            itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation));
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16, bottom: 8),
+              child: Text('Unit: ${item.unit}'),
+            ),
+            Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 8),
+              child: Text('Count: ${item.variations.length}'),
+            ),
+            Expanded(
+                child: ItemVariationListView(
+                    itemVariationList: item.variations, isToSelectItemVariation: isToSelectItemVariation)),
+          ],
+        ));
   }
 }

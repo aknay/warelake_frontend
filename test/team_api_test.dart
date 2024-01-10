@@ -67,7 +67,7 @@ void main() async {
     final team = createdOrError.toIterable().first;
     expect(team.name, 'Power Ranger');
     expect(team.timeZone, "Africa/Abidjan");
-    expect(team.currencyCode, "AUD");
+    expect(team.currencyCode, CurrencyCode.AUD);
 
     // admin role will be created when creating a team
     final roleListOrError = await roleApi.getRoleList(teamId: team.id!, token: firstUserAccessToken);
@@ -207,7 +207,7 @@ void main() async {
     }
   });
 
-    test('item variation count will be updated when you delete the item', () async {
+  test('item variation count will be updated when you delete the item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
@@ -251,9 +251,9 @@ void main() async {
 
     final retrievedItem = itemCreated.toIterable().first;
     final deletedOrError = await itemRepo.deleteItem(
-        itemId: retrievedItem.id!,
-        teamId: team.id!,
-        token: firstUserAccessToken,
+      itemId: retrievedItem.id!,
+      teamId: team.id!,
+      token: firstUserAccessToken,
     );
     expect(deletedOrError.isRight(), true);
 
