@@ -27,38 +27,30 @@ class DrawerWidget extends StatelessWidget {
             child: Text('Drawer Header'),
           ),
           ListTile(
+            leading: const FaIcon(FontAwesomeIcons.house),
             title: const Text('Dashboard'),
-            // selected: _selectedIndex == 0,
             onTap: () {
               log("are we going?");
               context.goNamed(
                 AppRoute.dashboard.name,
               );
-
-              // context.go("/items");
-
-              // Navigator.pop(context);
               Navigator.pop(context);
             },
           ),
           ListTile(
             title: const Text('Items'),
             leading: const FaIcon(FontAwesomeIcons.cubesStacked),
-            // selected: _selectedIndex == 1,
             onTap: () {
               log("are we going?");
               context.goNamed(
                 AppRoute.items.name,
               );
-
-              // context.go("/items");
-
               Navigator.pop(context);
             },
           ),
           ListTile(
             title: const Text('Stock In'),
-            leading: const FaIcon(FontAwesomeIcons.arrowRightToBracket),
+            leading: const FaIcon(FontAwesomeIcons.squarePlus),
             onTap: () {
               context.goNamed(AppRoute.stockIn.name);
               Navigator.pop(context);
@@ -66,7 +58,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Stock Out'),
-            leading: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
+            leading: const FaIcon(FontAwesomeIcons.squareMinus),
             onTap: () {
               context.goNamed(AppRoute.stockOut.name);
               Navigator.pop(context);
@@ -90,6 +82,7 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
             title: const Text('Sale Orders'),
             onTap: () {
               log("are we going?");
@@ -101,6 +94,7 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const FaIcon(FontAwesomeIcons.arrowRightToBracket),
             title: const Text('Purchase Orders'),
             onTap: () {
               context.goNamed(
@@ -110,6 +104,7 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const FaIcon(FontAwesomeIcons.moneyBillTransfer),
             title: const Text('Account'),
             onTap: () {
               context.goNamed(
