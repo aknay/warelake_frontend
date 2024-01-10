@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:inventory_frontend/data/item/item.service.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
+import 'package:inventory_frontend/domain/item/search.fields.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.list.controller.g.dart';
@@ -72,10 +73,28 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-  Future<Either<String, List<Item>>> _list() async {
+  Future<void> search(String text) async {
+    if (text.length > 2) {
+      state = const AsyncLoading();
+      final itemsOrError = await _list(searchField: ItemSearchField(itemName: text));
+      if (itemsOrError.isLeft()) {
+        throw AssertionError("error while fetching items");
+      }
+      state = AsyncValue.data(itemsOrError.toIterable().first);
+    } else if (text.isEmpty){
+       state = const AsyncLoading();
+             final itemsOrError = await _list();
+      if (itemsOrError.isLeft()) {
+        throw AssertionError("error while fetching items");
+      }
+      state = AsyncValue.data(itemsOrError.toIterable().first);
+    }
+  }
+
+  Future<Either<String, List<Item>>> _list({ItemSearchField? searchField}) async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
-    return await ref.read(itemServiceProvider).list();
+    return await ref.read(itemServiceProvider).list(itemSearchField: searchField);
   }
 }

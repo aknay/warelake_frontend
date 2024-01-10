@@ -4,6 +4,7 @@ import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
+import 'package:inventory_frontend/domain/item/search.fields.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.service.g.dart';
@@ -38,11 +39,11 @@ class ItemService {
     });
   }
 
-  Future<Either<String, List<Item>>> list() async {
+  Future<Either<String, List<Item>>> list({ItemSearchField? itemSearchField}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _itemRepo.getItemList(teamId: teamId, token: token);
+      final items = await _itemRepo.getItemList(teamId: teamId, token: token, itemSearchField: itemSearchField);
       return items.fold((l) => Left(l.message), (r) => Right(r.data));
     });
   }
