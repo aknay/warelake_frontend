@@ -12,16 +12,16 @@ import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
+import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRepository();
   final stockTransactionRepo = StockTransactionRepository();
-  // final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 
-  setUpAll(() async {
-    const email = "abc@someemail.com";
+ setUpAll(() async {
+    final email = generateRandomEmail();
     const password = "nakbi6785!";
 
     Map<String, dynamic> signUpData = {};
@@ -95,6 +95,68 @@ void main() async {
 
     final stx = stCreatedOrError.toIterable().first;
     {
+      final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White shirt").first;
+      final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black shirt").first;
+      expect(retrivedWhiteShirt.quantity, 2);
+      expect(retrivedWhiteShirt.oldStockLevel, 0);
+      expect(retrivedWhiteShirt.newStockLevel, 2);
+      expect(retrivedBlackShirt.quantity, 3);
+      expect(retrivedBlackShirt.oldStockLevel, 0);
+      expect(retrivedBlackShirt.newStockLevel, 3);
+    }
+  });
+
+    test('you can get back the created stock transaction', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShirt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'kg');
+
+    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    final tShirtItem = itemCreated.toIterable().first;
+
+    final retrievedShirts = itemCreated.toIterable().first.variations;
+    final retrievedWhiteShirt = retrievedShirts.where((element) => element.name == "White shirt").first;
+    final retrievedBlackShirt = retrievedShirts.where((element) => element.name == "Black shirt").first;
+
+    final lineItems = [
+      StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 2),
+      StockLineItem.create(itemVariation: retrievedBlackShirt, quantity: 3)
+    ];
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: lineItems,
+      stockMovement: StockMovement.stockIn,
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+
+    final createdStx = stCreatedOrError.toIterable().first;
+    {
+     final stxOrError = await stockTransactionRepo.get(stockTransactionId: createdStx.id!, teamId: team.id!, token: firstUserAccessToken);
+      final stx = stxOrError.toIterable().first;
       final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White shirt").first;
       final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black shirt").first;
       expect(retrivedWhiteShirt.quantity, 2);
