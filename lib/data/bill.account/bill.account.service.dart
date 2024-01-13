@@ -20,7 +20,7 @@ class BillAccountService {
         _authRepo = authRepo;
 
   Future<Either<String, List<BillAccount>>> list() async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _billAccountRepo.list(teamId: teamId, token: token);
@@ -28,7 +28,7 @@ class BillAccountService {
     });
   }
     Future<Either<String, BillAccount>> get({required String billAccountId}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _billAccountRepo.get(billAccountId: billAccountId, teamId: teamId, token: token);

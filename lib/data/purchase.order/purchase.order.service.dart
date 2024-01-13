@@ -20,7 +20,7 @@ class PurchaseOrderService {
         _authRepo = authRepo;
 
   Future<Either<String, Unit>> createPurchaseOrder(PurchaseOrder po) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError =
@@ -30,7 +30,7 @@ class PurchaseOrderService {
   }
 
   Future<Either<String, PurchaseOrder>> getPurchaseOrder({required String purchaseOrderId}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError =
@@ -40,7 +40,7 @@ class PurchaseOrderService {
   }
 
   Future<Either<String, List<PurchaseOrder>>> list() async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _purchaseOrderRepo.list(teamId: teamId, token: token);
@@ -49,7 +49,7 @@ class PurchaseOrderService {
   }
 
   Future<Either<String, Unit>> converteToReceived({required String purchaseOrderId, required DateTime date}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _purchaseOrderRepo.receivedItems(

@@ -20,7 +20,7 @@ class StockTransactionService {
         _authRepo = authRepo;
 
   Future<Either<String, Unit>> create(StockTransaction stockTransaction) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError =
@@ -30,7 +30,7 @@ class StockTransactionService {
   }
 
     Future<Either<String, StockTransaction>> get({required String stockTransactionId}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError = await _stockTransactionRepo.get(stockTransactionId: stockTransactionId, teamId: teamId, token: token);
@@ -39,7 +39,7 @@ class StockTransactionService {
   }
 
   Future<Either<String, List<StockTransaction>>> list() async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _stockTransactionRepo.list(teamId: teamId, token: token);

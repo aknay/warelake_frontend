@@ -14,12 +14,12 @@ class TeamIdSharedRefereceRepository {
   static const onboardingCompleteKey = 'onboardingComplete';
   static const teamCurrencyKey = 'team_currency_key';
 
-  Future<void> setOnboardingComplete({required Team team}) async {
+  Future<void> setTeam({required Team team}) async {
     await _sharedPreferences.setString(onboardingCompleteKey, team.id!);
     await _sharedPreferences.setString(teamCurrencyKey, team.currencyCode.name);
   }
 
-  Option<String> get getTemId {
+  Option<String> get existingTeamId {
     final teamIdOrNone = _sharedPreferences.getString(onboardingCompleteKey);
     return optionOf(teamIdOrNone);
   }

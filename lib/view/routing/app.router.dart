@@ -99,18 +99,8 @@ GoRouter goRouter(GoRouterRef ref) {
       if (path.startsWith('/dashboard')) {
         //we need to guard otherwise it will call after '\dashboard'
         final onboardingService = ref.watch(onboardingServiceProvider);
-        final teamIdEmptyOrTeamListOrError = await onboardingService.isOnboardingCompleted;
-
-        if (teamIdEmptyOrTeamListOrError.isLeft()) {
-          return '/error';
-        }
-        final teamIdEmptyOrTeamList = teamIdEmptyOrTeamListOrError.toIterable().first;
-
-        if (teamIdEmptyOrTeamList.isNone()) {
-          if (path != '/onboarding') {
-            return '/onboarding';
-          }
-        }
+        final isCompletedOrError = await onboardingService.isOnboardingCompleted;
+        return isCompletedOrError.fold((l) => '/error', (isCompleted) => isCompleted ? null : '/onboarding');
       }
 
       // no need to redirect at all

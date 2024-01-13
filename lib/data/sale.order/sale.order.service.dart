@@ -20,7 +20,7 @@ class SaleOrderService {
         _authRepo = authRepo;
 
   Future<Either<String, Unit>> createSaleOrder(SaleOrder saleOrder) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError = await _saleOrderRepo.issuedSaleOrder(saleOrder: saleOrder, teamId: teamId, token: token);
@@ -29,7 +29,7 @@ class SaleOrderService {
   }
 
     Future<Either<String, SaleOrder>> getSaleOrder({required String saleOrderId}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError = await _saleOrderRepo.getSaleOrder(saleOrderId: saleOrderId, teamId: teamId, token: token);
@@ -38,7 +38,7 @@ class SaleOrderService {
   }
 
   Future<Either<String, List<SaleOrder>>> list() async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _saleOrderRepo.listSaleOrder(teamId: teamId, token: token);
@@ -47,7 +47,7 @@ class SaleOrderService {
   }
 
     Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);

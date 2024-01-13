@@ -20,38 +20,39 @@ class OnboardingService {
 
   static const onboardingCompleteKey = 'onboardingComplete';
 
-  Future<Either<ErrorResponse, Option<List<Team>>>> get isOnboardingCompleted async {
+  Future<Either<ErrorResponse, bool>> get isOnboardingCompleted async {
     final token = await authRepo.shouldGetToken();
     log("print call?");
-    final teamListOrError = await teamRepository.teamApi.list(token: token);
+    final onlineTeamListOrError = await teamRepository.teamApi.list(token: token);
 
-    if (teamListOrError.isLeft()) {
+    if (onlineTeamListOrError.isLeft()) {
       return left(ErrorResponse.withOtherError(message: "unable to connect"));
     }
 
-    final teamList = teamListOrError.toIterable().first.data;
+    final onlineTeamList = onlineTeamListOrError.toIterable().first.data;
 
-    if (teamList.isEmpty) {
-      return right(none());
-    } else {
-      final teamIdOrNone = teamIdSharedRefRepository.getTemId;
+    if (onlineTeamList.isEmpty) {
+      return right(false);
+    } else if (onlineTeamList.length == 1) {
+      final onlineTeam = onlineTeamList.first;
+      final exitingTeamIdOrNone = teamIdSharedRefRepository.existingTeamId;
 
-      return await teamIdOrNone.fold(() async {
-        if (teamList.length == 1) {
-          teamIdSharedRefRepository.setOnboardingComplete(team: teamList.first);
-        }
-        return right(some(teamList));
-      }, (existingTeamId) async {
-        final isExistingTeamIdIsPartOfTeamList = teamList.where((element) => element.id! == existingTeamId).isNotEmpty;
-        if (isExistingTeamIdIsPartOfTeamList) {
-          final currentTeam = teamList.where((element) => element.id! == existingTeamId).first;
-          return right(some([currentTeam]));
+      return exitingTeamIdOrNone.fold(() async {
+        await teamIdSharedRefRepository.setTeam(team: onlineTeam);
+        return right(true);
+      }, (existingTeamId) {
+        if (existingTeamId == onlineTeam.id) {
+          return right(true);
         } else {
-          await teamIdSharedRefRepository.clearTeamId();
-          return right(some(teamList));
+          teamIdSharedRefRepository.setTeam(team: onlineTeam);
+          return right(true);
         }
       });
+    } else {
+      //TODO we dont know how to handle with multiple team
     }
+    //should not reach here
+    return right(false);
   }
 
   Future<Either<ErrorResponse, Team>> submit(
@@ -60,7 +61,7 @@ class OnboardingService {
     final token = await authRepo.shouldGetToken();
     final newTeamOrError = await teamRepository.teamApi.create(team: team, token: token);
     await newTeamOrError.fold((l) => null, (r) async {
-      await teamIdSharedRefRepository.setOnboardingComplete(team: r);
+      await teamIdSharedRefRepository.setTeam(team: r);
     });
 
     return newTeamOrError;
