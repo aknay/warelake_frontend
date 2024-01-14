@@ -85,7 +85,6 @@ class StockTransactionRepository extends StockTransactionApi {
       {required String teamId, required String token, StockTransactionSearchField? searchField}) async {
     try {
       Map<String, String> additionalQuery = {};
-
       if (searchField != null) {
         if (searchField.startingAfterStockTransactionId != null) {
           additionalQuery["starting_after"] = searchField.startingAfterStockTransactionId!;

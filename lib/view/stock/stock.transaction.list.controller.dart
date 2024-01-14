@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
+import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -15,7 +16,7 @@ class StockTransactionListController extends _$StockTransactionListController {
     if (itemsOrError.isLeft()) {
       throw AssertionError("error while fetching items");
     }
-    return itemsOrError.toIterable().first;
+    return itemsOrError.toIterable().first.data;
   }
 
   Future<bool> create(StockTransaction stockTransaction) async {
@@ -29,12 +30,12 @@ class StockTransactionListController extends _$StockTransactionListController {
       if (itemsOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
+      state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
   }
 
-  Future<Either<String, List<StockTransaction>>> _list() async {
+  Future<Either<String, ListResponse<StockTransaction>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }

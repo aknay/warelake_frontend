@@ -2,7 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/data/stock.transaction/stock.transaction.repository.dart';
+import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stock.transaction.service.g.dart';
@@ -29,21 +31,29 @@ class StockTransactionService {
     });
   }
 
-    Future<Either<String, StockTransaction>> get({required String stockTransactionId}) async {
+  Future<Either<String, StockTransaction>> get({required String stockTransactionId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _stockTransactionRepo.get(stockTransactionId: stockTransactionId, teamId: teamId, token: token);
-      return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
+      final createdOrError =
+          await _stockTransactionRepo.get(stockTransactionId: stockTransactionId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 
-  Future<Either<String, List<StockTransaction>>> list() async {
+  Future<Either<String, ListResponse<StockTransaction>>> list(
+      {Option<String> lastStockTransactionIdOrNone = const None()}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _stockTransactionRepo.list(teamId: teamId, token: token);
-      return items.fold((l) => Left(l.message), (r) => Right(r.data));
+      StockTransactionSearchField? field;
+      if (lastStockTransactionIdOrNone.isSome()) {
+        field = StockTransactionSearchField(
+            startingAfterStockTransactionId: lastStockTransactionIdOrNone.toIterable().first);
+      }
+
+      final items = await _stockTransactionRepo.list(searchField: field, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 

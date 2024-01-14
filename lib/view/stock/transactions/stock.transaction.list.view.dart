@@ -1,34 +1,67 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/stock/stock.transaction.list.controller.dart';
-import 'package:inventory_frontend/view/utils/async_value_ui.dart';
 
-class StockTransactionListView extends ConsumerWidget {
+class StockTransactionListView extends ConsumerStatefulWidget {
   const StockTransactionListView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<AsyncValue>(
-      stockTransactionListControllerProvider,
-      (_, state) => state.showAlertDialogOnError(context),
+  ConsumerState<ConsumerStatefulWidget> createState() => _StockTransactionListViewState();
+}
+
+class _StockTransactionListViewState extends ConsumerState<StockTransactionListView> {
+  final PagingController<int, StockTransaction> _pagingController = PagingController(firstPageKey: 0);
+
+  final _lastStockTransactionIdProvider = StateProvider<Option<String>>(
+    (ref) => const None(),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PagedListView<int, StockTransaction>(
+      pagingController: _pagingController,
+      builderDelegate: PagedChildBuilderDelegate<StockTransaction>(itemBuilder: (context, item, index) {
+        return _getListTitle(item, context);
+      }),
     );
+  }
 
-    final asyncItemList = ref.watch(stockTransactionListControllerProvider);
+  Future<void> _fetchPage(int pageKey) async {
+    final stockTransactionListResponseOrError = await ref
+        .read(stockTransactionServiceProvider)
+        .list(lastStockTransactionIdOrNone: ref.read(_lastStockTransactionIdProvider));
 
-    return asyncItemList.when(
-        data: (data) {
-          if (data.isEmpty) {
-            return const Center(child: Text("Empty Sale Order"));
-          }
+    if (stockTransactionListResponseOrError.isLeft()) {
+      _pagingController.error = "Having error";
+      return;
+    }
+    final stockTransactionListResponse = stockTransactionListResponseOrError.toIterable().first;
+    final stockTransactionList = stockTransactionListResponse.data;
 
-          return ListView(children: data.map((e) => _getListTitle(e, context)).toList());
-        },
-        error: (Object error, StackTrace stackTrace) => Text('Error: $error'),
-        loading: () => const Center(child: CircularProgressIndicator()));
+    if (stockTransactionList.isNotEmpty) {
+      ref.read(_lastStockTransactionIdProvider.notifier).state = Some(stockTransactionList.last.id!);
+    }
+
+    if (stockTransactionListResponse.hasMore) {
+      final nextPageKey = pageKey + stockTransactionList.length;
+      _pagingController.appendPage(stockTransactionList, nextPageKey);
+    } else {
+      _pagingController.appendLastPage(stockTransactionList);
+    }
   }
 
   ListTile _getListTitle(StockTransaction stx, BuildContext context) {
@@ -55,12 +88,7 @@ class StockTransactionListView extends ConsumerWidget {
           AppRoute.stockTransactionDetail.name,
           pathParameters: {'id': stx.id!},
         );
-        // Navigator.pop(context);
       },
-      // trailing: Text(
-      // " ${stx.currencyCodeEnum.name} ${stx.totalInDouble}",
-      // style: Theme.of(context).textTheme.titleMedium,
-      // ),
     );
   }
 }
