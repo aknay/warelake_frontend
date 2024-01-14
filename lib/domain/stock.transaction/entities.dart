@@ -11,6 +11,19 @@ extension StockMovementExtension on StockMovement {
     return name.replaceAllMapped(exp, (m) => '_${m.group(0)}').toLowerCase();
   }
 
+  String get description {
+    switch (this) {
+      case StockMovement.stockIn:
+        return "Stock In";
+      case StockMovement.stockOut:
+        return "Stock Out";
+      case StockMovement.stockAdjust:
+        return "Stock Adjust";
+      default:
+        return "Unknown stock movement";
+    }
+  }
+
   static StockMovement fromFormattedString(String formattedString) {
     log("strin for is $formattedString");
     String enumString = _snakeCaseToCamelCase(formattedString);
