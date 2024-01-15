@@ -13,21 +13,9 @@ class ItemsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text("Items")),
-      // body: const ItemListView(isToSelectItemVariation: false),
-      body:  Column(
+      body: const Column(
         children: [
           ItemSearchWidget(),
-          // TextField(
-          //   onChanged: (value) async {
-          //     // await ref.read(itemListControllerProvider.notifier).search(value);
-          //   },
-          //   decoration: InputDecoration(
-          //     prefixIcon: const Icon(Icons.search, color: Colors.white),
-          //     hintText: "Search item name",
-          //     labelStyle: Theme.of(context).textTheme.bodyLarge,
-          //     border: const OutlineInputBorder(),
-          //   ),
-          // ),
           Expanded(child: ItemListView(isToSelectItemVariation: false)),
         ],
       ),

@@ -17,28 +17,42 @@ class StockLineItemListView extends ConsumerWidget {
     }
     return ListView(
       children: lineItems
-          .map((e) => ListTile(
-                title: Text(e.itemVariation.name),
-                trailing: SizedBox(
-                  width: 80,
-                  child: TextFormField(
-                    //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
-                    key: Key('${Random().nextInt(100000)}'),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    initialValue: e.quantity.toString(),
-                    onChanged: (value) {
-                      optionOf(int.tryParse(value)).fold(
-                          () => null,
-                          (a) => ref
-                              .read(stockLineItemControllerProvider.notifier)
-                              .edit(itemVariationId: e.itemVariation.id!, value: a));
-                    },
+          .map((e) => Dismissible(
+            key: Key(e.itemVariation.id!),
+            onDismissed: (value){
+                ref.read(stockLineItemControllerProvider.notifier).remove(itemVariationId: e.itemVariation.id!);
+            },
+             background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+            child: ListTile(
+                  title: Text(e.itemVariation.name),
+                  trailing: SizedBox(
+                    width: 80,
+                    child: TextFormField(
+                      //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
+                      key: Key('${Random().nextInt(100000)}'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      initialValue: e.quantity.toString(),
+                      onChanged: (value) {
+                        optionOf(int.tryParse(value)).fold(
+                            () => null,
+                            (a) => ref
+                                .read(stockLineItemControllerProvider.notifier)
+                                .edit(itemVariationId: e.itemVariation.id!, value: a));
+                      },
+                    ),
                   ),
+                  onTap: () {},
                 ),
-                // subtitle: ,
-                onTap: () {},
-              ))
+          ))
           .toList(),
     );
   }

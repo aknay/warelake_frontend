@@ -32,7 +32,7 @@ class StockLineItemController extends _$StockLineItemController {
     log("the state ${state.length}");
   }
 
-  void remove(String itemVariationId) {
+  void remove({required String itemVariationId}) {
     state = [
       for (final todo in state)
         if (todo.itemVariation.id != itemVariationId) todo,

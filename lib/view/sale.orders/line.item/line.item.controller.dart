@@ -17,12 +17,10 @@ class LineItemController extends _$LineItemController {
     log("the state ${state.length}");
   }
 
-  void remove(String todoId) {
-    // Again, our state is immutable. So we're making a new list instead of
-    // changing the existing list.
+  void remove({required String lineItemId}) {
     state = [
       for (final todo in state)
-        if (todo.itemVariation.id != todoId) todo,
+        if (todo.itemVariation.id != lineItemId) todo,
     ];
   }
 }
