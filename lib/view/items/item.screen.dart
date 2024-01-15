@@ -63,9 +63,7 @@ class PageContents extends ConsumerWidget {
                         .updateItem(payload: payload, itemId: item.id!);
                     if (isSuccessful) {
                       ref.invalidate(itemProvider);
-                      log("refreshing?");
-                      ref.read(toForceToRefreshIemListProvider.notifier).state = unit;
-                      // ref.invalidate(toForceToRefreshIemListProvider);
+                      ref.read(toForceToRefreshIemListProvider.notifier).state = !ref.read(toForceToRefreshIemListProvider);
                     }
                   }
                 },
