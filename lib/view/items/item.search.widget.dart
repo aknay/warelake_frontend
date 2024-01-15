@@ -11,7 +11,8 @@ class ItemSearchWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return TextField(
+    return TextFormField(
+      initialValue: ref.watch(searchItemByNameProvider).toNullable(),
       onChanged: (value) async {
         if (value.isEmpty) {
           ref.read(searchItemByNameProvider.notifier).state = const None();
