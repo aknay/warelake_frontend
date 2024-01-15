@@ -9,7 +9,7 @@ class ItemSelectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text("Items")),
-      body: const ItemListView(isToSelectItemVariation: true),
+      body:  ItemListView(isToSelectItemVariation: true),
     );
   }
 }

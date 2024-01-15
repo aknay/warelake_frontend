@@ -52,7 +52,7 @@ class ItemRepository extends ItemApi {
           additionalQuery["item_name"] = itemSearchField.itemName!;
         }
       }
-
+      log("additional query $additionalQuery");
       final response = await HttpHelper.get(
         url: ApiEndPoint.getItemEndPoint(),
         token: token,
@@ -61,9 +61,10 @@ class ItemRepository extends ItemApi {
       );
 
       log("item list response code ${response.statusCode}");
-      log("item list response ${jsonDecode(response.body)}");
+      // log("item list response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), Item.fromJson);
+        log("the response ${listResponse.data.length}");
         return Right(listResponse);
       }
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));

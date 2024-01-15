@@ -9,6 +9,7 @@ import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
 import 'package:inventory_frontend/view/items/edit.item.screen.dart';
 import 'package:inventory_frontend/view/items/item.list.controller.dart';
+import 'package:inventory_frontend/view/items/item.list.view.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
 
 final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
@@ -62,6 +63,9 @@ class PageContents extends ConsumerWidget {
                         .updateItem(payload: payload, itemId: item.id!);
                     if (isSuccessful) {
                       ref.invalidate(itemProvider);
+                      log("refreshing?");
+                      ref.read(toForceToRefreshIemListProvider.notifier).state = unit;
+                      // ref.invalidate(toForceToRefreshIemListProvider);
                     }
                   }
                 },
@@ -76,7 +80,7 @@ class PageContents extends ConsumerWidget {
               child: Text('Unit: ${item.unit}'),
             ),
             Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 8),
+              padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text('Count: ${item.variations.length}'),
             ),
             Expanded(

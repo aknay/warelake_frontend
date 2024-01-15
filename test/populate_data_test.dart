@@ -81,13 +81,14 @@ void main() async {
         double min = 5.0; // Minimum value (inclusive)
         double max = 10.0; // Maximum value (exclusive)
 
-        double randomPrice = min + random.nextDouble() * (max - min);
+        double randomPriceForSale = min + random.nextDouble() * (max - min);
+        double randomPriceForPurchase = min + random.nextDouble() * (max - min);
 
-        final salePriceMoney = PriceMoney.from(amount: randomPrice, currencyCode: CurrencyCode.AUD);
-        final purchasePriceMoney = PriceMoney.from(amount: randomPrice, currencyCode: CurrencyCode.AUD);
+        final salePriceMoney = PriceMoney.from(amount: randomPriceForSale, currencyCode: CurrencyCode.AUD);
+        final purchasePriceMoney = PriceMoney.from(amount: randomPriceForPurchase, currencyCode: CurrencyCode.AUD);
 
         final whiteShrt = ItemVariation.create(
-            name: attr + fruit,
+            name: "$attr $fruit",
             stockable: true,
             sku: 'sku 123',
             salePriceMoney: salePriceMoney,
@@ -127,8 +128,8 @@ void main() async {
         lineItems: lineItemList,
         stockMovement: StockMovement.stockIn,
       );
-      final stCreatedOrError =
-          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+      await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
 
@@ -162,8 +163,7 @@ void main() async {
         lineItems: lineItemList,
         stockMovement: StockMovement.stockOut,
       );
-      final stCreatedOrError =
-          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+      await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
   });

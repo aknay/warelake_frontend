@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:inventory_frontend/data/item/item.service.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/item/payloads.dart';
 import 'package:inventory_frontend/domain/item/search.fields.dart';
+import 'package:inventory_frontend/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.list.controller.g.dart';
@@ -16,7 +19,7 @@ class ItemListController extends _$ItemListController {
     if (itemsOrError.isLeft()) {
       throw AssertionError("error while fetching items");
     }
-    return itemsOrError.toIterable().first;
+    return itemsOrError.toIterable().first.data;
   }
 
   Future<bool> createItem(Item item) async {
@@ -30,7 +33,7 @@ class ItemListController extends _$ItemListController {
       if (itemsOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
+      state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
   }
@@ -52,7 +55,7 @@ class ItemListController extends _$ItemListController {
       if (itemsOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
+      state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
   }
@@ -68,33 +71,43 @@ class ItemListController extends _$ItemListController {
       if (itemsOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
+      //we cannot update here as no widget is listing item list controller 
+      // state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
   }
 
-  Future<void> search(String text) async {
-    if (text.length > 2) {
-      state = const AsyncLoading();
-      final itemsOrError = await _list(searchField: ItemSearchField(itemName: text));
-      if (itemsOrError.isLeft()) {
-        throw AssertionError("error while fetching items");
-      }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
-    } else if (text.isEmpty){
-       state = const AsyncLoading();
-             final itemsOrError = await _list();
-      if (itemsOrError.isLeft()) {
-        throw AssertionError("error while fetching items");
-      }
-      state = AsyncValue.data(itemsOrError.toIterable().first);
-    }
-  }
+  // Future<void> search(String text) async {
+  //   if (text.length > 2) {
+  //     state = const AsyncLoading();
+  //     final itemsOrError = await _list(searchField: ItemSearchField(itemName: text));
+  //     if (itemsOrError.isLeft()) {
+  //       throw AssertionError("error while fetching items");
+  //     }
+  //     state = AsyncValue.data(itemsOrError.toIterable().first.data);
+  //   } else if (text.isEmpty) {
+  //     state = const AsyncLoading();
+  //     final itemsOrError = await _list();
+  //     if (itemsOrError.isLeft()) {
+  //       throw AssertionError("error while fetching items");
+  //     }
+  //     state = AsyncValue.data(itemsOrError.toIterable().first.data);
+  //   }
+  // }
 
-  Future<Either<String, List<Item>>> _list({ItemSearchField? searchField}) async {
+  // Future<Either<String, ListResponse<Item>>> list({String? searchText, String? startingAfterItemId}) async {
+  //   log("call this?");
+  //   final textToSearch = searchText != null && searchText.length > 2 ? searchText : null;
+  //   final searchField = ItemSearchField(itemName: textToSearch, startingAfterItemId: startingAfterItemId);
+  //   return ref.read(itemServiceProvider).list(itemSearchField: searchField);
+  // }
+
+  Future<Either<String, ListResponse<Item>>> _list({ItemSearchField? searchField}) async {
+    log("call this _list?");
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
+    // return Right(ListResponse(data: [], hasMore: false));
     return await ref.read(itemServiceProvider).list(itemSearchField: searchField);
   }
 }
