@@ -42,15 +42,14 @@ class StockTransactionService {
   }
 
   Future<Either<String, ListResponse<StockTransaction>>> list(
-      {Option<String> lastStockTransactionIdOrNone = const None()}) async {
+      {String? lastStockTransactionId, StockMovement? stockMovement}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       StockTransactionSearchField? field;
-      if (lastStockTransactionIdOrNone.isSome()) {
-        field = StockTransactionSearchField(
-            startingAfterStockTransactionId: lastStockTransactionIdOrNone.toIterable().first);
-      }
+
+      field = StockTransactionSearchField(
+          startingAfterStockTransactionId: lastStockTransactionId, stockMovement: stockMovement);
 
       final items = await _stockTransactionRepo.list(searchField: field, teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));

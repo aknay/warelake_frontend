@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +10,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:inventory_frontend/view/stock/transactions/entities.dart';
+import 'package:inventory_frontend/view/stock/transactions/stock.filter.provider.dart';
 
 class StockTransactionListView extends ConsumerStatefulWidget {
   const StockTransactionListView({super.key});
@@ -30,20 +35,41 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
     });
   }
 
+  Future<void> _refresh() async {
+    ref.read(_lastStockTransactionIdProvider.notifier).state = const None();
+    _pagingController.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PagedListView<int, StockTransaction>(
-      pagingController: _pagingController,
-      builderDelegate: PagedChildBuilderDelegate<StockTransaction>(itemBuilder: (context, item, index) {
-        return _getListTitle(item, context);
-      }),
+    ref.listen<StockTransactionFilter?>(
+      stockTransctionFilterProvider,
+      (_, state) {
+        log("refresh from other pages?");
+        _refresh();
+      },
+    );
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: PagedListView<int, StockTransaction>(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<StockTransaction>(itemBuilder: (context, item, index) {
+          return _getListTitle(item, context);
+        }),
+      ),
     );
   }
 
   Future<void> _fetchPage(int pageKey) async {
+    if (foundation.kDebugMode) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    final lastStockTranasactionId = ref.read(_lastStockTransactionIdProvider).toNullable();
+    final stockTransactionFilter = ref.read(stockTransctionFilterProvider);
     final stockTransactionListResponseOrError = await ref
         .read(stockTransactionServiceProvider)
-        .list(lastStockTransactionIdOrNone: ref.read(_lastStockTransactionIdProvider));
+        .list(lastStockTransactionId: lastStockTranasactionId, stockMovement: stockTransactionFilter.stockMovement);
 
     if (stockTransactionListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -54,6 +80,8 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
 
     if (stockTransactionList.isNotEmpty) {
       ref.read(_lastStockTransactionIdProvider.notifier).state = Some(stockTransactionList.last.id!);
+    } else {
+      log("item list is empty");
     }
 
     if (stockTransactionListResponse.hasMore) {
