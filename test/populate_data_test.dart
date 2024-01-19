@@ -166,5 +166,5 @@ void main() async {
       await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
-  });
+  }, timeout: const Timeout(Duration(minutes: 1)));
 }

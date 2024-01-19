@@ -11,7 +11,8 @@ import 'package:inventory_frontend/view/sale.orders/line.item/line.item.controll
 import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
 
 class AddLineItemScreen extends ConsumerStatefulWidget {
-  const AddLineItemScreen({super.key});
+  const AddLineItemScreen({super.key, this.lineItem = const None()});
+  final Option<LineItem> lineItem;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddLineItemScreenState();
@@ -19,11 +20,15 @@ class AddLineItemScreen extends ConsumerStatefulWidget {
 
 class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   final _formKey = GlobalKey<FormState>();
-  Option<int> quantity = const Some(0);
-  Option<double> rate = const Some(0.0);
+  late Option<int> quantity = widget.lineItem.fold(() => const None(), (a) => Some(a.quantity));
+  late Option<double> rate = widget.lineItem.fold(() => const None(), (a) => Some(a.rateInDouble));
+
+ 
 
   @override
   Widget build(BuildContext context) {
+    log("the quantity ${quantity.toNullable()}");
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("Add Line Item"),
@@ -67,6 +72,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
         children: [
           Expanded(
             child: TextFormField(
+              initialValue: quantity.fold(() => null, (a) => a.toString()),
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.digitsOnly,
@@ -85,6 +91,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
           ),
           Expanded(
             child: TextFormField(
+              initialValue: rate.fold(() => null, (a) => a.toString()),
               decoration: const InputDecoration(
                 labelText: 'Rate *',
               ),

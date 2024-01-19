@@ -64,27 +64,27 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         },
         onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
       ),
-      TextButton(
-        onPressed: () async {
-          final router = GoRouter.of(context);
-          final uri = router.routeInformationProvider.value.uri;
-
-          if (uri.path.contains('purchase_order')) {
-            context.goNamed(
-              AppRoute.addLineItemForPurchaseOrder.name,
-            );
-          } else {
-            context.goNamed(
-              AppRoute.addLineItemForSaleOrder.name,
-            );
-          }
-        },
-        child: const Text("Add Line Item"),
-      ),
+     
       BillAccountSelectionWidget(onValueChanged: (value) {
         log("value ${value.isSome()}");
         _billAccountOrNone = value;
       }),
+       TextButton(
+          onPressed: () async {
+            final router = GoRouter.of(context);
+            final uri = router.routeInformationProvider.value.uri;
+
+            if (uri.path.contains('purchase_order')) {
+              context.goNamed(
+                AppRoute.addLineItemForPurchaseOrder.name,
+              );
+            } else {
+              context.goNamed(
+                AppRoute.addLineItemForSaleOrder.name,
+              );
+            }
+          },
+          child: const Text("Add Line Item")),
       const Expanded(child: LineItemListView())
     ];
   }

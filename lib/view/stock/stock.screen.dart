@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/main/drawer.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.controller.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.list.view.dart';
+import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:inventory_frontend/view/stock/stock.transaction.list.controller.dart';
+import 'package:inventory_frontend/view/utils/alert_dialogs.dart';
+
+final _stockLineItemProvider = StateProvider<List<StockLineItem>>((ref) => const []);
 
 class StockScreen extends ConsumerStatefulWidget {
   const StockScreen({super.key, required this.stockMovement});
@@ -77,12 +79,23 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
   }
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
-    return [const Expanded(child: StockLineItemListView())];
+    return [
+      Expanded(child: StockLineItemListView(
+        onValueChanged: (stockLinItemList) {
+          ref.read(_stockLineItemProvider.notifier).state = stockLinItemList;
+        },
+      ))
+    ];
   }
 
   Future<void> _submit({required WidgetRef ref}) async {
     if (_validateAndSaveForm()) {
-      final stockLineItemList = ref.read(stockLineItemControllerProvider);
+      final stockLineItemList = ref.read(_stockLineItemProvider);
+      if (stockLineItemList.isEmpty) {
+        showAlertDialog(
+            context: context, title: "Empty", content: "Line item cannot be empty.", defaultActionText: "OK");
+        return;
+      }
 
       final rawTx = StockTransaction.create(
         date: DateTime.now(),

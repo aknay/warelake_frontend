@@ -9,7 +9,7 @@ import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
 import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.controller.dart';
+import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {
   const ItemVariationListView({required this.itemVariationList, required this.isToSelectItemVariation, super.key});

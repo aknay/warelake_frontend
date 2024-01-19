@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,14 +11,14 @@ class LineItemController extends _$LineItemController {
   }
 
   void add(LineItem lineItem) {
-    state = [...state, lineItem];
-    log("the state ${state.length}");
+    final newList = state.where((element) => element.itemVariation.id != lineItem.itemVariation.id);
+    state = [...newList, lineItem];
   }
 
-  void remove({required String lineItemId}) {
+  void remove({required LineItem lineItem}) {
     state = [
-      for (final todo in state)
-        if (todo.itemVariation.id != lineItemId) todo,
+      for (final lineItem in state)
+        if (lineItem.itemVariation.id != lineItem.itemVariation.id) lineItem,
     ];
   }
 }

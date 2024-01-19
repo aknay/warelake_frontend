@@ -4,13 +4,17 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.controller.dart';
+import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class StockLineItemListView extends ConsumerWidget {
-  const StockLineItemListView({super.key});
+  const StockLineItemListView({super.key, required this.onValueChanged});
+  final void Function(List<StockLineItem> stockLinItemList) onValueChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<List<StockLineItem>>(stockLineItemControllerProvider, (_, state) => onValueChanged);
+
     final lineItems = ref.watch(stockLineItemControllerProvider);
     if (lineItems.isEmpty) {
       return const Center(child: Text("Empty. Please add"));
@@ -18,20 +22,20 @@ class StockLineItemListView extends ConsumerWidget {
     return ListView(
       children: lineItems
           .map((e) => Dismissible(
-            key: Key(e.itemVariation.id!),
-            onDismissed: (value){
-                ref.read(stockLineItemControllerProvider.notifier).remove(itemVariationId: e.itemVariation.id!);
-            },
-             background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ),
-            ),
-            child: ListTile(
+                key: Key(e.itemVariation.id!),
+                onDismissed: (value) {
+                  ref.read(stockLineItemControllerProvider.notifier).remove(itemVariationId: e.itemVariation.id!);
+                },
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                ),
+                child: ListTile(
                   title: Text(e.itemVariation.name),
                   trailing: SizedBox(
                     width: 80,
@@ -52,7 +56,7 @@ class StockLineItemListView extends ConsumerWidget {
                   ),
                   onTap: () {},
                 ),
-          ))
+              ))
           .toList(),
     );
   }

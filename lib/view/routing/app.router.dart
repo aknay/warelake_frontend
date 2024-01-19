@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
 import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
+import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
 import 'package:inventory_frontend/view/bill.account/bill.account.screen.dart';
@@ -261,7 +262,8 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.addLineItemForPurchaseOrder.name,
                       path: 'line_item',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const AddLineItemScreen();
+                        LineItem? lineItem = state.extra as LineItem;
+                        return AddLineItemScreen(lineItem: optionOf(lineItem));
                       },
                       routes: <RouteBase>[
                         GoRoute(
@@ -309,7 +311,9 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.addLineItemForSaleOrder.name,
                       path: 'line_item',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const AddLineItemScreen();
+                        log("come to here?");
+                        LineItem? lineItem = state.extra as LineItem?;
+                        return AddLineItemScreen(lineItem: optionOf(lineItem));
                       },
                       routes: <RouteBase>[
                         GoRoute(
