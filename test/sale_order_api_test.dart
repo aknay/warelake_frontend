@@ -15,6 +15,7 @@ import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
+import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRestApi();
@@ -24,7 +25,7 @@ void main() async {
   late String firstUserAccessToken;
 
   setUpAll(() async {
-    const email = "abc@someemail.com";
+    final email = generateRandomEmail();
     const password = "nakbi6785!";
 
     Map<String, dynamic> signUpData = {};
@@ -97,7 +98,7 @@ void main() async {
     expect(createdPo.saleOrderNumber, "S0-00001");
 
     {
-      final saleOrderListOrError = await saleOrderApi.listSaleOrder(teamId: team.id!, token: firstUserAccessToken);
+      final saleOrderListOrError = await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
 
       expect(saleOrderListOrError.toIterable().first.data.isNotEmpty, true);
     }
@@ -163,20 +164,31 @@ void main() async {
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
-    final whiteShrt = ItemVariation.create(
+    final whiteShirt = ItemVariation.create(
         name: "White shirt",
         stockable: true,
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
+        stockable: true,
+        sku: 'sku 234',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final shirt1 = itemCreated.toIterable().first.variations[0];
+    final shirt2 = itemCreated.toIterable().first.variations[1];
 
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.7, quantity: 5, unit: 'cm');
+    final lineItem1 = LineItem.create(itemVariation: shirt1, rate: 3.5, quantity: 5, unit: 'cm');
+    final lineItem2 = LineItem.create(itemVariation: shirt2, rate: 2.7, quantity: 4, unit: 'cm');
+
+    // final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.7, quantity: 5, unit: 'cm');
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
@@ -189,7 +201,7 @@ void main() async {
         accountId: account.id!,
         date: date,
         currencyCode: CurrencyCode.AUD,
-        lineItems: [lineItem],
+        lineItems: [lineItem1, lineItem2],
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
@@ -225,7 +237,8 @@ void main() async {
           itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
       log("the item is $item");
-      expect(item.variations.first.itemCount, -5);
+      expect(item.variations[0].itemCount, -5);
+      expect(item.variations[1].itemCount, -4);
     }
 
     {
@@ -234,7 +247,7 @@ void main() async {
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
       final account = accountListOrError.toIterable().first.data.first;
-      expect(account.balance, 13.5);
+      expect(account.balance, 28.3);
     }
   });
 

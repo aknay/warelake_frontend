@@ -62,7 +62,7 @@ class SaleOrderRepository extends SaleOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<SaleOrder>>> listSaleOrder(
+  Future<Either<ErrorResponse, ListResponse<SaleOrder>>> list(
       {required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.get(url: ApiEndPoint.getSaleOrderEndPoint(), token: token, teamId: teamId);

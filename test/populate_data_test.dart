@@ -3,11 +3,16 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
+import 'package:inventory_frontend/data/purchase.order/purchase.order.repository.dart';
+import 'package:inventory_frontend/data/sale.order/sale.order.repository.dart';
 import 'package:inventory_frontend/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
@@ -17,7 +22,9 @@ void main() async {
   final teamApi = TeamRestApi();
   final itemApi = ItemRepository();
   final stockTransactionRepo = StockTransactionRepository();
-  // final billAccountApi = BillAccountRepository();
+  final billAccountApi = BillAccountRepository();
+  final saleOrderApi = SaleOrderRepository();
+  final purchaseOrderApi = PurchaseOrderRepository();
   late String firstUserAccessToken;
 
   setUpAll(() async {
@@ -45,6 +52,18 @@ void main() async {
 
     firstUserAccessToken = signInResponse.idToken!;
   });
+
+  List<ItemVariation> getItemVariationList(List<ItemVariation> objectList, int numberOfObjects) {
+    Random random = Random();
+    List<ItemVariation> result = [];
+
+    for (int i = 0; i < numberOfObjects; i++) {
+      int randomIndex = random.nextInt(objectList.length);
+      result.add(objectList[randomIndex]);
+    }
+
+    return result;
+  }
 
   test('populate data', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
@@ -104,21 +123,9 @@ void main() async {
       await Future.delayed(const Duration(milliseconds: 1000));
     }
 
-    List<ItemVariation> getRandomObjects(List<ItemVariation> objectList, int numberOfObjects) {
-      Random random = Random();
-      List<ItemVariation> result = [];
-
-      for (int i = 0; i < numberOfObjects; i++) {
-        int randomIndex = random.nextInt(objectList.length);
-        result.add(objectList[randomIndex]);
-      }
-
-      return result;
-    }
-
     for (int i = 0; i < 10; i++) {
       List<StockLineItem> lineItemList = [];
-      getRandomObjects(retrievedItemVariationList, 4).forEach((element) {
+      getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
         final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(100) + 50);
         lineItemList.add(lineItem);
       });
@@ -135,7 +142,7 @@ void main() async {
 
     for (int i = 0; i < 10; i++) {
       List<StockLineItem> lineItemList = [];
-      getRandomObjects(retrievedItemVariationList, 4).forEach((element) {
+      getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
         final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(100) + 50);
         lineItemList.add(lineItem);
       });
@@ -153,7 +160,7 @@ void main() async {
 
     for (int i = 0; i < 10; i++) {
       List<StockLineItem> lineItemList = [];
-      getRandomObjects(retrievedItemVariationList, 4).forEach((element) {
+      getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
         final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(10) + 2);
         lineItemList.add(lineItem);
       });
@@ -166,5 +173,81 @@ void main() async {
       await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
-  }, timeout: const Timeout(Duration(minutes: 1)));
+
+    //add orders
+
+    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
+    expect(accountListOrError.toIterable().first.data.length == 1, true);
+    final account = accountListOrError.toIterable().first.data.first;
+
+    //add sale orders
+    List<String> saleOrderIdList = [];
+    for (int i = 0; i < 30; i++) {
+      final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
+          .map(
+            (e) => LineItem.create(
+                itemVariation: e, quantity: random.nextInt(10) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
+          )
+          .toList();
+
+      final so = SaleOrder.create(
+          accountId: account.id!,
+          date: DateTime.now(),
+          currencyCode: CurrencyCode.AUD,
+          lineItems: lineItems,
+          subTotal: 10,
+          total: 20,
+          saleOrderNumber: "S0-0000$i");
+      final soCreatedOrError =
+          await saleOrderApi.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      await Future.delayed(const Duration(milliseconds: 1000));
+      saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
+    }
+
+    {
+      //delivered sale order
+      final soIdList = saleOrderIdList.take(random.nextInt(10) + 3);
+
+      for (var element in soIdList) {
+        await saleOrderApi.deliveredItems(
+            saleOrderId: element, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+        await Future.delayed(const Duration(milliseconds: 1000));
+      }
+    }
+
+    //add purchase order
+        List<String> purchaseOrderIdList = [];
+    for (int i = 0; i < 30; i++) {
+      final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
+          .map(
+            (e) => LineItem.create(
+                itemVariation: e, quantity: random.nextInt(10) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
+          )
+          .toList();
+
+      final po = PurchaseOrder.create(
+          accountId: account.id!,
+          date: DateTime.now(),
+          currencyCode: CurrencyCode.AUD,
+          lineItems: lineItems,
+          subTotal: 10,
+          total: 20,
+          purchaseOrderNumber: "P0-0000$i");
+      final poCreatedOrError =
+          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
+    {
+            //delivered sale order
+      final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
+
+      for (var element in poIdList) {
+        await purchaseOrderApi.receivedItems(
+            purchaseOrderId: element, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+        await Future.delayed(const Duration(milliseconds: 1000));
+      }
+    }
+  }, timeout: const Timeout(Duration(minutes: 10)));
 }

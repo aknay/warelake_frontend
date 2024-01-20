@@ -40,8 +40,8 @@ class LineItemListView extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Dialog Title'),
-          content: const Text('This is the dialog content.'),
+          title: const Text('Edit/Delete?'),
+          // content: const Text('This is the dialog content.'),
           actions: [
             TextButton(
                 onPressed: () {
@@ -55,10 +55,7 @@ class LineItemListView extends ConsumerWidget {
                 ref.read(lineItemControllerProvider.notifier).remove(lineItem: lineItem);
                 Navigator.pop(context);
               },
-              child: const Text(
-                'DELETE',
-                style: TextStyle(color: Colors.redAccent),
-              ),
+              child: const Text('REMOVE', style: TextStyle(color: Colors.redAccent)),
             ),
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
           ],
