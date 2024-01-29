@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../stock.line.item.controller.g.dart';
+part 'stock.line.item.controller.g.dart';
 
 @riverpod
 class StockLineItemController extends _$StockLineItemController {

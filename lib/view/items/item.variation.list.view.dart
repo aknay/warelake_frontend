@@ -35,9 +35,13 @@ class ItemVariationListView extends ConsumerWidget {
                     Text("Stock on hand: ${e.itemCount}")
                   ],
                 ),
-                trailing: e.itemId == null ? IconButton(onPressed: () {
-                    ref.read(itemVariationListControllerProvider.notifier).delete(e);  
-                }, icon: const FaIcon(FontAwesomeIcons.xmark)) : null,
+                trailing: e.itemId == null
+                    ? IconButton(
+                        onPressed: () {
+                          ref.read(itemVariationListControllerProvider.notifier).delete(e);
+                        },
+                        icon: const FaIcon(FontAwesomeIcons.xmark))
+                    : null,
                 onTap: () async {
                   if (isToSelectItemVariation) {
                     ref.read(selectedItemVariationProvider.notifier).state = Some(e);
