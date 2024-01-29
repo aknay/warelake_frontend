@@ -185,23 +185,7 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
-
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
+    final lineItems = await getLineItem(teamId: team.id!);
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
@@ -211,7 +195,7 @@ void main() async {
       accountId: account.id!,
       date: DateTime.now(),
       currencyCode: CurrencyCode.AUD,
-      lineItems: [lineItem],
+      lineItems: lineItems,
       subTotal: 10,
       total: 20,
       purchaseOrderNumber: "PO-0001",
@@ -302,7 +286,8 @@ void main() async {
 
     {
       //check primary account's balance
-      final total = lineItems.map((e) => e.quantity * e.rate).fold(0, (previousValue, element) => previousValue + element);
+      final total =
+          lineItems.map((e) => e.quantity * e.rate).fold(0, (previousValue, element) => previousValue + element);
       final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
@@ -317,23 +302,7 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
-
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
+    final lineItems = await getLineItem(teamId: team.id!);
 
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
@@ -344,7 +313,7 @@ void main() async {
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: [lineItem],
+        lineItems: lineItems,
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
@@ -373,13 +342,13 @@ void main() async {
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
-
+    final lineItems = await getLineItem(teamId: team.id!);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: account.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: await getLineItem(teamId: team.id!),
+        lineItems: lineItems,
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
@@ -391,6 +360,7 @@ void main() async {
     final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
         purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
+    
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 
@@ -406,22 +376,26 @@ void main() async {
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 
-    // {
-    //   //test item increased after received
-    //   final retrievedItemOrError = await itemApi.getItem(
-    //       itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
-    //   final item = retrievedItemOrError.toIterable().first;
-    //   log("the item is $item");
-    //   expect(item.variations.first.itemCount, 0);
-    // }
+    {
+      // check all item count reset back to zero
+      final itemIds = lineItems.map((e) => e.itemVariation.itemId!).toSet();
+      for (var itemId in itemIds) {
+        final retrievedItemsOrError =
+            await itemApi.getItem(itemId: itemId, teamId: team.id!, token: firstUserAccessToken);
+        final itemVariations = retrievedItemsOrError.toIterable().first.variations;
+        for (var iv in itemVariations) {
+          expect(iv.itemCount, 0);
+        }
+      }
+    }
 
-    // {
-    //   //check primary account balance is correct
-    //   final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    //   expect(accountListOrError.isRight(), true);
-    //   expect(accountListOrError.toIterable().first.data.length == 1, true);
-    //   final account = accountListOrError.toIterable().first.data.first;
-    //   expect(account.balance, 0);
-    // }
+    {
+      //check primary account balance is correct
+      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(accountListOrError.isRight(), true);
+      expect(accountListOrError.toIterable().first.data.length == 1, true);
+      final account = accountListOrError.toIterable().first.data.first;
+      expect(account.balance, 0);
+    }
   });
 }
