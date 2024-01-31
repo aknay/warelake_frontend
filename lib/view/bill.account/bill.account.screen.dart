@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_frontend/data/bill.account/bill.account.service.dart';
+import 'package:inventory_frontend/data/monthly.summary/monthly.summary.chart.wrapper.dart';
 import 'package:inventory_frontend/domain/bill.account/entities.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
 import 'package:flutter/foundation.dart' as foundation;
@@ -26,14 +27,14 @@ class BillAccountScreen extends ConsumerWidget {
 
     return ScaffoldAsyncValueWidget<BillAccount>(
       value: billAccountAsync,
-      data: (job) => PageContents(so: job),
+      data: (job) => PageContents(billAccount: job),
     );
   }
 }
 
 class PageContents extends ConsumerWidget {
-  const PageContents({super.key, required this.so});
-  final BillAccount so;
+  const PageContents({super.key, required this.billAccount});
+  final BillAccount billAccount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,13 +49,14 @@ class PageContents extends ConsumerWidget {
                 Column(
                   children: [
                     const Text("Total Amount"),
-                    Text("${so.currencyCodeAsEnum.name} ${so.totalBalance}"),
+                    Text("${billAccount.currencyCodeAsEnum.name} ${billAccount.totalBalance}"),
                   ],
                 ),
                 // const Spacer(),
-                Text(so.status.toUpperCase())
+                Text(billAccount.status.toUpperCase())
               ],
             ),
+                        SizedBox(height: 150, child: MonthlySummaryChartWrapper(billAccount: billAccount)),
             // Expanded(child: _getListView(so.lineItems))
           ],
         ));

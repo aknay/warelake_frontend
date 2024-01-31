@@ -8,6 +8,9 @@ import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/monthly.summary/api.dart';
 import 'package:inventory_frontend/domain/monthly.summary/entities.dart';
 import 'package:inventory_frontend/domain/responses.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'monthly.summary.repository.g.dart';
 
 class MonthlySummaryRepository extends MonthlySummaryApi {
   @override
@@ -29,3 +32,9 @@ class MonthlySummaryRepository extends MonthlySummaryApi {
     }
   }
 }
+
+@Riverpod(keepAlive: true)
+MonthlySummaryApi monthlySummaryRepository(MonthlySummaryRepositoryRef ref) {
+  return MonthlySummaryRepository();
+}
+
