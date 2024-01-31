@@ -23,17 +23,17 @@ class SaleOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _saleOrderRepo.issuedSaleOrder(saleOrder: saleOrder, teamId: teamId, token: token);
+      final createdOrError = await _saleOrderRepo.issued(saleOrder: saleOrder, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
 
-    Future<Either<String, SaleOrder>> getSaleOrder({required String saleOrderId}) async {
+  Future<Either<String, SaleOrder>> getSaleOrder({required String saleOrderId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _saleOrderRepo.getSaleOrder(saleOrderId: saleOrderId, teamId: teamId, token: token);
-      return createdOrError.fold((l) => Left(l.message), (r) =>  Right(r));
+      final createdOrError = await _saleOrderRepo.get(saleOrderId: saleOrderId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 
@@ -46,11 +46,12 @@ class SaleOrderService {
     });
   }
 
-    Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
+  Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
+      final items = await _saleOrderRepo.deliveredItems(
+          saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }

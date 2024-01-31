@@ -356,8 +356,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError =
-        await saleOrderRepo.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderRepo.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
@@ -400,8 +399,7 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00002");
 
-      final soOrError =
-          await saleOrderRepo.issuedSaleOrder(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.issued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.deliveredItems(
         saleOrderId: so.id!,
@@ -443,8 +441,7 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00003");
 
-      final soOrError =
-          await saleOrderRepo.issuedSaleOrder(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.issued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.deliveredItems(
         saleOrderId: so.id!,
@@ -469,7 +466,6 @@ void main() async {
       expect(monthlySummary.outgoingAmount, 0);
     }
   });
-
 
   test('you can get updated monthly summary after deleting a so', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
@@ -507,8 +503,7 @@ void main() async {
         lineItems: [lineItem],
         subTotal: 10,
         total: 20);
-    final soCreatedOrError =
-        await saleOrderRepo.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderRepo.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
     final firstSo = soCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -554,8 +549,7 @@ void main() async {
           subTotal: 10,
           total: 20);
 
-      final soOrError =
-          await saleOrderRepo.issuedSaleOrder(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.issued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
       secondPo = soOrError.toIterable().first;
       await saleOrderRepo.deliveredItems(
           date: DateTime.now(), saleOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);

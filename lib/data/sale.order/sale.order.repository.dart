@@ -9,6 +9,7 @@ import 'package:inventory_frontend/domain/responses.dart';
 import 'package:inventory_frontend/domain/sale.order/api.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
 import 'package:inventory_frontend/domain/sale.order/payloads.dart';
+import 'package:inventory_frontend/domain/sale.order/search.field.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sale.order.repository.g.dart';
@@ -44,7 +45,7 @@ class SaleOrderRepository extends SaleOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, SaleOrder>> issuedSaleOrder(
+  Future<Either<ErrorResponse, SaleOrder>> issued(
       {required SaleOrder saleOrder, required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.post(
@@ -63,9 +64,14 @@ class SaleOrderRepository extends SaleOrderApi {
 
   @override
   Future<Either<ErrorResponse, ListResponse<SaleOrder>>> list(
-      {required String teamId, required String token}) async {
+      {required String teamId, required String token, SaleOrderSearchField? searchField}) async {
     try {
-      final response = await HttpHelper.get(url: ApiEndPoint.getSaleOrderEndPoint(), token: token, teamId: teamId);
+      final response = await HttpHelper.get(
+        url: ApiEndPoint.getSaleOrderEndPoint(),
+        token: token,
+        teamId: teamId,
+        additionalQuery: searchField?.toMap(),
+      );
       log("list sale order response code ${response.statusCode}");
       log("list sale order response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
@@ -80,7 +86,7 @@ class SaleOrderRepository extends SaleOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, SaleOrder>> getSaleOrder(
+  Future<Either<ErrorResponse, SaleOrder>> get(
       {required String saleOrderId, required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.get(

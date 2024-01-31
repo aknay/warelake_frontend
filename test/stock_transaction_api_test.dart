@@ -72,7 +72,6 @@ void main() async {
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
-    final tShirtItem = itemCreated.toIterable().first;
 
     final retrievedShirts = itemCreated.toIterable().first.variations;
     final retrievedWhiteShirt = retrievedShirts.where((element) => element.name == "White shirt").first;
@@ -132,7 +131,6 @@ void main() async {
 
     final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
-    final tShirtItem = itemCreated.toIterable().first;
 
     final retrievedShirts = itemCreated.toIterable().first.variations;
     final retrievedWhiteShirt = retrievedShirts.where((element) => element.name == "White shirt").first;

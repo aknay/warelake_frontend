@@ -199,8 +199,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-0000$i");
-      final soCreatedOrError =
-          await saleOrderApi.issuedSaleOrder(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
       saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
     }
@@ -217,7 +216,7 @@ void main() async {
     }
 
     //add purchase order
-        List<String> purchaseOrderIdList = [];
+    List<String> purchaseOrderIdList = [];
     for (int i = 0; i < 30; i++) {
       final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
@@ -240,7 +239,7 @@ void main() async {
       await Future.delayed(const Duration(milliseconds: 1000));
     }
     {
-            //delivered sale order
+      //delivered sale order
       final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
 
       for (var element in poIdList) {
