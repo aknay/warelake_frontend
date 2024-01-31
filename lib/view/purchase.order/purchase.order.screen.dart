@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_frontend/data/purchase.order/purchase.order.service.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/valueobject.dart';
 import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
 import 'package:inventory_frontend/view/purchase.order/purchase.order.list.controller.dart';
 

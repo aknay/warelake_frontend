@@ -1,11 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
-
-enum PurchaseOrderStatus {
-  issued,
-  received,
-}
+import 'package:inventory_frontend/domain/purchase.order/valueobject.dart';
 
 class PurchaseOrder {
   String? id;

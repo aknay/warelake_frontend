@@ -1,0 +1,4 @@
+enum PurchaseOrderStatus {
+  issued,
+  received,
+}

@@ -8,6 +8,7 @@ import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/purchase.order/api.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/payloads.dart';
+import 'package:inventory_frontend/domain/purchase.order/search.field.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,7 +40,8 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
       final payload = PurchaseOrderUpdatePayload.create(date: date);
 
       final response = await HttpHelper.post(
-          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId),body: payload.toMap(),
+          url: ApiEndPoint.getReceivedItemsPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId),
+          body: payload.toMap(),
           token: token,
           teamId: teamId);
       log("purchase order create response code ${response.statusCode}");
@@ -91,10 +93,17 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<PurchaseOrder>>> list(
-      {required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, ListResponse<PurchaseOrder>>> list({
+    required String teamId,
+    required String token,
+    PurchaseOrderSearchField? searchField,
+  }) async {
     try {
-      final response = await HttpHelper.get(url: ApiEndPoint.getPurchaseOrderEndPoint(), token: token, teamId: teamId);
+      final response = await HttpHelper.get(
+          url: ApiEndPoint.getPurchaseOrderEndPoint(),
+          token: token,
+          teamId: teamId,
+          additionalQuery: searchField?.toMap());
       log("list sale order response code ${response.statusCode}");
       log("list sale order response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {

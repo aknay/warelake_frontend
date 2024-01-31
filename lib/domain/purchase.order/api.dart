@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/search.field.dart';
 import 'package:inventory_frontend/domain/responses.dart';
 
 abstract class PurchaseOrderApi {
@@ -32,5 +33,6 @@ abstract class PurchaseOrderApi {
   Future<Either<ErrorResponse, ListResponse<PurchaseOrder>>> list({
     required String teamId,
     required String token,
+    PurchaseOrderSearchField? searchField,
   });
 }

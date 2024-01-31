@@ -11,6 +11,8 @@ import 'package:inventory_frontend/data/purchase.order/purchase.order.repository
 import 'package:inventory_frontend/data/team/rest.api.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
+import 'package:inventory_frontend/domain/purchase.order/search.field.dart';
+import 'package:inventory_frontend/domain/purchase.order/valueobject.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
@@ -212,6 +214,83 @@ void main() async {
     }
   });
 
+  test('you can list po with search', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final lineItems = await getLineItem(teamId: team.id!);
+
+    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
+    final account = accountListOrError.toIterable().first.data.first;
+
+    final po = PurchaseOrder.create(
+      accountId: account.id!,
+      date: DateTime.now(),
+      currencyCode: CurrencyCode.AUD,
+      lineItems: lineItems,
+      subTotal: 10,
+      total: 20,
+      purchaseOrderNumber: "PO-0001",
+    );
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+
+    {
+      // for issued, we have a list with one po
+      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.issued);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      expect(poListOrError.toIterable().first.data.length, 1);
+    }
+    {
+      // for received, we have a empty list
+      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.received);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      expect(poListOrError.toIterable().first.data.isEmpty, true);
+    }
+
+    {
+      // receiving items
+      final now = DateTime.now();
+      await purchaseOrderApi.receivedItems(
+          purchaseOrderId: poCreatedOrError.toIterable().first.id!,
+          date: now,
+          teamId: team.id!,
+          token: firstUserAccessToken);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      final poOrError = await purchaseOrderApi.get(
+          purchaseOrderId: poCreatedOrError.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
+      final po = poOrError.toIterable().first;
+      expect(po.receivedAt, DateFormat('yyyy-MM-dd').format(now));
+    }
+    {
+      // for issued, we have a empty list
+      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.issued);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      expect(poListOrError.toIterable().first.data.isEmpty, true);
+    }
+    {
+      // for received, we have a list with one po
+      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.received);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      expect(poListOrError.toIterable().first.data.length, 1);
+    }
+  });
+
   test('you can received item from po', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
@@ -360,7 +439,7 @@ void main() async {
     final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
         purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
-    
+
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 

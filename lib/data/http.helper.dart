@@ -68,8 +68,8 @@ class HttpHelper {
         body: jsonEncode(body));
   }
 
-  static get({required String url, required String token, String? teamId, Map<String, String>? additionalQuery}) {
-    Map<String, String> map = {};
+  static get({required String url, required String token, String? teamId, Map<String, dynamic>? additionalQuery}) {
+    Map<String, dynamic> map = {};
     if (teamId != null) {
       map["team_id"] = teamId;
     }
