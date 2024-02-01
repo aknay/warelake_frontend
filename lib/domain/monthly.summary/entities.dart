@@ -62,12 +62,12 @@ class MonthYear with _$MonthYear {
 
   DateTime get toDateTime => DateTime.utc(year, month);
 
-  String toMonthString() {
-    final df = DateFormat('MMMM');
+  String toYearMonthDayString() {
+    final df = DateFormat('yyyy-MM-dd');
     return df.format(DateTime(year, month));
   }
 
-    String toShortMonthString() {
+  String toShortMonthString() {
     final df = DateFormat('MMM');
     return df.format(DateTime(year, month));
   }

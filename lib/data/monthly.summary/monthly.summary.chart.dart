@@ -1,4 +1,3 @@
-
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +70,7 @@ class IncomingOutGoingAmountChartState extends ConsumerState<MonthlySummaryChart
   GroupData _getGroupData(
       {required index, required MonthYear monthYear, required List<MonthlySummary> monthlySummaryList}) {
     final monthSummaryList =
-        monthlySummaryList.where((element) => element.monthYear == monthYear.toMonthString());
+        monthlySummaryList.where((element) => element.monthYear == monthYear.toYearMonthDayString());
 
     return monthSummaryList.isEmpty
         ? GroupData.withEmpty(index: index)
@@ -86,8 +85,8 @@ class IncomingOutGoingAmountChartState extends ConsumerState<MonthlySummaryChart
     super.initState();
     final onlySixMonthList = [for (var i = 0; i >= -5; i--) i];
     final monthYearList = onlySixMonthList.map((e) => MonthYear.thisMonth().getDeltaMonth(e)).toList();
-    final monthlySummaryList = widget.monthlySummaryList;
 
+    final monthlySummaryList = widget.monthlySummaryList;
     final groupDataList = monthYearList
         .mapIndexed(
             (index, element) => _getGroupData(index: index, monthYear: element, monthlySummaryList: monthlySummaryList))
