@@ -202,6 +202,23 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({required String teamId, required String token}) async {
+    try {
+      final response =
+          await HttpHelper.get(url: ApiEndPoint.itemUtilizationEndPoint, token: token, teamId: teamId);
+      log("get item response code ${response.statusCode}");
+      log("get item response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return Right(ItemUtilization.fromMap(jsonDecode(response.body)));
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)

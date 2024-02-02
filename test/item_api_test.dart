@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ import 'package:inventory_frontend/domain/item/search.fields.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
+import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
@@ -20,7 +22,7 @@ void main() async {
   late String firstUserAccessToken;
 
   setUpAll(() async {
-    const email = "abc@someemail.com";
+    final email = generateRandomEmail();
     const password = "nakbi6785!";
 
     Map<String, dynamic> signUpData = {};
@@ -45,28 +47,51 @@ void main() async {
     firstUserAccessToken = signInResponse.idToken!;
   });
 
+  Item getShirt() {
+    final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+
+    final whiteShirt = ItemVariation.create(
+        name: "White Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final blackShirt = ItemVariation.create(
+        name: "Black Shirt",
+        stockable: true,
+        sku: 'sku 234',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+  }
+
   test('creating item should be successful', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
+    {
+      // item utilization must be zero when there is no item added
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.itemVariationCount, 0);
+    }
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItem(item: getShirt(), teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final item = itemCreated.toIterable().first;
-    expect(item.variations.length, 1);
+    expect(item.variations.length, 2);
+
+    {
+      // item utilization must be zero when there is no item added
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.itemVariationCount, 2);
+    }
   });
 
   test('you can get back the item', () async {
@@ -136,18 +161,7 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItem(item: getShirt(), teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     {
@@ -167,6 +181,12 @@ void main() async {
       expect(itemListOrError.isRight(), true);
       expect(itemListOrError.toIterable().first.data.isEmpty, true);
     }
+    {
+      // item utilization must be zero after deleted
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.itemVariationCount, 0);
+    }
   });
 
   test('you can delete the item variation', () async {
@@ -175,18 +195,7 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItem(item: getShirt(), teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     {
@@ -205,11 +214,10 @@ void main() async {
     expect(deletedOrError.isRight(), true);
 
     {
-      //check item list is empty
-      final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
-      expect(itemListOrError.isRight(), true);
-      expect(itemListOrError.toIterable().first.data.isEmpty, false);
-      expect(itemListOrError.toIterable().first.data.first.variations.isEmpty, true);
+      // item utilization must be 1 after only one deleted
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.itemVariationCount, 1);
     }
   });
 

@@ -52,4 +52,9 @@ abstract class ItemApi {
     required String teamId,
     required String token,
   });
+
+    Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
+    required String teamId,
+    required String token,
+  });
 }
