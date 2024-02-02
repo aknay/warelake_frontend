@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/view/main/drawer.dart';
+import 'package:inventory_frontend/view/main/item.utilization.wiget.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -20,7 +21,9 @@ class DashboardScreen extends ConsumerWidget {
               icon: const Icon(Icons.account_circle_outlined)),
         ],
       ),
-      body: const Text("main screen"),
+      body: const Column(
+        children: [ItemUtilizationWidget()],
+      ),
       drawer: const DrawerWidget(),
     );
   }

@@ -16,3 +16,6 @@
 - `flutter emulators`
 - `flutter emulators --launch <emulator id>`
 - `flutter run`
+
+# To remove emulator lock
+- `rm ~/.android/avd/Pixel_6_API_34.avd/*.lock`

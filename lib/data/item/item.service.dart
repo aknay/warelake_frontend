@@ -74,6 +74,16 @@ class ItemService {
       return items.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
+
+  Future<Either<String, ItemUtilization>> get itemUtilization async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _itemRepo.getItemUtilization(teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
+
 }
 
 @Riverpod(keepAlive: true)
