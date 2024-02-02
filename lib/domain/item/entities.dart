@@ -195,21 +195,20 @@ class PriceMoney {
 }
 
 class ItemUtilization {
-  int itemVariationCount;
+  int totalItemVariationsCount;
+  int totalItemCount;
+  int totalQuantityOfAllItemVariation;
 
-  ItemUtilization({
-    required this.itemVariationCount,
-  });
+  ItemUtilization(
+      {required this.totalItemVariationsCount,
+      required this.totalItemCount,
+      required this.totalQuantityOfAllItemVariation});
 
   factory ItemUtilization.fromMap(Map<String, dynamic> json) {
     return ItemUtilization(
-      itemVariationCount: json['item_variation_count'],
+      totalItemVariationsCount: json['total_item_variations_count'],
+      totalItemCount: json['total_item_count'],
+      totalQuantityOfAllItemVariation: json['total_quantity_of_all_item_variation'],
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'item_variation_count': itemVariationCount,
-    };
   }
 }

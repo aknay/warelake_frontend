@@ -77,7 +77,7 @@ void main() async {
       // item utilization must be zero when there is no item added
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
-      expect(iuOrError.toIterable().first.itemVariationCount, 0);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 0);
     }
 
     final itemCreated = await itemRepo.createItem(item: getShirt(), teamId: team.id!, token: firstUserAccessToken);
@@ -90,7 +90,9 @@ void main() async {
       // item utilization must be zero when there is no item added
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
-      expect(iuOrError.toIterable().first.itemVariationCount, 2);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 2);
+      expect(iuOrError.toIterable().first.totalItemCount, 1);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
     }
   });
 
@@ -185,7 +187,9 @@ void main() async {
       // item utilization must be zero after deleted
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
-      expect(iuOrError.toIterable().first.itemVariationCount, 0);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 0);
+      expect(iuOrError.toIterable().first.totalItemCount, 0);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
     }
   });
 
@@ -217,7 +221,9 @@ void main() async {
       // item utilization must be 1 after only one deleted
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
-      expect(iuOrError.toIterable().first.itemVariationCount, 1);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 1);
+      expect(iuOrError.toIterable().first.totalItemCount, 1);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
     }
   });
 

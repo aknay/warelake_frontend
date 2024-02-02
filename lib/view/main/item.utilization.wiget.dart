@@ -13,7 +13,7 @@ class ItemUtilizationWidget extends ConsumerWidget {
           return Row(
             children: [
               Column(
-                children: [Text("${data.itemVariationCount}"), const Text('Items')],
+                children: [Text("${data.totalItemVariationsCount}"), const Text('Items')],
               ),
             ],
           );

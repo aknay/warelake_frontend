@@ -133,8 +133,8 @@ class IncomingOutGoingAmountChartState extends ConsumerState<MonthlySummaryChart
           padding: const EdgeInsets.only(left: 16.0, bottom: 8),
           child: LegendsListWidget(
             legends: [
-              Legend('Incoming', rallyGreen),
-              Legend('Outgoing', rallyOrange),
+              Legend('Sale', rallyGreen),
+              Legend('Purchase', rallyOrange),
             ],
           ),
         ),
