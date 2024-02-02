@@ -1,5 +1,5 @@
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
+import 'package:inventory_frontend/data/onboarding/team.service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -14,7 +14,7 @@ class TeamListController extends _$TeamListController {
 
   Future<bool> submit({required String teamName, required tz.Location location, required Currency currency}) async {
     final addedOrError =
-        await ref.read(onboardingServiceProvider).submit(teamName: teamName, location: location, currency: currency);
+        await ref.read(teamServiceProvider).submit(teamName: teamName, location: location, currency: currency);
     return addedOrError.fold((l) {
       state = AsyncError("Unable to create a team", StackTrace.current);
       return false;

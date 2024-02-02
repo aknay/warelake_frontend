@@ -9,7 +9,7 @@ import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/monthly.summary/monthly.summary.repository.dart';
 import 'package:inventory_frontend/data/purchase.order/purchase.order.repository.dart';
 import 'package:inventory_frontend/data/sale.order/sale.order.repository.dart';
-import 'package:inventory_frontend/data/team/rest.api.dart';
+import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/sale.order/entities.dart';
@@ -18,7 +18,7 @@ import 'package:inventory_frontend/domain/team/entities.dart';
 import 'helpers/sign.in.response.dart';
 
 void main() async {
-  final teamApi = TeamRestApi();
+  final teamApi = TeamRepository();
   final itemApi = ItemRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();

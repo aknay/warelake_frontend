@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/stock.transaction/stock.transaction.repository.dart';
-import 'package:inventory_frontend/data/team/rest.api.dart';
+import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
@@ -15,12 +15,12 @@ import 'helpers/sign.in.response.dart';
 import 'helpers/test.helper.dart';
 
 void main() async {
-  final teamApi = TeamRestApi();
+  final teamApi = TeamRepository();
   final itemApi = ItemRepository();
   final stockTransactionRepo = StockTransactionRepository();
   late String firstUserAccessToken;
 
- setUpAll(() async {
+  setUpAll(() async {
     final email = generateRandomEmail();
     const password = "nakbi6785!";
 
@@ -105,7 +105,7 @@ void main() async {
     }
   });
 
-    test('you can get back the created stock transaction', () async {
+  test('you can get back the created stock transaction', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
@@ -153,7 +153,8 @@ void main() async {
 
     final createdStx = stCreatedOrError.toIterable().first;
     {
-     final stxOrError = await stockTransactionRepo.get(stockTransactionId: createdStx.id!, teamId: team.id!, token: firstUserAccessToken);
+      final stxOrError = await stockTransactionRepo.get(
+          stockTransactionId: createdStx.id!, teamId: team.id!, token: firstUserAccessToken);
       final stx = stxOrError.toIterable().first;
       final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White shirt").first;
       final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black shirt").first;

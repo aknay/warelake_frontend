@@ -6,24 +6,25 @@ import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/errors/response.dart';
+import 'package:inventory_frontend/domain/team/api.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-part 'onboarding.service.g.dart';
+part 'team.service.g.dart';
 
-class OnboardingService {
+class TeamService {
   final AuthRepository authRepo;
   final TeamIdSharedRefereceRepository teamIdSharedRefRepository;
-  final TeamRepository teamRepository;
-  OnboardingService({required this.authRepo, required this.teamIdSharedRefRepository, required this.teamRepository});
+  final TeamApi teamRepository;
+  TeamService({required this.authRepo, required this.teamIdSharedRefRepository, required this.teamRepository});
 
   static const onboardingCompleteKey = 'onboardingComplete';
 
   Future<Either<ErrorResponse, bool>> get isOnboardingCompleted async {
     final token = await authRepo.shouldGetToken();
     log("print call?");
-    final onlineTeamListOrError = await teamRepository.teamApi.list(token: token);
+    final onlineTeamListOrError = await teamRepository.list(token: token);
 
     if (onlineTeamListOrError.isLeft()) {
       return left(ErrorResponse.withOtherError(message: "unable to connect"));
@@ -59,21 +60,39 @@ class OnboardingService {
       {required String teamName, required tz.Location location, required Currency currency}) async {
     final team = Team.create(name: teamName, timeZone: location.name, currencyCode: currency.toCurrencyCode);
     final token = await authRepo.shouldGetToken();
-    final newTeamOrError = await teamRepository.teamApi.create(team: team, token: token);
+    final newTeamOrError = await teamRepository.create(team: team, token: token);
     await newTeamOrError.fold((l) => null, (r) async {
       await teamIdSharedRefRepository.setTeam(team: r);
     });
 
     return newTeamOrError;
   }
+
+  Future<Either<String, Team>> get(
+      {required String teamName, required tz.Location location, required Currency currency}) async {
+    final teamIdOrNone = teamIdSharedRefRepository.existingTeamId;
+
+    if (teamIdOrNone.isNone()) {
+      return left("team id is not available");
+    }
+    final teamId = teamIdOrNone.toNullable()!;
+
+    // final team = teamRepository.teamApi.
+    final token = await authRepo.shouldGetToken();
+    final newTeamOrError = await teamRepository.get(teamId: teamId, token: token);
+    await newTeamOrError.fold((l) => null, (r) async {
+      await teamIdSharedRefRepository.setTeam(team: r);
+    });
+  
+    return newTeamOrError.fold((l) => left(l.message), (r) => right(r));
+  }
 }
 
 @Riverpod(keepAlive: true)
 // @riverpod
-OnboardingService onboardingService(OnboardingServiceRef ref) {
+TeamService teamService(TeamServiceRef ref) {
   final authRepo = ref.watch(authRepositoryProvider);
   final teamIdSharedRefRepo = ref.watch(teamIdSharedReferenceRepositoryProvider);
   final teamRepo = ref.watch(teamRepositoryProvider);
-  return OnboardingService(
-      authRepo: authRepo, teamIdSharedRefRepository: teamIdSharedRefRepo, teamRepository: teamRepo);
+  return TeamService(authRepo: authRepo, teamIdSharedRefRepository: teamIdSharedRefRepo, teamRepository: teamRepo);
 }

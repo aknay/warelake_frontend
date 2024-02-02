@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/team/rest.api.dart';
+import 'package:inventory_frontend/data/team/team.repository.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -14,7 +14,7 @@ import 'helpers/sign.in.response.dart';
 import 'helpers/test.helper.dart';
 
 void main() async {
-  final teamApi = TeamRestApi();
+  final teamApi = TeamRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 

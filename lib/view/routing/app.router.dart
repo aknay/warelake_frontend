@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/onboarding/onboarding.service.dart';
+import 'package:inventory_frontend/data/onboarding/team.service.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
 import 'package:inventory_frontend/view/auth/custom.sign.in.screen.dart';
@@ -99,7 +99,7 @@ GoRouter goRouter(GoRouterRef ref) {
 
       if (path.startsWith('/dashboard')) {
         //we need to guard otherwise it will call after '\dashboard'
-        final onboardingService = ref.watch(onboardingServiceProvider);
+        final onboardingService = ref.watch(teamServiceProvider);
         final isCompletedOrError = await onboardingService.isOnboardingCompleted;
         return isCompletedOrError.fold((l) => '/error', (isCompleted) => isCompleted ? null : '/onboarding');
       }
