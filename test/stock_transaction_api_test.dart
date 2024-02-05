@@ -90,7 +90,7 @@ void main() async {
     }
 
     {
-      // item utilization must be zero when there is no item added
+      // item utilization toal quatity of all item variation should be same as total line item
       final total = lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
 
       final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
@@ -167,28 +167,21 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final shirt = getShirt();
+    final jean = getJean();
 
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-    final tShirtItem = itemCreated.toIterable().first;
+    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeanCreated = jeansCreatedOrError.toIterable().first;
 
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final stockInLineItems = getStocklLineItem(createdItemList: [shirtCreated, jeanCreated]);
 
-    final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 7);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
-      lineItems: [lineItem],
+      lineItems: stockInLineItems,
       stockMovement: StockMovement.stockIn,
     );
     final stCreatedOrError =
@@ -196,44 +189,45 @@ void main() async {
 
     expect(stCreatedOrError.isRight(), true);
 
-    final stx = stCreatedOrError.toIterable().first;
-    expect(stx.lineItems.first.quantity, 7);
-    expect(stx.lineItems.first.oldStockLevel, 0);
-    expect(stx.lineItems.first.newStockLevel, 7);
+    final stockInStx = stCreatedOrError.toIterable().first;
+    final retrievedStxInWhiteShirtLineItem =
+        stockInStx.lineItems.where((element) => element.itemVariation.name == "White Shirt").first;
+    final retrievedStxInBlackShirtLineItem =
+        stockInStx.lineItems.where((element) => element.itemVariation.name == "Black Shirt").first;
 
+    final stockOutLineItems = getStocklLineItem(createdItemList: [shirtCreated, jeanCreated]);
     {
-      //check item stock is updated
-      final itemOrError = await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
-      final item = itemOrError.toIterable().first;
-      final whiteTShirt = item.variations.first;
-      expect(whiteTShirt.itemCount, 7);
-    }
-
-    {
-      final lineItem = StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 3);
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
-        lineItems: [lineItem],
+        lineItems: stockOutLineItems,
         stockMovement: StockMovement.stockOut,
       );
       final stCreatedOrError =
           await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-
       expect(stCreatedOrError.isRight(), true);
-
       final stx = stCreatedOrError.toIterable().first;
-      expect(stx.lineItems.first.quantity, 3);
-      expect(stx.lineItems.first.oldStockLevel, 7);
-      expect(stx.lineItems.first.newStockLevel, 4);
+      final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White Shirt").first;
+      final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black Shirt").first;
 
-      {
-        //check item stock is updated
-        final itemOrError =
-            await itemApi.getItem(itemId: tShirtItem.id!, teamId: team.id!, token: firstUserAccessToken);
-        final item = itemOrError.toIterable().first;
-        final whiteTShirt = item.variations.first;
-        expect(whiteTShirt.itemCount, 4);
-      }
+      final whiteShirtLineItem = stockOutLineItems.where((e) => e.itemVariation.name == "White Shirt").first;
+      final blackShirtLineItem = stockOutLineItems.where((e) => e.itemVariation.name == "Black Shirt").first;
+
+      expect(retrivedWhiteShirt.quantity, whiteShirtLineItem.quantity);
+      expect(retrivedWhiteShirt.oldStockLevel, retrievedStxInWhiteShirtLineItem.quantity);
+      expect(retrivedWhiteShirt.newStockLevel, retrievedStxInWhiteShirtLineItem.quantity - whiteShirtLineItem.quantity);
+      expect(retrivedBlackShirt.quantity, blackShirtLineItem.quantity);
+      expect(retrivedBlackShirt.oldStockLevel, retrievedStxInBlackShirtLineItem.quantity);
+      expect(retrivedBlackShirt.newStockLevel, retrievedStxInBlackShirtLineItem.quantity - blackShirtLineItem.quantity);
+    }
+    {
+      // item utilization toal quatity of all item variation should be same as total line item
+      final totalStockOut =
+          stockOutLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+      final totalStockIn =
+          stockInLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, totalStockIn - totalStockOut);
     }
   });
 
