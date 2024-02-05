@@ -52,35 +52,16 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final shirt = getShirt();
+    final jean = getJean();
 
-    final whiteShirt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final blackShirt = ItemVariation.create(
-        name: "Black shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'kg');
+    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeanCreated = jeansCreatedOrError.toIterable().first;
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedShirts = itemCreated.toIterable().first.variations;
-    final retrievedWhiteShirt = retrievedShirts.where((element) => element.name == "White shirt").first;
-    final retrievedBlackShirt = retrievedShirts.where((element) => element.name == "Black shirt").first;
-
-    final lineItems = [
-      StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 2),
-      StockLineItem.create(itemVariation: retrievedBlackShirt, quantity: 3)
-    ];
+    final lineItems = getStocklLineItem(createdItemList: [shirtCreated, jeanCreated]);
 
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
@@ -94,14 +75,27 @@ void main() async {
 
     final stx = stCreatedOrError.toIterable().first;
     {
-      final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White shirt").first;
-      final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black shirt").first;
-      expect(retrivedWhiteShirt.quantity, 2);
+      final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White Shirt").first;
+      final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black Shirt").first;
+
+      final whiteShirtLineItem = lineItems.where((e) => e.itemVariation.name == "White Shirt").first;
+      final blackShirtLineItem = lineItems.where((e) => e.itemVariation.name == "Black Shirt").first;
+
+      expect(retrivedWhiteShirt.quantity, whiteShirtLineItem.quantity);
       expect(retrivedWhiteShirt.oldStockLevel, 0);
-      expect(retrivedWhiteShirt.newStockLevel, 2);
-      expect(retrivedBlackShirt.quantity, 3);
+      expect(retrivedWhiteShirt.newStockLevel, whiteShirtLineItem.quantity);
+      expect(retrivedBlackShirt.quantity, blackShirtLineItem.quantity);
       expect(retrivedBlackShirt.oldStockLevel, 0);
-      expect(retrivedBlackShirt.newStockLevel, 3);
+      expect(retrivedBlackShirt.newStockLevel, blackShirtLineItem.quantity);
+    }
+
+    {
+      // item utilization must be zero when there is no item added
+      final total = lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, total);
     }
   });
 
