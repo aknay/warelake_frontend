@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:dartz/dartz.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
@@ -71,9 +72,16 @@ List<LineItem> getLineItem({required List<Item> createdItemList}) {
       .toList();
 }
 
-List<StockLineItem> getStocklLineItem({required List<Item> createdItemList}) {
+List<StockLineItem> getStocklLineItemWithRandomCount({required List<Item> createdItemList}) {
   return createdItemList
       .map((e) => e.variations.map((e) => StockLineItem.create(itemVariation: e, quantity: Random().nextInt(5) + 5)))
+      .flattened
+      .toList();
+}
+
+List<StockLineItem> getStockLineItem({required List<Tuple2<int, Item>> items}) {
+  return items
+      .map((e) => e.value2.variations.map((f) => StockLineItem.create(itemVariation: f, quantity: e.value1)))
       .flattened
       .toList();
 }
