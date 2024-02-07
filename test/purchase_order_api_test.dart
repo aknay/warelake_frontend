@@ -375,6 +375,80 @@ void main() async {
     }
   });
 
+  test('you can delete po with issued state and check totalQuantityOfAllItemVariation', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+
+    final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: lineItems,
+        subTotal: 10,
+        total: 20);
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+    final createdPo = poCreatedOrError.toIterable().first;
+
+    {
+      final deletedOrError = await purchaseOrderApi.delete(
+        purchaseOrderId: createdPo.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken,
+      );
+      expect(deletedOrError.isRight(), true);
+    }
+
+    {
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
+    }
+  });
+
+  test('you can delete po with received state and check totalQuantityOfAllItemVariation', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: lineItems,
+        subTotal: 10,
+        total: 20);
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+    final createdPo = poCreatedOrError.toIterable().first;
+    expect(createdPo.status, 'issued');
+    final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+        purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+    expect(poItemsReceivedOrError.isRight(), true);
+
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      final deletedOrError = await purchaseOrderApi.delete(
+        purchaseOrderId: createdPo.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken,
+      );
+      expect(deletedOrError.isRight(), true);
+    }
+
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 1));
+    {
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
+    }
+  });
+
   test('you can delete po with received state', () async {
     final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
     final po = PurchaseOrder.create(
