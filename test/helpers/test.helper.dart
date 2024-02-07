@@ -64,8 +64,8 @@ Item getJean() {
   return Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs');
 }
 
-List<LineItem> getLineItemsWithRandomCount({required List<Item> createdItemList}) {
-  return createdItemList
+List<LineItem> getLineItemsWithRandomCount({required List<Item> items}) {
+  return items
       .map((e) => e.variations.map((e) => LineItem.create(
           itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: Random().nextInt(5) + 5, unit: 'pcs')))
       .flattened
