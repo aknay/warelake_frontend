@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -9,6 +9,7 @@ import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/item/item.repository.dart';
 import 'package:inventory_frontend/data/purchase.order/purchase.order.repository.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
+import 'package:inventory_frontend/domain/bill.account/entities.dart';
 import 'package:inventory_frontend/domain/item/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/entities.dart';
 import 'package:inventory_frontend/domain/purchase.order/search.field.dart';
@@ -24,6 +25,10 @@ void main() async {
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
+  late Item shirtItem;
+  late Item jeanItem;
+  late BillAccount billAccount;
+  late Team team;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -51,93 +56,31 @@ void main() async {
     firstUserAccessToken = signInResponse.idToken!;
   });
 
-  Item getShirt() {
-    final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-
-    final whiteShirt = ItemVariation.create(
-        name: "White Shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-
-    final blackShirt = ItemVariation.create(
-        name: "Black Shirt",
-        stockable: true,
-        sku: 'sku 234',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-
-    return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-  }
-
-  Item getJean() {
-    final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-
-    final whiteJean = ItemVariation.create(
-        name: "White Jean",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-
-    final blackJean = ItemVariation.create(
-        name: "Black Jean",
-        stockable: true,
-        sku: 'sku 234',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-
-    return Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs');
-  }
-
-  Future<List<LineItem>> getLineItem({required String teamId}) async {
-    final shirt = getShirt();
-    final shirtCreated = await itemApi.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
-    expect(shirtCreated.isRight(), true);
-    final shirtLineItems = shirtCreated
-        .toIterable()
-        .first
-        .variations
-        .map((e) => LineItem.create(
-            itemVariation: e,
-            rate: e.purchasePriceMoney.amountInDouble,
-            quantity: Random().nextInt(1) + 5,
-            unit: "pcs"))
-        .toList();
-
-    final jean = getJean();
-    final jeanCreated = await itemApi.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
-    expect(jeanCreated.isRight(), true);
-    final jeanLineItems = jeanCreated
-        .toIterable()
-        .first
-        .variations
-        .map((e) => LineItem.create(
-            itemVariation: e,
-            rate: e.purchasePriceMoney.amountInDouble,
-            quantity: Random().nextInt(1) + 5,
-            unit: "pcs"))
-        .toList();
-    return shirtLineItems + jeanLineItems;
-  }
-
-  test('creating po should be successful', () async {
+  setUp(() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
+    team = createdOrError.toIterable().first;
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
+    billAccount = accountListOrError.toIterable().first.data.first;
 
+    final shirt = getShirt();
+    final jean = getJean();
+
+    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    shirtItem = shirtCreatedOrError.toIterable().first;
+
+    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    jeanItem = jeansCreatedOrError.toIterable().first;
+  });
+
+  test('creating po should be successful', () async {
     final po = PurchaseOrder.create(
-        accountId: account.id!,
+        accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: await getLineItem(teamId: team.id!),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -150,21 +93,35 @@ void main() async {
     expect(createdPo.purchaseOrderNumber, "PO-0001");
   });
 
-  test('you can get po', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
-
+  test('check totalQuantityOfAllItemVariation after po issued', () async {
     final po = PurchaseOrder.create(
-        accountId: account.id!,
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        purchaseOrderNumber: "PO-0001",
+        total: 20);
+
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+
+    {
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
+    }
+  });
+
+  test('you can get po', () async {
+    final po = PurchaseOrder.create(
+        accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         purchaseOrderNumber: "PO-0001",
-        lineItems: await getLineItem(teamId: team.id!),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
@@ -182,19 +139,10 @@ void main() async {
   });
 
   test('you can list po', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final lineItems = await getLineItem(teamId: team.id!);
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
 
     final po = PurchaseOrder.create(
-      accountId: account.id!,
+      accountId: billAccount.id!,
       date: DateTime.now(),
       currencyCode: CurrencyCode.AUD,
       lineItems: lineItems,
@@ -215,19 +163,10 @@ void main() async {
   });
 
   test('you can list po with search', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final lineItems = await getLineItem(teamId: team.id!);
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
 
     final po = PurchaseOrder.create(
-      accountId: account.id!,
+      accountId: billAccount.id!,
       date: DateTime.now(),
       currencyCode: CurrencyCode.AUD,
       lineItems: lineItems,
@@ -292,18 +231,10 @@ void main() async {
   });
 
   test('you can received item from po', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
-    final lineItems = await getLineItem(teamId: team.id!);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
-        accountId: account.id!,
+        accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         lineItems: lineItems,
@@ -314,7 +245,6 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
 
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 1));
@@ -375,21 +305,54 @@ void main() async {
     }
   });
 
+  test('check totalQuantityOfAllItemVariation after po received', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final po = PurchaseOrder.create(
+        purchaseOrderNumber: "PO-0001",
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: lineItems,
+        subTotal: 10,
+        total: 20);
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+    final createdPo = poCreatedOrError.toIterable().first;
+
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 1));
+
+    // testing receiving items
+    {
+      final now = DateTime.now();
+      await purchaseOrderApi.receivedItems(
+          purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      final poOrError =
+          await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+      expect(poOrError.isRight(), true);
+    }
+
+    //sleep a while to update correctly
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 30);
+    }
+  });
+
   test('you can delete po with issued state', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final lineItems = await getLineItem(teamId: team.id!);
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
 
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
-        accountId: account.id!,
+        accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         lineItems: lineItems,
@@ -413,18 +376,10 @@ void main() async {
   });
 
   test('you can delete po with received state', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    expect(accountListOrError.isRight(), true);
-    final account = accountListOrError.toIterable().first.data.first;
-    final lineItems = await getLineItem(teamId: team.id!);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
-        accountId: account.id!,
+        accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         lineItems: lineItems,

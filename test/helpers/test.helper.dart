@@ -64,10 +64,18 @@ Item getJean() {
   return Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs');
 }
 
-List<LineItem> getLineItem({required List<Item> createdItemList}) {
+List<LineItem> getLineItemsWithRandomCount({required List<Item> createdItemList}) {
   return createdItemList
       .map((e) => e.variations.map((e) => LineItem.create(
           itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: Random().nextInt(5) + 5, unit: 'pcs')))
+      .flattened
+      .toList();
+}
+
+List<LineItem> getLineItems({required List<Tuple2<int, Item>> items}) {
+  return items
+      .map((f) => f.value2.variations.map((e) => LineItem.create(
+          itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: f.value1, unit: 'pcs')))
       .flattened
       .toList();
 }
