@@ -7,7 +7,7 @@ import 'package:inventory_frontend/data/bill.account/bill.account.repository.dar
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/role/rest.api.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
-import 'package:inventory_frontend/data/user/rest.api.dart';
+import 'package:inventory_frontend/data/user/user.repository.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -18,7 +18,7 @@ import 'helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final roleApi = RoleRestApi();
-  final userApi = UserRestApi();
+  final userApi = UserRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
 

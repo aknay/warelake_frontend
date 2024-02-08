@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/view/main/drawer.dart';
+import 'package:inventory_frontend/view/main/drawer/drawer.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 import 'package:inventory_frontend/view/sale.orders/sale.order.list.view.dart';
 

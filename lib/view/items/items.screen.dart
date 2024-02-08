@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventory_frontend/view/items/item.list.view.dart';
 import 'package:inventory_frontend/view/items/item.search.widget.dart';
-import 'package:inventory_frontend/view/main/drawer.dart';
+import 'package:inventory_frontend/view/main/drawer/drawer.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
 class ItemsScreen extends ConsumerWidget {

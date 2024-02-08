@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventory_frontend/view/main/drawer/user.info.widget.dart';
 import 'package:inventory_frontend/view/routing/app.router.dart';
 
 class DrawerWidget extends StatelessWidget {
@@ -10,8 +11,6 @@ class DrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Drawer(child: ,)
-
     return Drawer(
       // Add a ListView to the drawer. This ensures the user can scroll
       // through the options in the drawer if there isn't enough vertical
@@ -21,10 +20,10 @@ class DrawerWidget extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+            child: Padding(
+              padding: EdgeInsets.only(top: 16, left: 8),
+              child: UserInfoWidget(),
             ),
-            child: Text('Drawer Header'),
           ),
           ListTile(
             leading: const FaIcon(FontAwesomeIcons.house),
@@ -75,7 +74,6 @@ class DrawerWidget extends StatelessWidget {
           ListTile(
             leading: const FaIcon(FontAwesomeIcons.arrowsRotate),
             title: const Text('Transactions'),
-            // selected: _selectedIndex == 1,
             onTap: () {
               context.goNamed(AppRoute.stockTransactions.name);
               Navigator.pop(context);

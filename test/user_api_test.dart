@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:inventory_frontend/data/currency.code/valueobject.dart';
 import 'package:inventory_frontend/data/team/team.repository.dart';
-import 'package:inventory_frontend/data/user/rest.api.dart';
+import 'package:inventory_frontend/data/user/user.repository.dart';
 import 'package:inventory_frontend/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
@@ -12,7 +12,7 @@ import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
-  final userApi = UserRestApi();
+  final userApi = UserRepository();
   late String firstUserAccessToken;
   late final String email;
 
@@ -51,7 +51,7 @@ void main() async {
     expect(team.timeZone, "Africa/Abidjan");
     expect(team.currencyCode, CurrencyCode.AUD);
 
-    final userOrError = await userApi.getUser(team: team, token: firstUserAccessToken);
+    final userOrError = await userApi.getUser(teamId: team.id!, token: firstUserAccessToken);
     expect(userOrError.isRight(), true);
     final user = userOrError.toIterable().first;
     expect(user.email, email);

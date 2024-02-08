@@ -6,5 +6,5 @@ import 'package:inventory_frontend/domain/user/valueobject.dart';
 
 abstract class UserApi {
   Future<Either<ErrorResponse, ListResponse<User>>> getUserList({required Team team, required String token});
-  Future<Either<ErrorResponse, User>> getUser({required Team team, required String token});
+  Future<Either<ErrorResponse, User>> getUser({required String teamId, required String token});
 }
