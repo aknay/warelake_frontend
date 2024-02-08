@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/bill.account/bill.account.service.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.chart.wrapper.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
-import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/data/bill.account/bill.account.service.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.chart.wrapper.dart';
+import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/view/common.widgets/async_value_widget.dart';
 
 final billAccountProvider = FutureProvider.family<BillAccount, String>((ref, id) async {
   if (foundation.kDebugMode) {

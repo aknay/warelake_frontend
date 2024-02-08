@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
 
 final random = Random();
 

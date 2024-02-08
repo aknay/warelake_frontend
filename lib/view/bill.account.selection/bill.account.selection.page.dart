@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/bill.account.selection/bill.account.list.view.dart';
+import 'package:warelake/view/bill.account.selection/bill.account.list.view.dart';
 
 class BillAccountSelectionPage extends ConsumerWidget {
   const BillAccountSelectionPage({super.key});

@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.repository.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/domain/errors/response.dart';
-import 'package:inventory_frontend/domain/monthly.summary/api.dart';
-import 'package:inventory_frontend/domain/monthly.summary/entities.dart';
+import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.repository.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/domain/errors/response.dart';
+import 'package:warelake/domain/monthly.summary/api.dart';
+import 'package:warelake/domain/monthly.summary/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'monthly.summary.service.g.dart';

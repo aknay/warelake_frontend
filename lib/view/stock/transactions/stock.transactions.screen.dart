@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:inventory_frontend/view/main/drawer/drawer.dart';
-import 'package:inventory_frontend/view/stock/transactions/filter.stock.transaction.screen.dart';
-import 'package:inventory_frontend/view/stock/transactions/stock.transaction.list.view.dart';
+import 'package:warelake/view/main/drawer/drawer.dart';
+import 'package:warelake/view/stock/transactions/filter.stock.transaction.screen.dart';
+import 'package:warelake/view/stock/transactions/stock.transaction.list.view.dart';
 
 class StockTransactionsScreen extends ConsumerWidget {
   const StockTransactionsScreen({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/view/main/drawer/drawer.dart';
-import 'package:inventory_frontend/view/main/item.utilization.wiget.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:warelake/view/main/drawer/drawer.dart';
+import 'package:warelake/view/main/item.utilization.wiget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});

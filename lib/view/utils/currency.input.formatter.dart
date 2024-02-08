@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/view/utils/number.formatter.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/view/utils/number.formatter.dart';
 
 //ref: https://github.com/gtgalone/currency_text_input_formatter/blob/master/lib/currency_text_input_formatter.dart
 class CurrencyTextInputFormatter extends TextInputFormatter {

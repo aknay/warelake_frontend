@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/domain/errors/response.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/domain/purchase.order/search.field.dart';
-import 'package:inventory_frontend/domain/responses.dart';
+import 'package:warelake/domain/errors/response.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/purchase.order/search.field.dart';
+import 'package:warelake/domain/responses.dart';
 
 abstract class PurchaseOrderApi {
   Future<Either<ErrorResponse, PurchaseOrder>> issuedPurchaseOrder({

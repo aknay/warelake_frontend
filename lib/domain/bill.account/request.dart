@@ -1,5 +1,5 @@
 // import 'package:billsible/domain/valueobject.dart';
-// import 'package:inventory_frontend/domain/valueobject.dart';
+// import 'package:warelake/domain/valueobject.dart';
 
 // class AccountUpdateRequest {
 //   final String? name;

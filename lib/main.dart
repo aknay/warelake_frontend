@@ -3,10 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/shared.preferences.providers/shared.preferences.provider.dart';
-import 'package:inventory_frontend/firebase_options.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/themes/flex.theme.dart';
+import 'package:warelake/data/shared.preferences.providers/shared.preferences.provider.dart';
+import 'package:warelake/firebase_options.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/themes/flex.theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 

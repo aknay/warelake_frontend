@@ -1,7 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/auth/providers.dart';
+import 'package:warelake/view/auth/providers.dart';
 
 //ref: https://github.com/bizz84/starter_architecture_flutter_firebase/blob/master/lib/src/features/authentication/presentation/auth_providers.dart
 class CustomSignInScreen extends ConsumerWidget {

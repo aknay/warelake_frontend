@@ -1,5 +1,5 @@
-import 'package:inventory_frontend/data/item/item.service.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:warelake/data/item/item.service.dart';
+import 'package:warelake/domain/item/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.utilization.controller.g.dart';

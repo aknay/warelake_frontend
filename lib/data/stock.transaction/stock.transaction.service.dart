@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/data/stock.transaction/stock.transaction.repository.dart';
-import 'package:inventory_frontend/domain/responses.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/domain/stock.transaction/search.field.dart';
+import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
+import 'package:warelake/domain/responses.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/domain/stock.transaction/search.field.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stock.transaction.service.g.dart';

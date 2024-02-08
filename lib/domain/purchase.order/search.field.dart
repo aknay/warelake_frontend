@@ -1,5 +1,5 @@
-import 'package:inventory_frontend/domain/entities.dart';
-import 'package:inventory_frontend/domain/purchase.order/valueobject.dart';
+import 'package:warelake/domain/entities.dart';
+import 'package:warelake/domain/purchase.order/valueobject.dart';
 
 class PurchaseOrderSearchField {
   final String? startingAfterPurchaseOrderId;

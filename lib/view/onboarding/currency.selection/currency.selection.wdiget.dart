@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/view/onboarding/currency.selection/currency.selection.page.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/view/onboarding/currency.selection/currency.selection.page.dart';
 
 final _currencyProvider = StateProvider<Option<Currency>>(
   (ref) {

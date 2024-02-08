@@ -1,7 +1,7 @@
 
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.service.dart';
-import 'package:inventory_frontend/domain/monthly.summary/entities.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.service.dart';
+import 'package:warelake/domain/monthly.summary/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'monthly.summary.controller.g.dart';

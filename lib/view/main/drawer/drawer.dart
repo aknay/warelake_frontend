@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/view/main/drawer/user.info.widget.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:warelake/view/main/drawer/user.info.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({super.key});

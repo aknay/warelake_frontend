@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
-import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/items/add.item.variance.screen.dart';
+import 'package:warelake/view/items/item.variation.list.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {
   const ItemVariationListView({required this.itemVariationList, required this.isToSelectItemVariation, super.key});

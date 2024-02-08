@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
+import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/bill.account/bill.account.repository.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'bill.account.service.g.dart';

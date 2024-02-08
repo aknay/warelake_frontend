@@ -1,4 +1,4 @@
-import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:warelake/domain/item/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.variation.list.controller.g.dart';

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
-import 'package:inventory_frontend/domain/responses.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
+import 'package:warelake/domain/responses.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stock.transaction.list.controller.g.dart';

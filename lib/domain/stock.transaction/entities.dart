@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:intl/intl.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
+import 'package:warelake/domain/item/entities.dart';
 
 enum StockMovement { stockIn, stockOut, stockAdjust }
 

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:inventory_frontend/data/sale.order/sale.order.service.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
+import 'package:warelake/data/sale.order/sale.order.service.dart';
+import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sale.order.list.controller.g.dart';

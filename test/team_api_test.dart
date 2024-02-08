@@ -3,12 +3,12 @@ import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/role/rest.api.dart';
-import 'package:inventory_frontend/data/team/team.repository.dart';
-import 'package:inventory_frontend/data/user/user.repository.dart';
-import 'package:inventory_frontend/domain/team/entities.dart';
+import 'package:warelake/data/bill.account/bill.account.repository.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/role/rest.api.dart';
+import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/data/user/user.repository.dart';
+import 'package:warelake/domain/team/entities.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 

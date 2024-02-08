@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
-import 'package:inventory_frontend/view/bill.account.selection/bill.account.selection.page.dart';
+import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/view/bill.account.selection/bill.account.selection.page.dart';
 
 final _billAccountProvider = StateProvider<Option<BillAccount>>(
   (ref) {

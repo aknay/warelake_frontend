@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.helper.dart';
+import 'package:warelake/view/onboarding/time.zone/time.zone.helper.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class TimeZoneScreen extends StatelessWidget {

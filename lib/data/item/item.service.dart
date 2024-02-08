@@ -1,13 +1,13 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/item/item.repository.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/item/payloads.dart';
-import 'package:inventory_frontend/domain/item/search.fields.dart';
-import 'package:inventory_frontend/domain/responses.dart';
+import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/item/item.repository.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/domain/responses.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.service.g.dart';

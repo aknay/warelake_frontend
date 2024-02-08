@@ -4,13 +4,13 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
-import 'package:inventory_frontend/view/bill.account.selection/bill.account.selection.widget.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/line.item.list.view.dart';
-import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/domain/sale.order/entities.dart';
+import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
+import 'package:warelake/view/sale.orders/line.item/line.item.list.view.dart';
+import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 
 class AddSaleOrderScreen extends ConsumerStatefulWidget {
   const AddSaleOrderScreen({super.key});

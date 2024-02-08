@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/domain/errors/response.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/item/payloads.dart';
-import 'package:inventory_frontend/domain/item/requests.dart';
-import 'package:inventory_frontend/domain/item/search.fields.dart';
-import 'package:inventory_frontend/domain/responses.dart';
+import 'package:warelake/domain/errors/response.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/requests.dart';
+import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/domain/responses.dart';
 
 abstract class ItemApi {
   Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({

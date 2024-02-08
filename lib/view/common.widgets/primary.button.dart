@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_frontend/view/constants/app.sizes.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton(

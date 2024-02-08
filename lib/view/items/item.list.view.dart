@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:inventory_frontend/data/item/item.service.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/item/search.fields.dart';
-import 'package:inventory_frontend/view/items/item.search.widget.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:warelake/data/item/item.service.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/view/items/item.search.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state

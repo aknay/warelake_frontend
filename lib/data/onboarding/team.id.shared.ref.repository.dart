@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/shared.preferences.providers/shared.preferences.provider.dart';
-import 'package:inventory_frontend/domain/team/entities.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/shared.preferences.providers/shared.preferences.provider.dart';
+import 'package:warelake/domain/team/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

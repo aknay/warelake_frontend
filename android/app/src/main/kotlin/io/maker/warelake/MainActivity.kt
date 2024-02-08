@@ -1,4 +1,4 @@
-package com.example.inventory_frontend
+package io.maker.warelake
 
 import io.flutter.embedding.android.FlutterActivity
 

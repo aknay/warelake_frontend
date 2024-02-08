@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/bill.account.selection/bill.account.controller.dart';
-import 'package:inventory_frontend/view/items/item.list.controller.dart';
-import 'package:inventory_frontend/view/utils/async_value_ui.dart';
+import 'package:warelake/view/bill.account.selection/bill.account.controller.dart';
+import 'package:warelake/view/items/item.list.controller.dart';
+import 'package:warelake/view/utils/async_value_ui.dart';
 
 class BillAccountListView extends ConsumerWidget {
   const BillAccountListView({super.key});

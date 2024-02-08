@@ -1,4 +1,4 @@
-import 'package:inventory_frontend/domain/role/entities.dart';
+import 'package:warelake/domain/role/entities.dart';
 
 class User {
   String id; 

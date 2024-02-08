@@ -2,15 +2,15 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
-import 'package:inventory_frontend/view/constants/breakpoints.dart';
-import 'package:inventory_frontend/view/onboarding/currency.selection/currency.selection.wdiget.dart';
-import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.widget.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/teams/team.list.controller.dart';
-import 'package:inventory_frontend/view/utils/alert_dialogs.dart';
-import 'package:inventory_frontend/view/utils/async_value_ui.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/view/common.widgets/responsive.center.dart';
+import 'package:warelake/view/constants/breakpoints.dart';
+import 'package:warelake/view/onboarding/currency.selection/currency.selection.wdiget.dart';
+import 'package:warelake/view/onboarding/time.zone/time.zone.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/teams/team.list.controller.dart';
+import 'package:warelake/view/utils/alert_dialogs.dart';
+import 'package:warelake/view/utils/async_value_ui.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 //ignore: must_be_immutable

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/common.widgets/async_value_widget.dart';
 
 final stockTransactionProvider = FutureProvider.autoDispose.family<StockTransaction, String>((ref, id) async {
   final itemOrError = await ref.watch(stockTransactionServiceProvider).get(stockTransactionId: id);

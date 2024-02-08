@@ -1,4 +1,4 @@
-# inventory_frontend
+# warelake
 
 # To run build runner
 - `dart run build_runner build`

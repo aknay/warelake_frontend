@@ -1,5 +1,5 @@
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/domain/valueobject.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/domain/valueobject.dart';
 
 class BillAccount {
   String? id;

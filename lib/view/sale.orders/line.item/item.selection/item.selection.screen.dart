@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/items/item.list.view.dart';
+import 'package:warelake/view/items/item.list.view.dart';
 
 class ItemSelectionScreen extends ConsumerWidget {
   const ItemSelectionScreen({super.key});

@@ -2,12 +2,12 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/view/constants/app.sizes.dart';
-import 'package:inventory_frontend/view/items/item.list.controller.dart';
-import 'package:inventory_frontend/view/items/item.variation.list.controller.dart';
-import 'package:inventory_frontend/view/items/item.variation.list.view.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/items/item.list.controller.dart';
+import 'package:warelake/view/items/item.variation.list.controller.dart';
+import 'package:warelake/view/items/item.variation.list.view.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key, required this.item});

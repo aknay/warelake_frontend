@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.helper.dart';
-import 'package:inventory_frontend/view/onboarding/time.zone/time.zone.selection.screen.dart';
+import 'package:warelake/view/onboarding/time.zone/time.zone.helper.dart';
+import 'package:warelake/view/onboarding/time.zone/time.zone.selection.screen.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 final _timeZoneLocationProvider = StateProvider<Option<tz.Location>>(

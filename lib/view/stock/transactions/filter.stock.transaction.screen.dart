@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/constants/app.sizes.dart';
-import 'package:inventory_frontend/view/stock/transactions/entities.dart';
-import 'package:inventory_frontend/view/stock/transactions/stock.filter.provider.dart';
-import 'package:inventory_frontend/view/stock/transactions/stock.movement.filter.toggle.button.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/stock/transactions/entities.dart';
+import 'package:warelake/view/stock/transactions/stock.filter.provider.dart';
+import 'package:warelake/view/stock/transactions/stock.movement.filter.toggle.button.dart';
 
 final _stockMovementProvider = StateProvider<StockMovement?>(
   (ref) => null,

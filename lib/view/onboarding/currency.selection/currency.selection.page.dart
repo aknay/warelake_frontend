@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
 
 class CurrencySelectionPage extends StatefulWidget {
   const CurrencySelectionPage({super.key});

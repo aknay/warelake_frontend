@@ -1,5 +1,5 @@
-import 'package:inventory_frontend/data/user/user.service.dart';
-import 'package:inventory_frontend/domain/user/valueobject.dart';
+import 'package:warelake/data/user/user.service.dart';
+import 'package:warelake/domain/user/valueobject.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'current.user.provider.g.dart';

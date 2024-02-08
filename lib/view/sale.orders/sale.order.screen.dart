@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/sale.order/sale.order.service.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
-import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
-import 'package:inventory_frontend/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/data/sale.order/sale.order.service.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/sale.order/entities.dart';
+import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 
 final saleOrderProvider = FutureProvider.family<SaleOrder, String>((ref, id) async {
   final saleOrderOrError = await ref.watch(saleOrderServiceProvider).getSaleOrder(saleOrderId: id);

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:inventory_frontend/view/sale.orders/line.item/selected.line.item.controller.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
+import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
 
 class AddStockLineItemScreen extends ConsumerStatefulWidget {
   const AddStockLineItemScreen({super.key});

@@ -7,11 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:inventory_frontend/data/stock.transaction/stock.transaction.service.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/stock/transactions/entities.dart';
-import 'package:inventory_frontend/view/stock/transactions/stock.filter.provider.dart';
+import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/transactions/entities.dart';
+import 'package:warelake/view/stock/transactions/stock.filter.provider.dart';
 
 class StockTransactionListView extends ConsumerStatefulWidget {
   const StockTransactionListView({super.key});

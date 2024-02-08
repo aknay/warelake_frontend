@@ -2,11 +2,11 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/monthly.summary/legends.dart';
-import 'package:inventory_frontend/data/monthly.summary/step.calculator.dart';
-import 'package:inventory_frontend/domain/monthly.summary/entities.dart';
-import 'package:inventory_frontend/view/constants/colors.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/monthly.summary/legends.dart';
+import 'package:warelake/data/monthly.summary/step.calculator.dart';
+import 'package:warelake/domain/monthly.summary/entities.dart';
+import 'package:warelake/view/constants/colors.dart';
 
 class GroupData {
   final int index;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
 
 final _stockMovementFilteringStateProvider = StateProvider<StockMovement?>(
   (ref) => null,

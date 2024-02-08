@@ -4,14 +4,14 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/item/item.repository.dart';
-import 'package:inventory_frontend/data/team/team.repository.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/item/payloads.dart';
-import 'package:inventory_frontend/domain/item/requests.dart';
-import 'package:inventory_frontend/domain/item/search.fields.dart';
-import 'package:inventory_frontend/domain/team/entities.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item/item.repository.dart';
+import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/requests.dart';
+import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
 import 'helpers/test.helper.dart';

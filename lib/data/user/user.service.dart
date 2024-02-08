@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:inventory_frontend/data/auth/firebase.auth.repository.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/data/user/user.repository.dart';
-import 'package:inventory_frontend/domain/user/api.dart';
-import 'package:inventory_frontend/domain/user/valueobject.dart';
+import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/data/user/user.repository.dart';
+import 'package:warelake/domain/user/api.dart';
+import 'package:warelake/domain/user/valueobject.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user.service.g.dart';

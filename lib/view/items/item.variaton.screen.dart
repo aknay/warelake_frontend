@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/item/item.service.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/item/payloads.dart';
-import 'package:inventory_frontend/view/common.widgets/async_value_widget.dart';
-import 'package:inventory_frontend/view/items/add.item.variance.screen.dart';
-import 'package:inventory_frontend/view/items/item.list.controller.dart';
+import 'package:warelake/data/item/item.service.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/items/add.item.variance.screen.dart';
+import 'package:warelake/view/items/item.list.controller.dart';
 
 final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
   if (foundation.kDebugMode) {

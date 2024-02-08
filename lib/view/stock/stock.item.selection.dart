@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/items/item.list.view.dart';
-import 'package:inventory_frontend/view/items/item.search.widget.dart';
+import 'package:warelake/view/items/item.list.view.dart';
+import 'package:warelake/view/items/item.search.widget.dart';
 
 class StockItemSelectionScreen extends ConsumerWidget {
   const StockItemSelectionScreen({super.key});

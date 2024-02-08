@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/main/drawer/drawer.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
-import 'package:inventory_frontend/view/stock/stock.transaction.list.controller.dart';
-import 'package:inventory_frontend/view/utils/alert_dialogs.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/main/drawer/drawer.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
+import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
+import 'package:warelake/view/utils/alert_dialogs.dart';
 
 final _stockLineItemProvider = StateProvider<List<StockLineItem>>((ref) => const []);
 

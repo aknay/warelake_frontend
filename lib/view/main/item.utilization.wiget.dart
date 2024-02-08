@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/items/item.utilization.controller.dart';
+import 'package:warelake/view/items/item.utilization.controller.dart';
 
 class ItemUtilizationWidget extends ConsumerWidget {
   const ItemUtilizationWidget({super.key});

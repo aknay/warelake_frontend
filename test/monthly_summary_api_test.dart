@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:inventory_frontend/data/bill.account/bill.account.repository.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/item/item.repository.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.repository.dart';
-import 'package:inventory_frontend/data/purchase.order/purchase.order.repository.dart';
-import 'package:inventory_frontend/data/sale.order/sale.order.repository.dart';
-import 'package:inventory_frontend/data/team/team.repository.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/domain/sale.order/entities.dart';
-import 'package:inventory_frontend/domain/team/entities.dart';
+import 'package:warelake/data/bill.account/bill.account.repository.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item/item.repository.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.repository.dart';
+import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
+import 'package:warelake/data/sale.order/sale.order.repository.dart';
+import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/sale.order/entities.dart';
+import 'package:warelake/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
 

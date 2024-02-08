@@ -1,5 +1,5 @@
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/onboarding/team.service.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/onboarding/team.service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timezone/timezone.dart' as tz;
 

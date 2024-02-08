@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/main/user/current.user.provider.dart';
+import 'package:warelake/view/main/user/current.user.provider.dart';
 
 class UserInfoWidget extends ConsumerWidget {
   const UserInfoWidget({super.key});

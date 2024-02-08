@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
-import 'package:inventory_frontend/domain/valueobject.dart';
+import 'package:warelake/domain/valueobject.dart';
 
 part 'entities.freezed.dart';
 

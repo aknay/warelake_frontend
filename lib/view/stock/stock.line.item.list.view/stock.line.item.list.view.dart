@@ -4,8 +4,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/domain/stock.transaction/entities.dart';
-import 'package:inventory_frontend/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class StockLineItemListView extends ConsumerWidget {
   const StockLineItemListView({super.key, required this.onValueChanged});

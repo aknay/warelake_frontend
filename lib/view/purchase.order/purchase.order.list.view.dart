@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/domain/purchase.order/entities.dart';
-import 'package:inventory_frontend/view/purchase.order/purchase.order.list.controller.dart';
-import 'package:inventory_frontend/view/routing/app.router.dart';
-import 'package:inventory_frontend/view/utils/async_value_ui.dart';
+import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/utils/async_value_ui.dart';
 
 class PurchaseOrderListView extends ConsumerWidget {
   const PurchaseOrderListView({super.key});

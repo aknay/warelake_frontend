@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventory_frontend/data/currency.code/valueobject.dart';
-import 'package:inventory_frontend/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:inventory_frontend/domain/item/entities.dart';
-import 'package:inventory_frontend/view/common.widgets/responsive.center.dart';
-import 'package:inventory_frontend/view/constants/app.sizes.dart';
-import 'package:inventory_frontend/view/constants/breakpoints.dart';
-import 'package:inventory_frontend/view/utils/currency.input.formatter.dart';
+import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
+import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/view/common.widgets/responsive.center.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/constants/breakpoints.dart';
+import 'package:warelake/view/utils/currency.input.formatter.dart';
 
 class AddItemVariationScreen extends ConsumerStatefulWidget {
   const AddItemVariationScreen({super.key, this.itemVariation, this.hideStockLevelUi});

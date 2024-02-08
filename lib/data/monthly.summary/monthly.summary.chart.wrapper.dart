@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.chart.dart';
-import 'package:inventory_frontend/data/monthly.summary/monthly.summary.controller.dart';
-import 'package:inventory_frontend/domain/bill.account/entities.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.chart.dart';
+import 'package:warelake/data/monthly.summary/monthly.summary.controller.dart';
+import 'package:warelake/domain/bill.account/entities.dart';
 
 class MonthlySummaryChartWrapper extends ConsumerWidget {
   final BillAccount billAccount;

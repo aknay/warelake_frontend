@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_frontend/view/bill.account/bill.account.list.view.dart';
-import 'package:inventory_frontend/view/main/drawer/drawer.dart';
+import 'package:warelake/view/bill.account/bill.account.list.view.dart';
+import 'package:warelake/view/main/drawer/drawer.dart';
 
 class BillAccountsScreen extends ConsumerWidget {
   const BillAccountsScreen({super.key});
