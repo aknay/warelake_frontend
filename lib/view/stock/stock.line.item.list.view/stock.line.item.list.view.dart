@@ -13,7 +13,7 @@ class StockLineItemListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<List<StockLineItem>>(stockLineItemControllerProvider, (_, state) => onValueChanged);
+    ref.listen<List<StockLineItem>>(stockLineItemControllerProvider, (_, state) => onValueChanged(state));
 
     final lineItems = ref.watch(stockLineItemControllerProvider);
     if (lineItems.isEmpty) {

@@ -49,7 +49,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Stock In'),
-            leading: const FaIcon(FontAwesomeIcons.squarePlus),
+            leading: const FaIcon(FontAwesomeIcons.arrowRightToBracket),
             onTap: () {
               context.goNamed(AppRoute.stockIn.name);
               Navigator.pop(context);
@@ -57,7 +57,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Stock Out'),
-            leading: const FaIcon(FontAwesomeIcons.squareMinus),
+            leading: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
             onTap: () {
               context.goNamed(AppRoute.stockOut.name);
               Navigator.pop(context);

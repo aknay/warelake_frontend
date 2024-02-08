@@ -12,14 +12,20 @@ class ItemUtilizationWidget extends ConsumerWidget {
         data: (data) {
           return Row(
             children: [
-              Column(
-                children: [Text("${data.totalItemCount}"), const Text('Item Group')],
+              Expanded(
+                child: Column(
+                  children: [Text("${data.totalItemCount}"), const Text('Item Groups')],
+                ),
               ),
-              Column(
-                children: [Text("${data.totalItemVariationsCount}"), const Text('Items')],
+              Expanded(
+                child: Column(
+                  children: [Text("${data.totalItemVariationsCount}"), const Text('Items')],
+                ),
               ),
-              Column(
-                children: [Text("${data.totalQuantityOfAllItemVariation}"), const Text('Item Quanity')],
+              Expanded(
+                child: Column(
+                  children: [Text("${data.totalQuantityOfAllItemVariation}"), const Text('Item Quanity')],
+                ),
               ),
             ],
           );

@@ -22,7 +22,10 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
       body: const Column(
-        children: [ItemUtilizationWidget()],
+        children: [Padding(
+          padding: EdgeInsets.all(8.0),
+          child: ItemUtilizationWidget(),
+        )],
       ),
       drawer: const DrawerWidget(),
     );
