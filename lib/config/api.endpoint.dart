@@ -25,12 +25,16 @@ class ApiEndPoint {
     return userId == null ? "${getApiBaseUrl()}/v1/users" : "${getApiBaseUrl()}/v1/users/$userId";
   }
 
+  static String get getCurrentUserEndPoint {
+    return "${getApiBaseUrl()}/v1/user";
+  }
+
   static String getItemEndPoint({String? itemId}) {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
 
   static String get itemUtilizationEndPoint => "${getApiBaseUrl()}/v1/item_utilization";
-  
+
   static String get itemSerchEndPoint => "${getApiBaseUrl()}/v1/items/search";
 
   static String getItemVariationEndPoint({required String itemId, String? itemVariationId}) {
@@ -62,7 +66,9 @@ class ApiEndPoint {
   }
 
   static String getBillAccountEndPoint({String? billAccountId}) {
-    return billAccountId == null ? "${getApiBaseUrl()}/v1/accounts" : "${getApiBaseUrl()}/v1/accounts/$billAccountId";
+    return billAccountId == null
+        ? "${getApiBaseUrl()}/v1/bill_accounts"
+        : "${getApiBaseUrl()}/v1/bill_accounts/$billAccountId";
   }
 
   static String getMonthlySummaryEndPoint({required String billAccountId, String? monthlySummary}) {

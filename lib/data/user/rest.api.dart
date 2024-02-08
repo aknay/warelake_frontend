@@ -29,4 +29,20 @@ class UserRestApi extends UserApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<ErrorResponse, User>> getUser({required Team team, required String token}) async {
+    try {
+      final response = await HttpHelper.get(url: ApiEndPoint.getCurrentUserEndPoint, token: token, teamId: team.id);
+      log("team create response code ${response.statusCode}");
+      log("team create response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        return Right(User.fromJson(jsonDecode(response.body)));
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 }
