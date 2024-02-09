@@ -35,6 +35,22 @@ class StockTransactionListController extends _$StockTransactionListController {
     });
   }
 
+    Future<bool> delete(StockTransaction stockTransaction) async {
+    state = const AsyncLoading();
+    final deletedOrError = await ref.read(stockTransactionServiceProvider).delete(stockTransaction);
+    return await deletedOrError.fold((l) {
+      state = AsyncError(l, StackTrace.current);
+      return false;
+    }, (r) async {
+      final itemsOrError = await _list();
+      if (itemsOrError.isLeft()) {
+        throw AssertionError("error while fetching items");
+      }
+      state = AsyncValue.data(itemsOrError.toIterable().first.data);
+      return true;
+    });
+  }
+
   Future<Either<String, ListResponse<StockTransaction>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));

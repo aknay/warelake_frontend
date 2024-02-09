@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/domain/responses.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/stock.transaction/search.field.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stock.transaction.service.g.dart';
 
@@ -27,6 +27,16 @@ class StockTransactionService {
       final token = await _authRepo.shouldGetToken();
       final createdOrError =
           await _stockTransactionRepo.create(stockTransaction: stockTransaction, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
+
+  Future<Either<String, Unit>> delete(StockTransaction stockTransaction) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError =
+          await _stockTransactionRepo.delete(stockTransactionId: stockTransaction.id!, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }

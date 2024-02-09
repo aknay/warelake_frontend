@@ -473,6 +473,49 @@ void main() async {
     }
   });
 
+  test('after transaction is deleted, it will not be shown in the list', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final shirt = getShirt();
+    final jean = getJean();
+
+    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreated = shirtCreatedOrError.toIterable().first;
+
+    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeanCreated = jeansCreatedOrError.toIterable().first;
+    StockTransaction stockInTransaction;
+    {
+      //stock in
+      final stockInLineItems = getStockLineItem(items: [Tuple2(10, shirtCreated), Tuple2(20, jeanCreated)]);
+
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: stockInLineItems,
+        stockMovement: StockMovement.stockIn,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+      stockInTransaction = stCreatedOrError.toIterable().first;
+    }
+
+    {
+      //delete stock in
+      final deletedOrError = await stockTransactionRepo.delete(
+          stockTransactionId: stockInTransaction.id!, teamId: team.id!, token: firstUserAccessToken);
+      expect(deletedOrError.isRight(), true);
+    }
+    {
+      // check in the list
+      final stockTransactionOrError = await stockTransactionRepo.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(stockTransactionOrError.toIterable().first.data.isEmpty, true);
+    }
+  });
+
   test('deleting stx with stock in: totalQuantityOfAllItemVariation should be correct', () async {
     //TODO
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);

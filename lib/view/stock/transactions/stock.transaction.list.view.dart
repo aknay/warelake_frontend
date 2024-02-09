@@ -10,6 +10,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 import 'package:warelake/view/stock/transactions/entities.dart';
 import 'package:warelake/view/stock/transactions/stock.filter.provider.dart';
 
@@ -49,6 +50,10 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
         _refresh();
       },
     );
+
+    //we will refresh the view if there is change in sale order list
+    ref.listen<AsyncValue>(stockTransactionListControllerProvider, (_, state) => _refresh());
+
     return RefreshIndicator(
       onRefresh: _refresh,
       child: PagedListView<int, StockTransaction>(
