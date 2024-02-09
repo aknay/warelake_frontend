@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/responses.dart';
 
 part 'purchase.order.list.controller.g.dart';
 
@@ -14,7 +15,7 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
     if (itemsOrError.isLeft()) {
       throw AssertionError("error while fetching items");
     }
-    return itemsOrError.toIterable().first;
+    return itemsOrError.toIterable().first.data;
   }
 
   Future<bool> createPurchaseOrder(PurchaseOrder po) async {
@@ -28,7 +29,7 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
       if (saleOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(saleOrdersOrError.toIterable().first);
+      state = AsyncValue.data(saleOrdersOrError.toIterable().first.data);
       return true;
     });
   }
@@ -45,7 +46,7 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
       if (saleOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(saleOrdersOrError.toIterable().first);
+      state = AsyncValue.data(saleOrdersOrError.toIterable().first.data);
       return true;
     });
   }
@@ -61,12 +62,12 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
       if (saleOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(saleOrdersOrError.toIterable().first);
+      state = AsyncValue.data(saleOrdersOrError.toIterable().first.data);
       return true;
     });
   }
 
-  Future<Either<String, List<PurchaseOrder>>> _list() async {
+  Future<Either<String, ListResponse<PurchaseOrder>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }

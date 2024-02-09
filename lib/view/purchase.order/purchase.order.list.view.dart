@@ -1,33 +1,81 @@
+import 'dart:developer';
+
+import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
-import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/utils/async_value_ui.dart';
 
-class PurchaseOrderListView extends ConsumerWidget {
+class PurchaseOrderListView extends ConsumerStatefulWidget {
   const PurchaseOrderListView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<AsyncValue>(
-      purchaseOrderListControllerProvider,
-      (_, state) => state.showAlertDialogOnError(context),
+  ConsumerState<ConsumerStatefulWidget> createState() => _PurchaseOrderListViewState();
+}
+
+class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
+  final PagingController<int, PurchaseOrder> _pagingController = PagingController(firstPageKey: 0);
+
+  final _lastStockTransactionIdProvider = StateProvider<Option<String>>(
+    (ref) => const None(),
+  );
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: PagedListView<int, PurchaseOrder>(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<PurchaseOrder>(itemBuilder: (context, item, index) {
+          return _getListTitle(item, context);
+        }),
+      ),
     );
+  }
 
-    final asyncItemList = ref.watch(purchaseOrderListControllerProvider);
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
 
-    return asyncItemList.when(
-        data: (data) {
-          if (data.isEmpty) {
-            return const Center(child: Text("Empty Purchase Order"));
-          }
+  Future<void> _refresh() async {
+    ref.read(_lastStockTransactionIdProvider.notifier).state = const None();
+    _pagingController.refresh();
+  }
 
-          return ListView(children: data.map((e) => _getListTitle(e, context)).toList());
-        },
-        error: (Object error, StackTrace stackTrace) => Text('Error: $error'),
-        loading: () => const Center(child: CircularProgressIndicator()));
+  Future<void> _fetchPage(int pageKey) async {
+    if (foundation.kDebugMode) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    final lastPoId = ref.read(_lastStockTransactionIdProvider).toNullable();
+    final poListResponseOrError = await ref.read(purchaseOrderServiceProvider).list(lastPurchaseOrderId: lastPoId);
+
+    if (poListResponseOrError.isLeft()) {
+      _pagingController.error = "Having error";
+      return;
+    }
+    final poListListResponse = poListResponseOrError.toIterable().first;
+    final poList = poListListResponse.data;
+
+    if (poList.isNotEmpty) {
+      ref.read(_lastStockTransactionIdProvider.notifier).state = Some(poList.last.id!);
+    } else {
+      log("po list is empty");
+    }
+
+    if (poListListResponse.hasMore) {
+      final nextPageKey = pageKey + poList.length;
+      _pagingController.appendPage(poList, nextPageKey);
+    } else {
+      _pagingController.appendLastPage(poList);
+    }
   }
 
   ListTile _getListTitle(PurchaseOrder po, BuildContext context) {
@@ -39,7 +87,6 @@ class PurchaseOrderListView extends ConsumerWidget {
           AppRoute.purchaseOrder.name,
           pathParameters: {'id': po.id!},
         );
-        // Navigator.pop(context, e);
       },
       trailing: Text(
         " ${po.currencyCodeEnum.name} ${po.totalInDouble}",

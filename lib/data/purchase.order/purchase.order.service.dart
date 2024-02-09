@@ -4,6 +4,8 @@ import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/purchase.order/search.field.dart';
+import 'package:warelake/domain/responses.dart';
 
 part 'purchase.order.service.g.dart';
 
@@ -39,12 +41,15 @@ class PurchaseOrderService {
     });
   }
 
-  Future<Either<String, List<PurchaseOrder>>> list() async {
+  Future<Either<String, ListResponse<PurchaseOrder>>> list({String? lastPurchaseOrderId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _purchaseOrderRepo.list(teamId: teamId, token: token);
-      return items.fold((l) => Left(l.message), (r) => Right(r.data));
+
+      final searchField = PurchaseOrderSearchField(startingAfterPurchaseOrderId: lastPurchaseOrderId);
+
+      final items = await _purchaseOrderRepo.list(teamId: teamId, token: token, searchField: searchField);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 

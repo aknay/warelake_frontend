@@ -162,6 +162,97 @@ void main() async {
     }
   });
 
+  test('you can list po with empty search field', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+
+    final po = PurchaseOrder.create(
+      accountId: billAccount.id!,
+      date: DateTime.now(),
+      currencyCode: CurrencyCode.AUD,
+      lineItems: lineItems,
+      subTotal: 10,
+      total: 20,
+      purchaseOrderNumber: "PO-0001",
+    );
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+
+    {
+      final searchField = PurchaseOrderSearchField();
+      final poOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poOrError.isRight(), true);
+      expect(poOrError.toIterable().first.data.isNotEmpty, true);
+    }
+  });
+
+  test('you can list po with last created item', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    PurchaseOrder firstPo;
+    {
+      final po = PurchaseOrder.create(
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: lineItems,
+        subTotal: 10,
+        total: 20,
+        purchaseOrderNumber: "PO-0001",
+      );
+      final poCreatedOrError =
+          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      firstPo = poCreatedOrError.toIterable().first;
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    PurchaseOrder secondPo;
+    {
+      final po = PurchaseOrder.create(
+        accountId: billAccount.id!,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: lineItems,
+        subTotal: 10,
+        total: 20,
+        purchaseOrderNumber: "PO-0002",
+      );
+      final poCreatedOrError =
+          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      secondPo = poCreatedOrError.toIterable().first;
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    {
+      // final searchField = PurchaseOrderSearchField();
+      final poListOrError = await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(poListOrError.isRight(), true);
+      final poList = poListOrError.toIterable().first;
+      expect(poList.data.length, 2);
+      expect(poList.data.first.purchaseOrderNumber, 'PO-0002');
+    }
+    {
+      // we will not see first PO after second PO
+      final searchField = PurchaseOrderSearchField(startingAfterPurchaseOrderId: secondPo.id!);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      final poList = poListOrError.toIterable().first;
+      expect(poList.data.length, 1);
+      expect(poList.data.first.purchaseOrderNumber, 'PO-0001');
+    }
+
+    {
+      // we will not see any po after first PO
+      final searchField = PurchaseOrderSearchField(startingAfterPurchaseOrderId: firstPo.id!);
+      final poListOrError =
+          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poListOrError.isRight(), true);
+      final poList = poListOrError.toIterable().first;
+      expect(poList.data.isEmpty, true);
+    }
+  });
+
   test('you can list po with search', () async {
     final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
 
