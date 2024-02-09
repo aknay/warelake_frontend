@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiEndPoint {
   static String getApiBaseUrl() {
@@ -10,7 +11,7 @@ class ApiEndPoint {
     if (kDebugMode) {
       return 'http://10.0.2.2:9888/api';
     }
-    return 'www.example.com'; //TODO
+    return dotenv.env['API_ENDPOINT'] ?? "www.example.com";
   }
 
   static String getTeamEndPoint({String? teamId}) {
