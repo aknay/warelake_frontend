@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:warelake/data/sale.order/sale.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 
 final saleOrderProvider = FutureProvider.family<SaleOrder, String>((ref, id) async {
@@ -72,7 +75,25 @@ class PageContents extends ConsumerWidget {
                         ref.invalidate(saleOrderProvider(so.id!));
                       }
                     case SaleOrderAction.delete:
-                    // TODO: Handle this case.
+                             if (context.mounted) {
+                        final toDeleteOrNull = await showDialog<bool?>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const YesOrNoDialog(
+                              actionWord: "Delete",
+                              title: "Delete?",
+                              content: "Are you sure you want to delete this purchase order?",
+                            );
+                          },
+                        );
+
+                        if (toDeleteOrNull != null && toDeleteOrNull) {
+                          final isSuccess = await ref.read(saleOrderListControllerProvider.notifier).delete(so);
+                          if (isSuccess && context.mounted) {
+                            context.goNamed(AppRoute.saleOrders.name);
+                          }
+                        }
+                      }
                   }
                 },
                 itemBuilder: (BuildContext context) => popupMenuItems)

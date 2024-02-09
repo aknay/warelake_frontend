@@ -35,13 +35,13 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
 
   @override
   Widget build(BuildContext context) {
-
     ref.listen<AsyncValue>(
       saleOrderListControllerProvider,
       (_, state) => state.showAlertDialogOnError(context),
     );
 
-    final asyncItemList = ref.watch(saleOrderListControllerProvider);
+    //we will refresh the view if there is change in sale order list
+    ref.listen<AsyncValue>(saleOrderListControllerProvider, (_, state) => _refresh());
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -54,7 +54,7 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
     );
   }
 
-    Future<void> _refresh() async {
+  Future<void> _refresh() async {
     ref.read(_lastSaleOrerIdProvider.notifier).state = const None();
     _pagingController.refresh();
   }
@@ -65,7 +65,8 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
     }
 
     final lastSoId = ref.read(_lastSaleOrerIdProvider).toNullable();
-    final soListResponseOrError = await ref.read(saleOrderListControllerProvider.notifier).list(lastSaleOrderId: lastSoId);
+    final soListResponseOrError =
+        await ref.read(saleOrderListControllerProvider.notifier).list(lastSaleOrderId: lastSoId);
 
     if (soListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -88,7 +89,7 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
     }
   }
 
-    ListTile _getListTitle(SaleOrder so, BuildContext context) {
+  ListTile _getListTitle(SaleOrder so, BuildContext context) {
     return ListTile(
       title: Text(so.saleOrderNumber!),
       subtitle: Text(so.status!.toUpperCase()),
