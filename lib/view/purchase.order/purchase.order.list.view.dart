@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/utils/async_value_ui.dart';
 
 class PurchaseOrderListView extends ConsumerStatefulWidget {
   const PurchaseOrderListView({super.key});
@@ -25,6 +26,11 @@ class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
   );
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue>(purchaseOrderListControllerProvider, (_, state) => state.showAlertDialogOnError(context));
+
+    //we will refresh the view if there is change in sale order list
+    ref.listen<AsyncValue>(purchaseOrderListControllerProvider, (_, state) => _refresh());
+
     return RefreshIndicator(
       onRefresh: _refresh,
       child: PagedListView<int, PurchaseOrder>(
@@ -55,7 +61,8 @@ class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
     }
 
     final lastPoId = ref.read(_lastStockTransactionIdProvider).toNullable();
-    final poListResponseOrError = await ref.read(purchaseOrderServiceProvider).list(lastPurchaseOrderId: lastPoId);
+    final poListResponseOrError =
+        await ref.read(purchaseOrderListControllerProvider.notifier).list(lastPurchaseOrderId: lastPoId);
 
     if (poListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";

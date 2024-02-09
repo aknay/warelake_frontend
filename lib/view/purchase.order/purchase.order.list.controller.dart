@@ -67,6 +67,13 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
     });
   }
 
+    Future<Either<String, ListResponse<PurchaseOrder>>> list({String? lastPurchaseOrderId}) async {
+    if (foundation.kDebugMode) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    return await ref.read(purchaseOrderServiceProvider).list(lastPurchaseOrderId: lastPurchaseOrderId);
+  }
+
   Future<Either<String, ListResponse<PurchaseOrder>>> _list() async {
     if (foundation.kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
