@@ -262,7 +262,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.addLineItemForPurchaseOrder.name,
                       path: 'line_item',
                       builder: (BuildContext context, GoRouterState state) {
-                        LineItem? lineItem = state.extra as LineItem;
+                        LineItem? lineItem = state.extra as LineItem?;
                         return AddLineItemScreen(lineItem: optionOf(lineItem));
                       },
                       routes: <RouteBase>[

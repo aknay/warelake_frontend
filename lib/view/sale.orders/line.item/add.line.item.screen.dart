@@ -9,6 +9,7 @@ import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
 import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddLineItemScreen extends ConsumerStatefulWidget {
   const AddLineItemScreen({super.key, this.lineItem = const None()});
@@ -22,8 +23,6 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   final _formKey = GlobalKey<FormState>();
   late Option<int> quantity = widget.lineItem.fold(() => const None(), (a) => Some(a.quantity));
   late Option<double> rate = widget.lineItem.fold(() => const None(), (a) => Some(a.rateInDouble));
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +118,16 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   Future<void> _submit({required WidgetRef ref}) async {
     if (_validateAndSaveForm()) {
       final selectedItemVariationOrNone = ref.watch(selectedItemVariationProvider);
+      if (selectedItemVariationOrNone.isNone()) {
+        showAlertDialog(
+          context: context,
+          title: "Empty",
+          content: "Please select a item first.",
+          defaultActionText: "OK",
+        );
+        return;
+      }
+
       final itemVariation = selectedItemVariationOrNone.toIterable().first;
       log("The rate is ${rate.toIterable().first}");
       final lineItem = LineItem.create(
