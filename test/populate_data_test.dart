@@ -65,6 +65,50 @@ void main() async {
     return result;
   }
 
+  DateTime randomDateWithinLastSixMonths() {
+    final Random random = Random();
+    final DateTime now = DateTime.now();
+    final int currentMonth = now.month;
+    final int currentYear = now.year;
+
+    // Generate a random month within the last six months
+    int randomMonth = random.nextInt(6) + currentMonth - 5;
+
+    // If the random month is less than 1, adjust the year
+    int year = currentYear;
+    if (randomMonth < 1) {
+      year -= 1;
+      randomMonth += 12;
+    }
+
+    // Generate a random day within the generated month
+    final int randomDay = random.nextInt(DateTime(year, randomMonth + 1, 0).day) + 1;
+
+    // Construct and return the random DateTime
+    return DateTime(year, randomMonth, randomDay);
+  }
+
+  DateTime randomDateTimeLast7Days() {
+    final Random random = Random();
+    final DateTime now = DateTime.now();
+    final int randomDays = random.nextInt(7); // Random number of days between 0 and 6
+    final DateTime randomDate = now.subtract(Duration(days: randomDays));
+    return randomDate;
+  }
+
+  StockMovement randomStockMovement() {
+    const List<StockMovement> values = StockMovement.values;
+    final Random random = Random();
+    return values[random.nextInt(values.length)];
+  }
+
+  double randomDoubleInRange(double min, double max) {
+    Random random = Random();
+    // Generate a random value between 0 and (max - min)
+    double value = min + random.nextDouble() * (max - min);
+    return double.parse((value).toStringAsFixed(2)); // Round to 2 decimal places
+  }
+
   test('populate data', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
@@ -97,11 +141,8 @@ void main() async {
     for (var fruit in fruitList) {
       List<ItemVariation> itemVariationList = [];
       for (var attr in fruitAttrs) {
-        double min = 5.0; // Minimum value (inclusive)
-        double max = 10.0; // Maximum value (exclusive)
-
-        double randomPriceForSale = min + random.nextDouble() * (max - min);
-        double randomPriceForPurchase = min + random.nextDouble() * (max - min);
+        double randomPriceForSale = randomDoubleInRange(30, 70);
+        double randomPriceForPurchase = randomDoubleInRange(2, 4);
 
         final salePriceMoney = PriceMoney.from(amount: randomPriceForSale, currencyCode: CurrencyCode.AUD);
         final purchasePriceMoney = PriceMoney.from(amount: randomPriceForPurchase, currencyCode: CurrencyCode.AUD);
@@ -123,7 +164,7 @@ void main() async {
       await Future.delayed(const Duration(milliseconds: 1000));
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 30; i++) {
       List<StockLineItem> lineItemList = [];
       getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
         final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(100) + 50);
@@ -131,45 +172,11 @@ void main() async {
       });
 
       final rawTx = StockTransaction.create(
-        date: DateTime.now(),
+        date: randomDateTimeLast7Days(),
         lineItems: lineItemList,
-        stockMovement: StockMovement.stockIn,
+        stockMovement: randomStockMovement(),
       );
 
-      await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-      await Future.delayed(const Duration(milliseconds: 1000));
-    }
-
-    for (int i = 0; i < 10; i++) {
-      List<StockLineItem> lineItemList = [];
-      getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
-        final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(100) + 50);
-        lineItemList.add(lineItem);
-      });
-
-      final rawTx = StockTransaction.create(
-        date: DateTime.now(),
-        lineItems: lineItemList,
-        stockMovement: StockMovement.stockAdjust,
-      );
-      final stCreatedOrError =
-          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
-      expect(stCreatedOrError.isRight(), true);
-      await Future.delayed(const Duration(milliseconds: 1000));
-    }
-
-    for (int i = 0; i < 10; i++) {
-      List<StockLineItem> lineItemList = [];
-      getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
-        final lineItem = StockLineItem.create(itemVariation: element, quantity: random.nextInt(10) + 2);
-        lineItemList.add(lineItem);
-      });
-
-      final rawTx = StockTransaction.create(
-        date: DateTime.now(),
-        lineItems: lineItemList,
-        stockMovement: StockMovement.stockOut,
-      );
       await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
@@ -187,17 +194,18 @@ void main() async {
       final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
-                itemVariation: e, quantity: random.nextInt(10) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
+                itemVariation: e, quantity: random.nextInt(8) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
           )
           .toList();
+      final totalAmount = lineItems.map((e) => e.rate).fold(0, (previousValue, element) => previousValue + element);
 
       final so = SaleOrder.create(
           accountId: account.id!,
-          date: DateTime.now(),
+          date: randomDateWithinLastSixMonths(),
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
-          subTotal: 10,
-          total: 20,
+          subTotal: totalAmount,
+          total: totalAmount,
           saleOrderNumber: "S0-0000$i");
       final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
@@ -206,8 +214,8 @@ void main() async {
 
     {
       //delivered sale order
+      saleOrderIdList.shuffle();
       final soIdList = saleOrderIdList.take(random.nextInt(10) + 3);
-
       for (var element in soIdList) {
         await saleOrderApi.deliveredItems(
             saleOrderId: element, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
@@ -221,17 +229,20 @@ void main() async {
       final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
-                itemVariation: e, quantity: random.nextInt(10) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
+                itemVariation: e,
+                quantity: random.nextInt(10) + 10,
+                rate: e.purchasePriceMoney.amountInDouble,
+                unit: 'kg'),
           )
           .toList();
-
+      final totalAmount = lineItems.map((e) => e.rate).fold(0, (previousValue, element) => previousValue + element);
       final po = PurchaseOrder.create(
           accountId: account.id!,
-          date: DateTime.now(),
+          date: randomDateWithinLastSixMonths(),
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
-          subTotal: 10,
-          total: 20,
+          subTotal: totalAmount,
+          total: totalAmount,
           purchaseOrderNumber: "P0-0000$i");
       final poCreatedOrError =
           await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
@@ -240,6 +251,7 @@ void main() async {
     }
     {
       //delivered sale order
+      purchaseOrderIdList.shuffle();
       final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
 
       for (var element in poIdList) {
