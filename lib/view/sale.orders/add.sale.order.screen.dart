@@ -11,6 +11,7 @@ import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
 import 'package:warelake/view/sale.orders/line.item/line.item.list.view.dart';
 import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddSaleOrderScreen extends ConsumerStatefulWidget {
   const AddSaleOrderScreen({super.key});
@@ -92,6 +93,30 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
   Future<void> _submit({required WidgetRef ref, required Option<BillAccount> billAccountOrNone}) async {
     if (_validateAndSaveForm()) {
       final lineItems = ref.read(lineItemControllerProvider);
+
+  if (billAccountOrNone.isNone()) {
+        showAlertDialog(
+          context: context,
+          title: "Empty",
+          content: "Please select a bill Account first.",
+          defaultActionText: "OK",
+        );
+        return;
+      }
+
+      if (lineItems.isEmpty) {
+        showAlertDialog(
+          context: context,
+          title: "Empty",
+          content: "Please add at least one line item",
+          defaultActionText: "OK",
+        );
+        return;
+      }
+
+
+
+
       final subTotal =
           lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
 

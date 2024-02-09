@@ -375,10 +375,7 @@ void main() async {
       retrievedSo = soCreatedOrError.toIterable().first;
 
       final soItemsReceivedOrError = await saleOrderApi.deliveredItems(
-          saleOrderId: retrievedSo.id!,
-          date: date,
-          teamId: team.id!,
-          token: firstUserAccessToken);
+          saleOrderId: retrievedSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
 
       expect(soItemsReceivedOrError.isRight(), true);
       //sleep a while to update correctly
@@ -485,18 +482,91 @@ void main() async {
     }
   });
 
+  test('you can list so with empty search field', () async {
+    final so = SaleOrder.create(
+      accountId: billAccount.id!,
+      date: DateTime.now(),
+      currencyCode: CurrencyCode.AUD,
+      lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+      subTotal: 10,
+      total: 20,
+      saleOrderNumber: "SO-0001",
+    );
+    final poCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(poCreatedOrError.isRight(), true);
+
+    {
+      final searchField = SaleOrderSearchField();
+      final poOrError =
+          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(poOrError.isRight(), true);
+      expect(poOrError.toIterable().first.data.isNotEmpty, true);
+    }
+  });
+
+  test('you can list po with last created item', () async {
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    SaleOrder firstPo;
+    {
+      final so = SaleOrder.create(
+          accountId: billAccount.id!,
+          date: DateTime.now(),
+          currencyCode: CurrencyCode.AUD,
+          lineItems: lineItems,
+          subTotal: 10,
+          total: 20,
+          saleOrderNumber: "S0-00001");
+      final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      firstPo = soCreatedOrError.toIterable().first;
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    SaleOrder secondPo;
+    {
+      final so = SaleOrder.create(
+          accountId: billAccount.id!,
+          date: DateTime.now(),
+          currencyCode: CurrencyCode.AUD,
+          lineItems: lineItems,
+          subTotal: 10,
+          total: 20,
+          saleOrderNumber: "S0-00002");
+      final poCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      secondPo = poCreatedOrError.toIterable().first;
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    {
+      // final searchField = PurchaseOrderSearchField();
+      final soListOrError = await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
+      expect(soListOrError.isRight(), true);
+      final soList = soListOrError.toIterable().first;
+      expect(soList.data.length, 2);
+      expect(soList.data.first.saleOrderNumber, 'S0-00002');
+    }
+    {
+      // we will not see first PO after second PO
+      final searchField = SaleOrderSearchField(startingAfterSaleOrderId: secondPo.id!);
+      final soListOrError =
+          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(soListOrError.isRight(), true);
+      final soList = soListOrError.toIterable().first;
+      expect(soList.data.length, 1);
+      expect(soList.data.first.saleOrderNumber, 'S0-00001');
+    }
+
+    {
+      // we will not see any po after first PO
+      final searchField = SaleOrderSearchField(startingAfterSaleOrderId: firstPo.id!);
+      final soListOrError =
+          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+      expect(soListOrError.isRight(), true);
+      final soList = soListOrError.toIterable().first;
+      expect(soList.data.isEmpty, true);
+    }
+  });
+
   test('you can list so with search', () async {
-    // final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    // final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    // expect(createdOrError.isRight(), true);
-    // final team = createdOrError.toIterable().first;
-
-    // final lineItems = await getLineItem(teamId: team.id!);
-
-    // final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
-    // expect(accountListOrError.isRight(), true);
-    // final account = accountListOrError.toIterable().first.data.first;
-
     final so = SaleOrder.create(
       accountId: billAccount.id!,
       date: DateTime.now(),

@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/data/sale.order/sale.order.repository.dart';
+import 'package:warelake/domain/responses.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:warelake/domain/sale.order/search.field.dart';
 
 part 'sale.order.service.g.dart';
 
@@ -37,12 +39,14 @@ class SaleOrderService {
     });
   }
 
-  Future<Either<String, List<SaleOrder>>> list() async {
+  Future<Either<String, ListResponse<SaleOrder>>> list({String? lastSaleOrderId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _saleOrderRepo.list(teamId: teamId, token: token);
-      return items.fold((l) => Left(l.message), (r) => Right(r.data));
+      final searchField = SaleOrderSearchField(startingAfterSaleOrderId: lastSaleOrderId);
+
+      final items = await _saleOrderRepo.list(teamId: teamId, token: token, searchField: searchField);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
 
@@ -52,6 +56,15 @@ class SaleOrderService {
       final token = await _authRepo.shouldGetToken();
       final items = await _saleOrderRepo.deliveredItems(
           saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
+
+  Future<Either<String, Unit>> delete({required SaleOrder saleOrder}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _saleOrderRepo.delete(saleOrderId: saleOrder.id!, teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }

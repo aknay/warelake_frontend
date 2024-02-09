@@ -2,12 +2,12 @@ import 'package:warelake/domain/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 
 class SaleOrderSearchField {
-  final String? startingAfterPurchaseOrderId;
+  final String? startingAfterSaleOrderId;
   final SaleOrderStatus? status;
   final DateRange? dateRange;
   final String? itemVariationName;
   SaleOrderSearchField({
-    this.startingAfterPurchaseOrderId,
+    this.startingAfterSaleOrderId,
     this.status,
     this.dateRange,
     this.itemVariationName,
@@ -15,10 +15,19 @@ class SaleOrderSearchField {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> additionalQuery = {};
-    additionalQuery['starting_after'] = startingAfterPurchaseOrderId;
-    additionalQuery['status'] = status?.name;
-    additionalQuery['item_variation_name'] = itemVariationName;
-    additionalQuery['date_range'] = dateRange?.toMap();
+    if (startingAfterSaleOrderId != null) {
+      additionalQuery['starting_after'] = startingAfterSaleOrderId;
+    }
+    if (status != null) {
+      additionalQuery['status'] = status?.name;
+    }
+    if (itemVariationName != null) {
+      additionalQuery['item_variation_name'] = itemVariationName;
+    }
+    if (dateRange != null) {
+      additionalQuery['date_range'] = dateRange?.toMap();
+    }
+
     return additionalQuery;
   }
 }

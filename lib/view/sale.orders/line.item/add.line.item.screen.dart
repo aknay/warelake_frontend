@@ -122,7 +122,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
         showAlertDialog(
           context: context,
           title: "Empty",
-          content: "Please select a item first.",
+          content: "Please select an item first.",
           defaultActionText: "OK",
         );
         return;
