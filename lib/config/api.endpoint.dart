@@ -11,7 +11,7 @@ class ApiEndPoint {
     if (kDebugMode) {
       return 'http://10.0.2.2:9888/api';
     }
-    return dotenv.env['API_ENDPOINT'] ?? "www.example.com";
+    return dotenv.env['API_ENDPOINT'] ?? "www.example.com/api";
   }
 
   static String getTeamEndPoint({String? teamId}) {
