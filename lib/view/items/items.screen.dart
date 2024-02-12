@@ -12,7 +12,7 @@ class ItemsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Items")),
+      appBar: AppBar(title: const Text("Item Groups")),
       body: const Column(
         children: [
           ItemSearchWidget(),

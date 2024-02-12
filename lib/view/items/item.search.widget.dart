@@ -22,7 +22,7 @@ class ItemSearchWidget extends ConsumerWidget {
       },
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.search, color: Colors.white),
-        hintText: "Search item name",
+        hintText: "Search item group name",
         labelStyle: Theme.of(context).textTheme.bodyLarge,
         border: const OutlineInputBorder(),
       ),
