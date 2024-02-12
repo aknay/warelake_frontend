@@ -5,6 +5,7 @@ import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 
@@ -44,7 +45,7 @@ class PageContents extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(stockTransaction.date),
+          title: Text(stockTransaction.stockMovement.description),
           actions: [
             PopupMenuButton<StockTransactionAction>(
                 onSelected: (StockTransactionAction value) async {
@@ -83,33 +84,47 @@ class PageContents extends ConsumerWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(stockTransaction.stockMovement.description),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Date'),
+                  gapW8,
+                  Text(
+                    stockTransaction.date,
+                  ),
+                ],
+              ),
+            ),
+            gapH16,
             Row(
               children: [
-                Expanded(child: _toItemCount(stockTransaction)),
-                Expanded(child: _toTotalItemCount(stockTransaction)),
+                Expanded(child: _toItemCount(stockTransaction, context)),
+                Expanded(child: _toTotalItemCount(stockTransaction, context)),
               ],
             ),
-            Expanded(child: _toLineItemList(stockTransaction))
+            gapH16,
+            Expanded(child: _toLineItemList(stockTransaction, context))
           ],
         ));
   }
 
-  Widget _toTotalItemCount(StockTransaction st) {
+  Widget _toTotalItemCount(StockTransaction st, BuildContext context) {
     final totalCount = st.lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
     return Column(
-      children: [Text("$totalCount"), const Text('Quantity')],
+      children: [Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),  Text('Quantity', style:  Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))],
     );
   }
 
-  Widget _toItemCount(StockTransaction st) {
+  Widget _toItemCount(StockTransaction st, BuildContext context) {
     final totalCount = st.lineItems.length;
     return Column(
-      children: [Text("$totalCount"), const Text('Item')],
+      children: [Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),  Text('Items',  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))],
     );
   }
 
-  Widget _toLineItemList(StockTransaction st) {
+  Widget _toLineItemList(StockTransaction st, BuildContext context) {
     ListTile toListTile(StockLineItem sli) {
       String getSign(StockMovement sm) {
         switch (sm) {
@@ -124,7 +139,7 @@ class PageContents extends ConsumerWidget {
 
       return ListTile(
         title: Text(sli.itemVariation.name),
-        trailing: Text("${getSign(st.stockMovement)} ${sli.quantity}"),
+        trailing: Text("${getSign(st.stockMovement)} ${sli.quantity}", style: Theme.of(context).textTheme.labelLarge),
       );
     }
 
