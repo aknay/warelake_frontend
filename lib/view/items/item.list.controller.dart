@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.list.controller.g.dart';
 
@@ -38,8 +36,6 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-
-
   Future<bool> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
     state = const AsyncLoading();
     final createdOrError = await ref.read(itemServiceProvider).updateItem(payload: payload, itemId: itemId);
@@ -51,7 +47,7 @@ class ItemListController extends _$ItemListController {
       if (itemsOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      //we cannot update here as no widget is listing item list controller 
+      //we cannot update here as no widget is listing item list controller
       // state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
@@ -83,8 +79,7 @@ class ItemListController extends _$ItemListController {
   // }
 
   Future<Either<String, ListResponse<Item>>> _list({ItemSearchField? searchField}) async {
-    log("call this _list?");
-    if (foundation.kDebugMode) {
+    if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
     // return Right(ListResponse(data: [], hasMore: false));

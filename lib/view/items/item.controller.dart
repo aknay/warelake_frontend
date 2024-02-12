@@ -1,9 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/view/items/item.list.view.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
 part 'item.controller.g.dart';
@@ -13,6 +14,22 @@ class ItemController extends _$ItemController {
   @override
   Future<Item> build({required String itemId}) {
     return _getItem(itemId: itemId);
+  }
+
+    Future<Unit> deleteItem() async {
+    state = const AsyncLoading();
+    final createdOrError = await ref.read(itemServiceProvider).deleteItem(itemId: itemId);
+      if (kDebugMode) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    return await createdOrError.fold((l) {
+      state = AsyncError(l, StackTrace.current);
+      return unit;
+    }, (r) async {
+      ref.read(toForceToRefreshIemListProvider.notifier).state = !ref.read(toForceToRefreshIemListProvider);
+      ref.read(goRouterProvider).pop();
+      return unit;
+    });
   }
 
   Future<Unit> deleteItemVariation({required String itemVariationId}) async {
@@ -46,7 +63,7 @@ class ItemController extends _$ItemController {
   }
 
   Future<Item> _getItem({required String itemId}) async {
-    if (foundation.kDebugMode) {
+    if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
     final itemOrError = await ref.read(itemServiceProvider).getItem(itemId: itemId);
