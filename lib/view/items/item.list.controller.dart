@@ -38,27 +38,7 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-  Future<bool> updateItemVariation({
-    required ItemVariationPayload payload,
-    required String itemId,
-    required String itemVariationId,
-  }) async {
-    state = const AsyncLoading();
-    final createdOrError = await ref
-        .read(itemServiceProvider)
-        .updateItemVariation(payload: payload, itemId: itemId, itemVariationId: itemVariationId);
-    return await createdOrError.fold((l) {
-      state = AsyncError(l, StackTrace.current);
-      return false;
-    }, (r) async {
-      final itemsOrError = await _list();
-      if (itemsOrError.isLeft()) {
-        throw AssertionError("error while fetching items");
-      }
-      state = AsyncValue.data(itemsOrError.toIterable().first.data);
-      return true;
-    });
-  }
+
 
   Future<bool> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
     state = const AsyncLoading();

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
@@ -8,7 +9,6 @@ import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.service.g.dart';
 
@@ -66,6 +66,19 @@ class ItemService {
     });
   }
 
+  Future<Either<String, Unit>> deleteItemVariation({
+    required String itemId,
+    required String itemVariationId,
+  }) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.deleteItemVariation(
+          itemId: itemId, itemVariationId: itemVariationId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
+
   Future<Either<String, Unit>> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
@@ -83,7 +96,6 @@ class ItemService {
       return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
-
 }
 
 @Riverpod(keepAlive: true)
