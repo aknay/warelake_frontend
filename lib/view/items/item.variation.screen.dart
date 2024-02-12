@@ -1,23 +1,16 @@
-import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
-import 'package:warelake/view/items/item.list.controller.dart';
+import 'package:warelake/view/items/item.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
-final itemProvider = FutureProvider.autoDispose.family<Item, String>((ref, id) async {
-  if (foundation.kDebugMode) {
-    await Future.delayed(const Duration(seconds: 1));
-  }
-  final itemOrError = await ref.watch(itemServiceProvider).getItem(itemId: id);
-  if (itemOrError.isLeft()) {
-    throw AssertionError("cannot item");
-  }
-  return itemOrError.toIterable().first;
-});
+enum ItemVariationAction {
+  delete,
+}
 
 class ItemVariationScreen extends ConsumerWidget {
   const ItemVariationScreen({required this.itemId, required this.itemVariationId, super.key});
@@ -26,7 +19,7 @@ class ItemVariationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemAsync = ref.watch(itemProvider(itemId));
+    final itemAsync = ref.watch(itemControllerProvider(itemId: itemId));
 
     return ScaffoldAsyncValueWidget<Item>(
       value: itemAsync,
@@ -62,27 +55,27 @@ class PageContents extends ConsumerWidget {
             : newItemVariation.salePriceMoney.amountInDouble,
       );
 
-      final isSuccess = await ref.read(itemListControllerProvider.notifier).updateItemVariation(
-          payload: payload, itemId: oldItemVariation.itemId!, itemVariationId: newItemVariation.id!);
-
-      if (isSuccess) {
-        ref.invalidate(itemProvider(item.id!));
-      }
+      await ref
+          .read(itemControllerProvider(itemId: oldItemVariation.itemId!).notifier)
+          .updateItemVariation(payload: payload, itemVariationId: newItemVariation.id!);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemVariation = item.variations.where((r) => r.id == itemVariationId).first;
-    final itemProviderState = ref.watch(itemProvider(item.id!));
-    final itemListControllerState = ref.watch(itemListControllerProvider);
+    final itemProviderState = ref.watch(itemControllerProvider(itemId: item.id!));
 
-    if (itemProviderState.isLoading || itemListControllerState.isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(itemVariation.name)),
-        body: const Center(child: CircularProgressIndicator()),
+    if (itemProviderState.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
+    final itemVariations = item.variations.where((r) => r.id == itemVariationId);
+    if (itemVariations.isEmpty) {
+      ref.read(goRouterProvider).pop();
+    }
+
+    final itemVariation = itemVariations.first;
 
     return Scaffold(
         appBar: AppBar(
@@ -93,6 +86,36 @@ class PageContents extends ConsumerWidget {
                   return itemProviderState.isLoading ? null : _edit(itemVariation, context, ref);
                 },
                 icon: const Icon(Icons.edit)),
+            PopupMenuButton<ItemVariationAction>(
+                onSelected: (ItemVariationAction value) async {
+                  switch (value) {
+                    case ItemVariationAction.delete:
+                      if (context.mounted) {
+                        final toDeleteOrNull = await showDialog<bool?>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const YesOrNoDialog(
+                              actionWord: "Delete",
+                              title: "Delete?",
+                              content: "Are you sure you want to delete this item?",
+                            );
+                          },
+                        );
+
+                        if (toDeleteOrNull != null && toDeleteOrNull) {
+                          await ref
+                              .read(itemControllerProvider(itemId: item.id!).notifier)
+                              .deleteItemVariation(itemVariationId: itemVariationId);
+                        }
+                      }
+                  }
+                },
+                itemBuilder: (BuildContext context) => [
+                      const PopupMenuItem(
+                        value: ItemVariationAction.delete,
+                        child: Text('Delete'),
+                      ),
+                    ])
           ],
         ),
         body: Column(

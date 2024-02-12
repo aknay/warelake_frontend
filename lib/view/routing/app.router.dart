@@ -13,7 +13,7 @@ import 'package:warelake/view/bill.account/bill.accounts.screen.dart';
 import 'package:warelake/view/items/add.item.screen.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
-import 'package:warelake/view/items/item.variaton.screen.dart';
+import 'package:warelake/view/items/item.variation.screen.dart';
 import 'package:warelake/view/items/items.screen.dart';
 import 'package:warelake/view/main/main.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
