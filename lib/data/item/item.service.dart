@@ -79,6 +79,15 @@ class ItemService {
     });
   }
 
+  Future<Either<String, Unit>> deleteItem({required String itemId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.deleteItem(itemId: itemId, teamId: teamId, token: token);
+      return items.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
+
   Future<Either<String, Unit>> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
