@@ -8,6 +8,7 @@ import 'package:warelake/view/items/item.list.controller.dart';
 import 'package:warelake/view/items/item.variation.list.controller.dart';
 import 'package:warelake/view/items/item.variation.list.view.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key, required this.item});
@@ -42,6 +43,17 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
     if (_validateAndSaveForm()) {
       final itemVariations = ref.read(itemVariationListControllerProvider);
 
+      if (itemVariations.isEmpty) {
+        showAlertDialog(
+          context: context,
+          title: "Item",
+          defaultActionText: "OK",
+          content: "Please add at least one item.",
+        );
+
+        return;
+      }
+
       final item =
           Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: itemUnit.toIterable().first);
 
@@ -69,7 +81,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: const Text("Add Items"),
+        title: const Text("Add Item Group"),
         actions: [
           IconButton(onPressed: state.isLoading ? null : _submit, icon: const Icon(Icons.check)),
         ],
@@ -81,8 +93,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
             gapH8,
             TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Item Name *',
-                hintText: 'Enter Item Name',
+                labelText: 'Item Group Name *',
+                hintText: 'Enter Item Group Name',
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
