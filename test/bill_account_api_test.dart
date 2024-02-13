@@ -53,14 +53,14 @@ void main() async {
     log(locations.keys.last); //
   });
 
-  test('account is created during team creation succeful', () async {
+  test('account is created during team creation successful', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
     expect(team.name, 'Power Ranger');
     expect(team.timeZone, "Africa/Abidjan");
-    expect(team.currencyCode, "AUD");
+    expect(team.currencyCode, CurrencyCode.AUD);
 
     {
       //check primary account is created
@@ -72,15 +72,11 @@ void main() async {
     }
   });
 
-  test('account is created during team creation succeful', () async {
+  test('you can get list and get the account', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
-    expect(team.name, 'Power Ranger');
-    expect(team.timeZone, "Africa/Abidjan");
-    expect(team.currencyCode, "AUD");
-
     {
       final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
