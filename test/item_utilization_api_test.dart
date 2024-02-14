@@ -11,6 +11,7 @@ import 'package:warelake/data/stock.transaction/stock.transaction.repository.dar
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -20,7 +21,7 @@ import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
-  final itemApi = ItemRepository();
+  final itemRepo = ItemRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   final stockTransactionRepo = StockTransactionRepository();
@@ -29,6 +30,7 @@ void main() async {
   late Item jeanItem;
   late BillAccount billAccount;
   late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -61,6 +63,7 @@ void main() async {
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     team = createdOrError.toIterable().first;
+    teamId = team.id!;
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
@@ -68,10 +71,10 @@ void main() async {
     final shirt = getShirt();
     final jean = getJean();
 
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError = await itemRepo.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
   });
 
@@ -95,7 +98,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10);
     }
@@ -119,7 +122,7 @@ void main() async {
           total: 20);
       final poCreatedOrError =
           await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-
+  await Future.delayed(const Duration(seconds: 1));
       expect(poCreatedOrError.isRight(), true);
       purchaseOrder = poCreatedOrError.toIterable().first;
       final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
@@ -129,7 +132,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 24);
     }
@@ -145,9 +148,47 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10);
     }
+  });
+
+  test('item utilization count is correct after new item variations can be added to the item', () async {
+
+  {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 4);
+    }
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final greenShirt = ItemVariation.create(
+        name: "Green Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final updatedOrError = await itemRepo.updateItem(
+        payload: ItemUpdatePayload(newItemVariationListOrNone: Some([greenShirt])),
+        itemId: shirtItem.id!,
+        teamId: teamId,
+        token: firstUserAccessToken);
+
+    expect(updatedOrError.isRight(), true);
+
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalItemVariationsCount, 5);
+    }
+
   });
 }

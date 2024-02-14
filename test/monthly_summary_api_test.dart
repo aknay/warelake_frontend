@@ -504,6 +504,7 @@ void main() async {
         subTotal: 10,
         total: 20);
     final soCreatedOrError = await saleOrderRepo.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+     await Future.delayed(const Duration(seconds: 1));
     final firstSo = soCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -556,7 +557,7 @@ void main() async {
     }
     {
       //sleep a while to update correctly
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       // check outgoing amount is accumulated
       final monthlySummaryListOrError = await monthlySummaryRepository.list(
           teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
