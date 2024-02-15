@@ -65,14 +65,14 @@ void main() async {
     return result;
   }
 
-  DateTime randomDateWithinLastSixMonths() {
+  DateTime randomDateWithinLastSixMonths(int index) {
     final Random random = Random();
     final DateTime now = DateTime.now();
     final int currentMonth = now.month;
     final int currentYear = now.year;
 
     // Generate a random month within the last six months
-    int randomMonth = random.nextInt(6) + currentMonth - 5;
+    int randomMonth = (index % 6) + currentMonth - 5;
 
     // If the random month is less than 1, adjust the year
     int year = currentYear;
@@ -141,7 +141,7 @@ void main() async {
     for (var fruit in fruitList) {
       List<ItemVariation> itemVariationList = [];
       for (var attr in fruitAttrs) {
-        double randomPriceForSale = randomDoubleInRange(30, 70);
+        double randomPriceForSale = randomDoubleInRange(5, 7);
         double randomPriceForPurchase = randomDoubleInRange(2, 4);
 
         final salePriceMoney = PriceMoney.from(amount: randomPriceForSale, currencyCode: CurrencyCode.AUD);
@@ -190,7 +190,7 @@ void main() async {
 
     //add sale orders
     List<String> saleOrderIdList = [];
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 60; i++) {
       final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
@@ -201,7 +201,7 @@ void main() async {
 
       final so = SaleOrder.create(
           accountId: account.id!,
-          date: randomDateWithinLastSixMonths(),
+          date: randomDateWithinLastSixMonths(i),
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
           subTotal: totalAmount,
@@ -225,7 +225,7 @@ void main() async {
 
     //add purchase order
     List<String> purchaseOrderIdList = [];
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 60; i++) {
       final lineItems = getItemVariationList(retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
@@ -238,7 +238,7 @@ void main() async {
       final totalAmount = lineItems.map((e) => e.rate).fold(0, (previousValue, element) => previousValue + element);
       final po = PurchaseOrder.create(
           accountId: account.id!,
-          date: randomDateWithinLastSixMonths(),
+          date: randomDateWithinLastSixMonths(i),
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
           subTotal: totalAmount,
@@ -260,5 +260,5 @@ void main() async {
         await Future.delayed(const Duration(milliseconds: 1000));
       }
     }
-  }, timeout: const Timeout(Duration(minutes: 10)));
+  }, timeout: const Timeout(Duration(minutes: 20)), skip: false);
 }

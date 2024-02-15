@@ -131,7 +131,7 @@ void main() async {
     }
     {
       //sleep a while to update correctly
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 24);
