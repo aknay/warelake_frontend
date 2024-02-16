@@ -7,7 +7,6 @@ import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
-import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
@@ -23,9 +22,7 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
-  late BillAccount billAccount;
   late Item shirtItem;
-  late Item jeanItem;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -60,16 +57,13 @@ void main() async {
     teamId = createdOrError.toIterable().first.id!;
     final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
-    billAccount = accountListOrError.toIterable().first.data.first;
 
     final shirt = getShirt();
     final jean = getJean();
 
     final shirtCreatedOrError = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
-
-    final jeansCreatedOrError = await itemRepo.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
-    jeanItem = jeansCreatedOrError.toIterable().first;
+    await itemRepo.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
   });
 
   // Item getShirt() {

@@ -517,7 +517,6 @@ void main() async {
   });
 
   test('deleting stx with stock in: totalQuantityOfAllItemVariation should be correct', () async {
-    //TODO
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
@@ -576,7 +575,6 @@ void main() async {
   });
 
   test('deleting stx with stock out: totalQuantityOfAllItemVariation should be correct', () async {
-    //TODO
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);

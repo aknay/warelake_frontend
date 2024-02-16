@@ -120,7 +120,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
 
       final success = await ref.read(purchaseOrderListControllerProvider.notifier).createPurchaseOrder(saleOrder);
 
-      if (success && context.mounted) {
+      if (success && mounted) {
         context.goNamed(AppRoute.purchaseOrders.name);
       }
     }
