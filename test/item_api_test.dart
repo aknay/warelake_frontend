@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
@@ -195,7 +194,7 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
 
     final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(newItemVariationListOrNone: Some([greenShirt])),
+        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
         itemId: shirtItem.id!,
         teamId: teamId,
         token: firstUserAccessToken);
@@ -226,7 +225,7 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
 
     final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(newItemVariationListOrNone: Some([greenShirt])),
+        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
         itemId: shirtItem.id!,
         teamId: teamId,
         token: firstUserAccessToken);

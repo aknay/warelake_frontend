@@ -36,22 +36,7 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-  Future<bool> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
-    state = const AsyncLoading();
-    final createdOrError = await ref.read(itemServiceProvider).updateItem(payload: payload, itemId: itemId);
-    return await createdOrError.fold((l) {
-      state = AsyncError(l, StackTrace.current);
-      return false;
-    }, (r) async {
-      final itemsOrError = await _list();
-      if (itemsOrError.isLeft()) {
-        throw AssertionError("error while fetching items");
-      }
-      //we cannot update here as no widget is listing item list controller
-      // state = AsyncValue.data(itemsOrError.toIterable().first.data);
-      return true;
-    });
-  }
+
 
   // Future<void> search(String text) async {
   //   if (text.length > 2) {

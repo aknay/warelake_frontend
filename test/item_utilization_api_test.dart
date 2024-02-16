@@ -175,7 +175,7 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
 
     final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(newItemVariationListOrNone: Some([greenShirt])),
+        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
         itemId: shirtItem.id!,
         teamId: teamId,
         token: firstUserAccessToken);
