@@ -16,12 +16,13 @@ class RoleRestApi extends RoleApi {
       Map<String, String> map = {};
       map["team_id"] = teamId;
       final response = await HttpHelper.getWithQuery(url: ApiEndPoint.getRoleEndPoint(), token: token, query: map);
-      log("team create response code ${response.statusCode}");
-      log("team create response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), Role.fromJson);
         return Right(listResponse);
       }
+      log("error while list roles: response code ${response.statusCode}");
+      log("error while listing roles: response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");

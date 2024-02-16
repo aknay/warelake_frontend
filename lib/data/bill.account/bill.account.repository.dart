@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/config/api.endpoint.dart';
 import 'package:warelake/data/http.helper.dart';
 import 'package:warelake/domain/bill.account/api.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/errors/response.dart';
 import 'package:warelake/domain/responses.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'bill.account.repository.g.dart';
 
@@ -20,12 +20,12 @@ class BillAccountRepository extends BillAccountApi {
       map["team_id"] = teamId;
       final response =
           await HttpHelper.getWithQuery(url: ApiEndPoint.getBillAccountEndPoint(), token: token, query: map);
-      log("team create response code ${response.statusCode}");
-      log("team create response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), BillAccount.fromJson);
         return Right(listResponse);
       }
+      log("error while listing bill account: response code ${response.statusCode}");
+      log("error while listing bill account:  response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");

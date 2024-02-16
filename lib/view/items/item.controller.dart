@@ -16,10 +16,10 @@ class ItemController extends _$ItemController {
     return _getItem(itemId: itemId);
   }
 
-    Future<Unit> deleteItem() async {
+  Future<Unit> deleteItem() async {
     state = const AsyncLoading();
     final createdOrError = await ref.read(itemServiceProvider).deleteItem(itemId: itemId);
-      if (kDebugMode) {
+    if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
     return await createdOrError.fold((l) {
@@ -71,5 +71,21 @@ class ItemController extends _$ItemController {
       return itemOrError.toIterable().first;
     }
     throw Exception('unable to get item utilization');
+  }
+
+  Future<bool> updateItem({required ItemUpdatePayload payload}) async {
+    state = const AsyncLoading();
+    if (kDebugMode) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    final createdOrError = await ref.read(itemServiceProvider).updateItem(payload: payload, itemId: itemId);
+
+    return await createdOrError.fold((l) {
+      state = AsyncError(l, StackTrace.current);
+      return false;
+    }, (r) async {
+      state = AsyncValue.data(await _getItem(itemId: itemId));
+      return true;
+    });
   }
 }
