@@ -23,7 +23,7 @@ abstract class ItemApi {
     required String teamId,
     required String token,
   });
-  Future<Either<ErrorResponse, Item>> createImage({
+  Future<Either<ErrorResponse, Unit>> createImage({
     required ItemVariationImageRequest request,
     required String token,
   });
