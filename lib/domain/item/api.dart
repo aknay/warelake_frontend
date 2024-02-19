@@ -23,8 +23,8 @@ abstract class ItemApi {
     required String teamId,
     required String token,
   });
-  Future<Either<ErrorResponse, Unit>> createImage({
-    required ItemVariationImageRequest request,
+  Future<Either<ErrorResponse, Unit>> createItemImage({
+    required ItemImageRequest request,
     required String token,
   });
   Future<Either<ErrorResponse, Unit>> updateItemVariation({
@@ -53,7 +53,7 @@ abstract class ItemApi {
     required String token,
   });
 
-    Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
+  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
     required String teamId,
     required String token,
   });

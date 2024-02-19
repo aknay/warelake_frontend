@@ -79,17 +79,14 @@ void main() async {
 
 //create image
     {
-      final whiteShirt = item.variations.first;
-
       String currentDirectory = Directory.current.path;
 
       // Construct the path to the image file in the same directory as the test file
       final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
 
-      final request = ItemVariationImageRequest(
-          itemId: item.id!, itemVariationId: whiteShirt.id!, imagePath: File(imagePath), teamId: teamId);
+      final request = ItemImageRequest(itemId: item.id!, imagePath: File(imagePath), teamId: teamId);
 
-      final createdImageOrError = await itemRepo.createImage(request: request, token: firstUserAccessToken);
+      final createdImageOrError = await itemRepo.createItemImage(request: request, token: firstUserAccessToken);
 
       expect(createdImageOrError.isRight(), true);
     }

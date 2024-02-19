@@ -95,10 +95,10 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, Unit>> createImage(
-      {required ItemVariationImageRequest request, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> createItemImage(
+      {required ItemImageRequest request, required String token}) async {
     final response = await HttpHelper.postImage(
-        url: ApiEndPoint.getItemImageEndPoint(),
+        url: ApiEndPoint.getItemImageEndPoint(itemId: request.itemId),
         imageFile: request.imagePath,
         token: token,
         body: request.toJson(),
