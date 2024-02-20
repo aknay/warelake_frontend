@@ -8,6 +8,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.search.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
@@ -108,6 +109,7 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
 
   ListTile _getListTitle(Item item, BuildContext context) {
     return ListTile(
+      leading: ItemImageWidget(itemId: item.id!, size: 40),
       title: Text(item.name),
       onTap: () {
         if (widget.isToSelectItemVariation) {

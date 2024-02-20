@@ -6,7 +6,7 @@ import 'package:warelake/data/item/item.service.dart';
 
 part 'item.image.controller.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ItemImageController extends _$ItemImageController {
   @override
   Future<Option<String>> build({required String itemId}) async {
