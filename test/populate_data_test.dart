@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,7 @@ import 'package:warelake/data/sale.order/sale.order.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
@@ -109,8 +111,7 @@ void main() async {
     return double.parse((value).toStringAsFixed(2)); // Round to 2 decimal places
   }
 
-
-    test('tiny populate data', () async {
+  test('tiny populate data', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
@@ -156,10 +157,27 @@ void main() async {
             purchasePriceMoney: purchasePriceMoney);
         itemVariationList.add(whiteShrt);
       }
-      final shirt = Item.create(name: fruit, variations: itemVariationList, unit: 'kg');
+      final itemToBeCreated = Item.create(name: fruit, variations: itemVariationList, unit: 'kg');
 
-      final itemOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      final itemOrError =
+          await itemApi.createItem(item: itemToBeCreated, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
+
+      {
+        //insert images
+        String currentDirectory = Directory.current.path;
+        // Construct the path to the image file in the same directory as the test file
+        final fruitImageFileName = '${fruit.toLowerCase()}.jpeg';
+        final String imagePath = '$currentDirectory/test/images/$fruitImageFileName'; // Adjust the image file name
+        if (File(imagePath).existsSync()) {
+          final request = ItemImageRequest(itemId: item.id!, imagePath: File(imagePath), teamId: team.id!);
+
+          final createdImageOrError = await itemApi.createItemImage(request: request, token: firstUserAccessToken);
+
+          expect(createdImageOrError.isRight(), true);
+        }
+      }
+
       retrievedItemVariationList.addAll(item.variations);
 
       await Future.delayed(const Duration(milliseconds: 1000));

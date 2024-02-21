@@ -24,12 +24,12 @@ class ImageUploadService {
     return await imagePicker.pickImage(source: ImageSource.gallery);
   }
 
-  Future<Either<String, Unit>> uploadImage({required XFile file, required String itemId}) async {
+  Future<Either<String, Unit>> uploadImage({required File file, required String itemId}) async {
     final teamIdOrNone = teamIdSharedRefRepository.existingTeamId;
     if (teamIdOrNone.isNone()) {
       throw Exception('team id cannot be none');
     }
-    final iir = ItemImageRequest(imagePath: File(file.path), itemId: itemId, teamId: teamIdOrNone.toNullable()!);
+    final iir = ItemImageRequest(imagePath: file, itemId: itemId, teamId: teamIdOrNone.toNullable()!);
 
     final token = await authRepo.shouldGetToken();
     final createdOrError = await itemRepository.createItemImage(request: iir, token: token);

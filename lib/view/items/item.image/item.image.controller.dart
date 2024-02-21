@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.image.service.dart';
 import 'package:warelake/data/item/item.service.dart';
@@ -17,7 +20,13 @@ class ItemImageController extends _$ItemImageController {
     final fileOrNull = await ref.read(imageUploadServiceProvider).pickImageByGallary(itemId: itemId);
     if (fileOrNull != null) {
       state = const AsyncLoading();
-      final uploadOrError = await ref.read(imageUploadServiceProvider).uploadImage(file: fileOrNull, itemId: itemId);
+      final resizedImageOrError = _compressAndResizeImage(File(fileOrNull.path));
+      if (resizedImageOrError.isLeft()) {
+        state = AsyncValue.error('Faile to resize iamge', StackTrace.current);
+        return;
+      }
+
+      final uploadOrError = await ref.read(imageUploadServiceProvider).uploadImage(file: resizedImageOrError.toIterable().first, itemId: itemId);
       uploadOrError.fold((l) {
         state = AsyncValue.error('Faile to upload an image', StackTrace.current);
       }, (r) async {
@@ -35,5 +44,23 @@ class ItemImageController extends _$ItemImageController {
       return optionOf(itemOrError.toIterable().first.imageUrl);
     }
     throw Exception('unable to get item utilization');
+  }
+
+  Either<String, File> _compressAndResizeImage(File file) {
+    final image = img.decodeImage(file.readAsBytesSync());
+    if (image == null) {
+      return left('unable to decode image');
+    }
+
+    img.Image resizedImage = img.copyResize(image, width: 200, height: 200);
+
+    // Compress the image with JPEG format
+    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 70);
+
+    // Save the compressed image to a file
+    File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
+    compressedFile.writeAsBytesSync(compressedBytes);
+
+    return right(compressedFile);
   }
 }

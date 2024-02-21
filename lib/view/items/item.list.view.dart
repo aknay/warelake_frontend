@@ -109,8 +109,11 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
 
   ListTile _getListTitle(Item item, BuildContext context) {
     return ListTile(
-      leading: ItemImageWidget(itemId: item.id!, size: 40),
-      title: Text(item.name),
+      leading: ItemImageWidget(itemId: item.id!, size: 48),
+      title: Padding(
+        padding: const EdgeInsets.only(bottom: 16, top: 16),
+        child: Text(item.name),
+      ),
       onTap: () {
         if (widget.isToSelectItemVariation) {
           final router = GoRouter.of(context);

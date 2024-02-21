@@ -41,9 +41,9 @@ class ItemImageWidget extends ConsumerWidget {
             ),
             placeholder: (context, url) => const CircleAvatar(
               backgroundColor: Colors.amber,
-              radius: 150,
+              radius: 40,
             ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         );
       });

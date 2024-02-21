@@ -62,6 +62,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   image_picker: ^1.0.7
   cached_network_image: ^3.3.1
+  image: ^4.1.7
 
 dev_dependencies:
   flutter_test:
