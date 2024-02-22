@@ -36,6 +36,11 @@
 
 # How to generate firebase_options.dart
 - https://stackoverflow.com/a/70405060 
+## Basically
+- export PATH="$PATH":"$HOME/.pub-cache/bin"
+- dart pub global activate flutterfire_cli
+- flutterfire configure --account <email-account>
+
 
 # How to generate keystore.jks
 - `keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias <Alias Key>`

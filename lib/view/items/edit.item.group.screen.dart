@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
 import 'package:warelake/view/items/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
@@ -68,6 +69,8 @@ class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
         child: Column(
           children: [
             gapH8,
+            ItemImageWidget(itemId: widget.item.id!),
+            gapH32,
             TextFormField(
               initialValue: itemName.getOrElse(() => ""),
               decoration: const InputDecoration(

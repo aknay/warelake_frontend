@@ -95,25 +95,20 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, Item>> createImage(
-      {required ItemVariationImageRequest request, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> createItemImage(
+      {required ItemImageRequest request, required String token}) async {
     final response = await HttpHelper.postImage(
-        url: ApiEndPoint.getItemImageEndPoint(),
+        url: ApiEndPoint.getItemImageEndPoint(itemId: request.itemId),
         imageFile: request.imagePath,
         token: token,
         body: request.toJson(),
         teamId: request.teamId);
     if (response.statusCode == 200) {
-      log('Image uploaded successfully');
-      log(await response.stream.bytesToString());
+      return right(unit);
     } else {
       log('Image upload failed with status ${response.statusCode}');
     }
-
-    // var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
-
-    // TODO: implement createImage
-    throw UnimplementedError();
+    return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
   }
 
   @override
