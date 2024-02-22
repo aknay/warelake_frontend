@@ -45,7 +45,9 @@ class ApiEndPoint {
   }
 
   static String getItemImageEndPoint({required String itemId, String? imageId}) {
-    return imageId == null ? "${getApiBaseUrl()}/v1/items/$itemId/images" : "${getApiBaseUrl()}/v1/items/$itemId/images/$imageId";
+    return imageId == null
+        ? "${getApiBaseUrl()}/v1/items/$itemId/images"
+        : "${getApiBaseUrl()}/v1/items/$itemId/images/$imageId";
   }
 
   static String getPurchaseOrderEndPoint({String? purchaseOrderId}) {
