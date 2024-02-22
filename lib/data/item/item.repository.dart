@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/config/api.endpoint.dart';
 import 'package:warelake/data/http.helper.dart';
 import 'package:warelake/domain/errors/response.dart';
@@ -11,7 +12,6 @@ import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'item.repository.g.dart';
 
@@ -24,11 +24,12 @@ class ItemRepository extends ItemApi {
     try {
       final response =
           await HttpHelper.post(url: ApiEndPoint.getItemEndPoint(), body: item.toJson(), token: token, teamId: teamId);
-      log("team create response code ${response.statusCode}");
-      log("team create response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 201) {
         return Right(Item.fromJson(jsonDecode(response.body)));
       }
+      log("error while creating an item: response code ${response.statusCode}");
+      log("error while creating an item: response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
@@ -80,11 +81,12 @@ class ItemRepository extends ItemApi {
     try {
       final response =
           await HttpHelper.get(url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId);
-      log("get item response code ${response.statusCode}");
-      log("get item response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 200) {
         return Right(Item.fromJson(jsonDecode(response.body)));
       }
+      log("get item response code ${response.statusCode}");
+      log("get item response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
@@ -93,25 +95,20 @@ class ItemRepository extends ItemApi {
   }
 
   @override
-  Future<Either<ErrorResponse, Item>> createImage(
-      {required ItemVariationImageRequest request, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> createItemImage(
+      {required ItemImageRequest request, required String token}) async {
     final response = await HttpHelper.postImage(
-        url: ApiEndPoint.getItemImageEndPoint(),
+        url: ApiEndPoint.getItemImageEndPoint(itemId: request.itemId),
         imageFile: request.imagePath,
         token: token,
         body: request.toJson(),
         teamId: request.teamId);
     if (response.statusCode == 200) {
-      log('Image uploaded successfully');
-      log(await response.stream.bytesToString());
+      return right(unit);
     } else {
       log('Image upload failed with status ${response.statusCode}');
     }
-
-    // var request = http.MultipartRequest('POST', Uri.parse(serverUrl));
-
-    // TODO: implement createImage
-    throw UnimplementedError();
+    return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
   }
 
   @override
@@ -123,11 +120,11 @@ class ItemRepository extends ItemApi {
     try {
       final response = await HttpHelper.post(
           url: ApiEndPoint.getItemEndPoint(itemId: itemId), token: token, teamId: teamId, body: payload.toMap());
-      log("get item response code ${response.statusCode}");
-      log("get item response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         return Right(Item.fromJson(jsonDecode(response.body)));
       }
+      log("error while updating item: response code ${response.statusCode}");
+      log("error while updating item: response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
@@ -202,12 +199,12 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization(
+      {required String teamId, required String token}) async {
     try {
-      final response =
-          await HttpHelper.get(url: ApiEndPoint.itemUtilizationEndPoint, token: token, teamId: teamId);
+      final response = await HttpHelper.get(url: ApiEndPoint.itemUtilizationEndPoint, token: token, teamId: teamId);
       log("get item response code ${response.statusCode}");
       log("get item response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {

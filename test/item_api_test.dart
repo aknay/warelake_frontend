@@ -1,15 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
-import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -19,7 +17,10 @@ import 'helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemRepo = ItemRepository();
+  final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
+  late String teamId;
+  late Item shirtItem;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -47,26 +48,42 @@ void main() async {
     firstUserAccessToken = signInResponse.idToken!;
   });
 
-  Item getShirt() {
-    final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+  setUp(() async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
 
-    final whiteShirt = ItemVariation.create(
-        name: "White Shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+    final shirt = getShirt();
+    final jean = getJean();
 
-    final blackShirt = ItemVariation.create(
-        name: "Black Shirt",
-        stockable: true,
-        sku: 'sku 234',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+    final shirtCreatedOrError = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    shirtItem = shirtCreatedOrError.toIterable().first;
+    await itemRepo.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
+  });
 
-    return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-  }
+  // Item getShirt() {
+  //   final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+  //   final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+
+  //   final whiteShirt = ItemVariation.create(
+  //       name: "White Shirt",
+  //       stockable: true,
+  //       sku: 'sku 123',
+  //       salePriceMoney: salePriceMoney,
+  //       purchasePriceMoney: purchasePriceMoney);
+
+  //   final blackShirt = ItemVariation.create(
+  //       name: "Black Shirt",
+  //       stockable: true,
+  //       sku: 'sku 234',
+  //       salePriceMoney: salePriceMoney,
+  //       purchasePriceMoney: purchasePriceMoney);
+
+  //   return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+  // }
 
   test('creating item should be successful', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
@@ -157,6 +174,70 @@ void main() async {
     }
   });
 
+  test('new item variations can be added after the item is created', () async {
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final greenShirt = ItemVariation.create(
+        name: "Green Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final updatedOrError = await itemRepo.updateItem(
+        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
+        itemId: shirtItem.id!,
+        teamId: teamId,
+        token: firstUserAccessToken);
+
+    expect(updatedOrError.isRight(), true);
+
+    {
+      //check the item variation is there
+      final retrievedItemOrError =
+          await itemRepo.getItem(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+      final newShirtItem = retrievedItemOrError.toIterable().first;
+
+      expect(newShirtItem.variations.length, 3);
+      expect(newShirtItem.variations.where((element) => element.name == 'Green Shirt').isNotEmpty, true);
+    }
+  });
+
+  test('item can be search after the item variations are added to item', () async {
+    //TODO: not sure we need this test
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final greenShirt = ItemVariation.create(
+        name: "Green Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final updatedOrError = await itemRepo.updateItem(
+        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
+        itemId: shirtItem.id!,
+        teamId: teamId,
+        token: firstUserAccessToken);
+
+    expect(updatedOrError.isRight(), true);
+
+    {
+      //you can search a shirt
+      final searchField = ItemSearchField(itemName: 'shirt');
+      final itemListOrError = await itemRepo.getItemList(
+        teamId: teamId,
+        itemSearchField: searchField,
+        token: firstUserAccessToken,
+      );
+      expect(itemListOrError.isRight(), true);
+      expect(itemListOrError.toIterable().first.data.length, 1);
+      expect(itemListOrError.toIterable().first.data.first.name, 'shirt');
+    }
+  });
+
   test('you can delete the item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
@@ -226,50 +307,6 @@ void main() async {
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 0);
     }
   });
-
-  // we skip this test for now
-  test('you can crate image for an item', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedItemOrError = await itemRepo.getItem(
-        itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
-    expect(retrievedItemOrError.isRight(), true);
-    final item = retrievedItemOrError.toIterable().first;
-
-//create image
-    {
-      final whiteShirt = item.variations.first;
-
-      String currentDirectory = Directory.current.path;
-
-      // Construct the path to the image file in the same directory as the test file
-      final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
-
-      final request = ItemVariationImageRequest(
-          itemId: item.id!, itemVariationId: whiteShirt.id!, imagePath: File(imagePath), teamId: team.id!);
-
-      final createdImageOrError = await itemRepo.createImage(request: request, token: firstUserAccessToken);
-
-      expect(createdImageOrError.isRight(), true);
-    }
-  }, skip: true);
 
   test('you can list item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);

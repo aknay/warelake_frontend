@@ -133,7 +133,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
 
       final success = await ref.read(saleOrderListControllerProvider.notifier).createSaleOrder(saleOrder);
 
-      if (success && context.mounted) {
+      if (success && mounted) {
         context.goNamed(AppRoute.saleOrders.name);
       }
     }

@@ -1,6 +1,6 @@
+import 'package:uuid/uuid.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/valueobject.dart';
-import 'package:uuid/uuid.dart';
 
 class Item {
   String? id;
@@ -12,6 +12,7 @@ class Item {
   List<ItemVariation> variations;
   String? productType;
   String unit;
+  String? imageUrl;
 
   Item(
       {required this.name,
@@ -20,7 +21,8 @@ class Item {
       required this.variations,
       this.productType,
       required this.unit,
-      this.id});
+      this.id,
+      this.imageUrl});
 
   factory Item.create(
       {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
@@ -49,7 +51,8 @@ class Item {
         abbreviation: json['abbreviation'],
         variations: itemVariations.values.toList(),
         productType: json['product_type'],
-        unit: json['unit']);
+        unit: json['unit'],
+        imageUrl: json['image_url']);
   }
 
   Map<String, dynamic> toJson() {

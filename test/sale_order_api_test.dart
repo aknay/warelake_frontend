@@ -190,11 +190,30 @@ void main() async {
   });
 
   test('you can change to delivered for so', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
+    final date = DateTime.now();
 
+    final so = SaleOrder.create(
+        accountId: billAccount.id!,
+        date: date,
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        total: 20,
+        saleOrderNumber: "S0-00001");
+    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(soCreatedOrError.isRight(), true);
+    final createdSo = soCreatedOrError.toIterable().first;
+
+    // testing receiving items
+    {
+    final soItemDeliveredOrError = await saleOrderApi.deliveredItems(
+        saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
+    expect(soItemDeliveredOrError.isRight(), true);
+    }
+  });
+
+  test('you can change to delivered for so with more params', () async {
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
@@ -277,11 +296,6 @@ void main() async {
   });
 
   test('you can delete the so with processig status', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
@@ -394,11 +408,6 @@ void main() async {
   });
 
   test('you can delete the so with delivered status', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 

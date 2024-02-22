@@ -1,19 +1,15 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
-import 'package:warelake/view/items/edit.item.screen.dart';
+import 'package:warelake/view/items/edit.item.group.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
-import 'package:warelake/view/items/item.list.view.dart';
 import 'package:warelake/view/items/item.variation.list.view.dart';
 
-enum ItemAction {
-  delete,
-}
+enum ItemAction { delete }
 
 class ItemScreen extends ConsumerWidget {
   const ItemScreen({super.key, required this.isToSelectItemVariation, required this.itemId});
@@ -34,6 +30,7 @@ class ItemScreen extends ConsumerWidget {
 
 class PageContents extends ConsumerWidget {
   const PageContents({super.key, required this.isToSelectItemVariation, required this.item});
+
   final Item item;
   final bool isToSelectItemVariation;
 
@@ -48,18 +45,12 @@ class PageContents extends ConsumerWidget {
                   ItemUpdatePayload? payload = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditItemScreen(item: Some(item)),
+                      builder: (context) => EditItemGroupScreen(item: item),
                     ),
                   );
 
                   if (payload != null) {
-                    final isSuccessful = await ref
-                        .read(itemListControllerProvider.notifier)
-                        .updateItem(payload: payload, itemId: item.id!);
-                    if (isSuccessful) {
-                      ref.read(toForceToRefreshIemListProvider.notifier).state =
-                          !ref.read(toForceToRefreshIemListProvider);
-                    }
+                    await ref.read(itemControllerProvider(itemId: item.id!).notifier).updateItem(payload: payload);
                   }
                 },
                 icon: const Icon(Icons.edit)),

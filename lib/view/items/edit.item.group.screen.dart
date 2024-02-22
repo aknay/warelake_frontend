@@ -5,16 +5,23 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
+import 'package:warelake/view/items/item.variation.list.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
-class EditItemScreen extends ConsumerStatefulWidget {
-  const EditItemScreen({super.key, required this.item});
-  final Option<Item> item;
+import 'item.variation.list.view.dart';
+
+class EditItemGroupScreen extends ConsumerStatefulWidget {
+  const EditItemGroupScreen({super.key, required this.item});
+
+  final Item item;
+
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AddItemScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditItemGroupScreenState();
 }
 
-class _AddItemScreenState extends ConsumerState<EditItemScreen> {
+class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<String> itemName = const None();
   Option<String> itemUnit = const None();
@@ -22,10 +29,8 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
   @override
   void initState() {
     super.initState();
-    widget.item.fold(() => null, (a) {
-      itemName = Some(a.name);
-      itemUnit = Some(a.unit);
-    });
+    itemName = Some(widget.item.name);
+    itemUnit = Some(widget.item.unit);
   }
 
   bool _validateAndSaveForm() {
@@ -39,18 +44,22 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
 
   _submit() async {
     if (_validateAndSaveForm()) {
-      context.pop(ItemUpdatePayload(name: itemName.toNullable(), unit: itemUnit.toNullable()));
+      context.pop(
+        ItemUpdatePayload(
+          name: itemName.toNullable(),
+          unit: itemUnit.toNullable(),
+          newItemVariationListOrNone: ref.watch(itemVariationListControllerProvider),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(itemListControllerProvider);
-    // final itemVariationList = ref.watch(itemVariationListControllerProvider);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Item"),
+        title: const Text("Edit Item Group"),
         actions: [
           IconButton(onPressed: state.isLoading ? null : _submit, icon: const Icon(Icons.check)),
         ],
@@ -60,6 +69,8 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
         child: Column(
           children: [
             gapH8,
+            ItemImageWidget(itemId: widget.item.id!),
+            gapH32,
             TextFormField(
               initialValue: itemName.getOrElse(() => ""),
               decoration: const InputDecoration(
@@ -89,6 +100,34 @@ class _AddItemScreenState extends ConsumerState<EditItemScreen> {
               },
               onSaved: (value) => itemUnit = optionOf(value),
             ),
+            gapH16,
+            Text('New Items', style: Theme.of(context).textTheme.titleLarge),
+            Expanded(
+                child: ItemVariationListView(
+              itemVariationList: ref.watch(itemVariationListControllerProvider),
+              isToSelectItemVariation: false,
+            )),
+            OutlinedButton(
+              onPressed: () async {
+                final ItemVariation? itemVariation = await context.pushNamed(AppRoute.addItemVariation.name);
+                if (itemVariation != null) {
+                  ref.read(itemVariationListControllerProvider.notifier).upset(itemVariation);
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text('Add more items'),
+            ),
+            gapH16,
+            Text('Existing Items', style: Theme.of(context).textTheme.titleLarge),
+            Expanded(
+                child: ItemVariationListView(
+              itemVariationList: widget.item.variations,
+              isToSelectItemVariation: false,
+            )),
           ],
         ),
       ),

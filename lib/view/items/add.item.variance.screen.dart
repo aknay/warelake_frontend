@@ -132,7 +132,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   List<Widget> _buildFormChildren() {
     return [
       TextFormField(
-        initialValue: widget.itemVariation == null ? null : widget.itemVariation!.name,
+        initialValue: widget.itemVariation?.name,
         decoration: const InputDecoration(
           labelText: 'Item Variation Name *',
           hintText: 'Enter your username',
@@ -149,7 +149,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         gapH8,
         TextFormField(
           initialValue:
-              widget.itemVariation == null ? null : widget.itemVariation!.salePriceMoney.amountInDouble.toString(),
+              widget.itemVariation?.salePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
@@ -167,7 +167,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         gapH8,
         TextFormField(
           initialValue:
-              widget.itemVariation == null ? null : widget.itemVariation!.purchasePriceMoney.amountInDouble.toString(),
+              widget.itemVariation?.purchasePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(

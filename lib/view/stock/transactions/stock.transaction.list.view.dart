@@ -44,7 +44,7 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
   @override
   Widget build(BuildContext context) {
     ref.listen<StockTransactionFilter?>(
-      stockTransctionFilterProvider,
+      stockTransactionFilterProvider,
       (_, state) {
         log("refresh from other pages?");
         _refresh();
@@ -70,11 +70,11 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    final lastStockTranasactionId = ref.read(_lastStockTransactionIdProvider).toNullable();
-    final stockTransactionFilter = ref.read(stockTransctionFilterProvider);
+    final lastStockTransactionId = ref.read(_lastStockTransactionIdProvider).toNullable();
+    final stockTransactionFilter = ref.read(stockTransactionFilterProvider);
     final stockTransactionListResponseOrError = await ref
         .read(stockTransactionServiceProvider)
-        .list(lastStockTransactionId: lastStockTranasactionId, stockMovement: stockTransactionFilter.stockMovement);
+        .list(lastStockTransactionId: lastStockTransactionId, stockMovement: stockTransactionFilter.stockMovement);
 
     if (stockTransactionListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";

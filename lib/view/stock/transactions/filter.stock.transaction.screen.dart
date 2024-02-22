@@ -36,7 +36,7 @@ class FilterStockTransactionScreen extends ConsumerWidget {
                   onChanged: (value) {
                     ref.read(_stockMovementProvider.notifier).state = value;
                   },
-                  stockMovement: ref.watch(stockTransctionFilterProvider).stockMovement,
+                  stockMovement: ref.watch(stockTransactionFilterProvider).stockMovement,
                 ),
               ),
             ],
@@ -49,7 +49,7 @@ class FilterStockTransactionScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                       onPressed: () {
-                        ref.read(stockTransctionFilterProvider.notifier).state =
+                        ref.read(stockTransactionFilterProvider.notifier).state =
                             StockTransactionFilter(stockMovement: ref.read(_stockMovementProvider));
                         Navigator.pop(context);
                       },

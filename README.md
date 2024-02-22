@@ -1,4 +1,4 @@
-# warelake
+# Warelake: Inventory Organizer
 
 [![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/)
 ![GitHub Release](https://img.shields.io/github/v/release/aknay/warelake_frontend)
@@ -36,6 +36,11 @@
 
 # How to generate firebase_options.dart
 - https://stackoverflow.com/a/70405060 
+## Basically
+- export PATH="$PATH":"$HOME/.pub-cache/bin"
+- dart pub global activate flutterfire_cli
+- flutterfire configure --account <email-account>
+
 
 # How to generate keystore.jks
 - `keytool -genkey -v -keystore keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias <Alias Key>`
