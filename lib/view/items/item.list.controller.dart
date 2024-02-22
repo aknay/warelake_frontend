@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
-import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
 
@@ -32,23 +31,6 @@ class ItemListController extends _$ItemListController {
         throw AssertionError("error while fetching items");
       }
       state = AsyncValue.data(itemsOrError.toIterable().first.data);
-      return true;
-    });
-  }
-
-  Future<bool> updateItem({required ItemUpdatePayload payload, required String itemId}) async {
-    state = const AsyncLoading();
-    final createdOrError = await ref.read(itemServiceProvider).updateItem(payload: payload, itemId: itemId);
-    return await createdOrError.fold((l) {
-      state = AsyncError(l, StackTrace.current);
-      return false;
-    }, (r) async {
-      final itemsOrError = await _list();
-      if (itemsOrError.isLeft()) {
-        throw AssertionError("error while fetching items");
-      }
-      //we cannot update here as no widget is listing item list controller
-      // state = AsyncValue.data(itemsOrError.toIterable().first.data);
       return true;
     });
   }

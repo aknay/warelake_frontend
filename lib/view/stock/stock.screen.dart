@@ -105,7 +105,7 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
 
       final success = await ref.read(stockTransactionListControllerProvider.notifier).create(rawTx);
 
-      if (success && context.mounted) {
+      if (success && mounted) {
         context.goNamed(AppRoute.stockTransactions.name);
       }
     }

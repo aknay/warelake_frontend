@@ -6,7 +6,6 @@ import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
-import 'package:warelake/view/routing/app.router.dart';
 
 enum ItemVariationAction {
   delete,
@@ -14,6 +13,7 @@ enum ItemVariationAction {
 
 class ItemVariationScreen extends ConsumerWidget {
   const ItemVariationScreen({required this.itemId, required this.itemVariationId, super.key});
+
   final String itemId;
   final String itemVariationId;
 
@@ -33,6 +33,7 @@ class ItemVariationScreen extends ConsumerWidget {
 
 class PageContents extends ConsumerWidget {
   const PageContents({super.key, required this.item, required this.itemVariationId});
+
   final Item item;
   final String itemVariationId;
 
@@ -63,18 +64,12 @@ class PageContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemProviderState = ref.watch(itemControllerProvider(itemId: item.id!));
-
-    if (itemProviderState.isLoading) {
+    final itemVariations = item.variations.where((r) => r.id == itemVariationId);
+    if (itemVariations.isEmpty) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    final itemVariations = item.variations.where((r) => r.id == itemVariationId);
-    if (itemVariations.isEmpty) {
-      ref.read(goRouterProvider).pop();
-    }
-
     final itemVariation = itemVariations.first;
 
     return Scaffold(
@@ -83,7 +78,7 @@ class PageContents extends ConsumerWidget {
           actions: [
             IconButton(
                 onPressed: () async {
-                  return itemProviderState.isLoading ? null : _edit(itemVariation, context, ref);
+                  return _edit(itemVariation, context, ref);
                 },
                 icon: const Icon(Icons.edit)),
             PopupMenuButton<ItemVariationAction>(

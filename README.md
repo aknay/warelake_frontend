@@ -1,4 +1,4 @@
-# warelake
+# Warelake: Inventory Organizer
 
 [![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/)
 ![GitHub Release](https://img.shields.io/github/v/release/aknay/warelake_frontend)

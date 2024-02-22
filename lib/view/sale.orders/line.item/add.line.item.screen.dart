@@ -136,7 +136,8 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
           quantity: quantity.toIterable().first,
           unit: "some unit");
       ref.read(lineItemControllerProvider.notifier).add(lineItem);
-
+      //to reset the line item after it has been added.
+      ref.read(selectedItemVariationProvider.notifier).state = const None();
       context.pop();
     }
   }
