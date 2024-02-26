@@ -11,6 +11,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -86,5 +87,45 @@ void main() async {
 
     final item = itemCreated.toIterable().first;
     expect(item.variations.first.barcode, barcodeData);
+  });
+
+  test('you can update the barcode of the item variation', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney, barcode: '1234');
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    expect(itemCreatedOrError.isRight(), true);
+    final payload = ItemVariationPayload(barcode: '67890');
+    final item = itemCreatedOrError.toIterable().first;
+    final updatedOrError = await itemRepo.updateItemVariation(
+        payload: payload,
+        itemId: item.id!,
+        itemVariationId: item.variations.first.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken);
+
+    expect(updatedOrError.isRight(), true);
+
+    {
+      //get back the updated item
+      final itemOrError = await itemRepo.getItem(itemId: item.id!, teamId: team.id!, token: firstUserAccessToken);
+      final updatedItem = itemOrError.toIterable().first;
+      final updatedItemVariation = updatedItem.variations.first;
+      expect(updatedItemVariation.barcode, "67890");
+ 
+    }
   });
 }
