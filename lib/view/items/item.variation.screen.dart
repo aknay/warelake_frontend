@@ -71,7 +71,7 @@ class PageContents extends ConsumerWidget {
       );
     }
     final itemVariation = itemVariations.first;
-
+    final barcodeText = itemVariation.barcode ?? '';
     return Scaffold(
         appBar: AppBar(
           title: Text(itemVariation.name),
@@ -123,6 +123,10 @@ class PageContents extends ConsumerWidget {
             ListTile(
               title: const Text("Stock on hand"),
               trailing: Text("${itemVariation.itemCount}", style: Theme.of(context).textTheme.bodyLarge),
+            ),
+            ListTile(
+              title: const Text("Barcode"),
+              trailing: Text(barcodeText, style: Theme.of(context).textTheme.bodyLarge),
             ),
             ListTile(
               title: const Text("Selling Price"),

@@ -4,8 +4,10 @@ import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/items/edit.item.group.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
+import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
 import 'package:warelake/view/items/item.variation.list.view.dart';
 
@@ -87,13 +89,21 @@ class PageContents extends ConsumerWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            gapH16,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ItemImageWidget(itemId: item.id!),
+              ],
+            ),
+            gapH8,
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text('Unit: ${item.unit}'),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text('Count: ${item.variations.length}'),
+              child: Text('Item Count: ${item.variations.length}'),
             ),
             Expanded(
                 child: ItemVariationListView(

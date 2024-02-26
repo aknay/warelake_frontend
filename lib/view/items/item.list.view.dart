@@ -114,6 +114,7 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(item.name),
       ),
+      trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
         if (widget.isToSelectItemVariation) {
           final router = GoRouter.of(context);

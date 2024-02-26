@@ -27,6 +27,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Option<String> itemVariationName = const None();
   Option<double> purchasingPrice = const None();
   Option<double> sellingPrice = const None();
+  Option<String> barcodeOrNone = const None();
   Option<int> currentStockLevel = const Some(0);
   Option<int> reorderStockLevel = const Some(0);
   late final CurrencyCode currencyCode;
@@ -56,7 +57,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
   Future<void> _submit() async {
     if (_validateAndSaveForm()) {
-      if (itemVariationName.isSome() && purchasingPrice.isSome() && sellingPrice.isSome()) {
+      if (itemVariationName.isSome() && purchasingPrice.isSome() && sellingPrice.isSome() && barcodeOrNone.isSome()) {
         final salePrice = sellingPrice.fold(() => 0.0, (a) => a);
         final salePriceMoney = PriceMoney.from(amount: salePrice, currencyCode: currencyCode);
 
@@ -74,7 +75,8 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
               sku: 'abc',
               salePriceMoney: salePriceMoney,
               purchasePriceMoney: purchasePriceMoney,
-              itemCount: itemCount);
+              itemCount: itemCount,
+              barcode: barcodeOrNone.toNullable());
 
           context.pop(itemVariation);
         } else {
@@ -84,7 +86,8 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
               sku: 'abc',
               salePriceMoney: salePriceMoney,
               purchasePriceMoney: purchasePriceMoney,
-              itemCount: itemCount);
+              itemCount: itemCount,
+              barcode: barcodeOrNone.toNullable());
 
           context.pop(itemVariation);
         }
@@ -96,7 +99,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.itemVariation == null ? 'New Item Variation' : 'Edit Item Variation'),
+        title: Text(widget.itemVariation == null ? 'New Item' : 'Edit Item'),
         actions: [
           IconButton(
               onPressed: () async {
@@ -134,7 +137,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
       TextFormField(
         initialValue: widget.itemVariation?.name,
         decoration: const InputDecoration(
-          labelText: 'Item Variation Name *',
+          labelText: 'Item Name *',
           hintText: 'Enter your username',
         ),
         validator: (value) {
@@ -148,17 +151,16 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
       Column(children: [
         gapH8,
         TextFormField(
-          initialValue:
-              widget.itemVariation?.salePriceMoney.amountInDouble.toString(),
+          initialValue: widget.itemVariation?.salePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
             labelText: 'Purchase Price*',
-            hintText: 'Enter your username',
+            hintText: 'Enter purchase price',
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter your username';
+              return 'Please enter purchase price';
             }
             return null;
           },
@@ -166,61 +168,74 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         ),
         gapH8,
         TextFormField(
-          initialValue:
-              widget.itemVariation?.purchasePriceMoney.amountInDouble.toString(),
+          initialValue: widget.itemVariation?.purchasePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
             labelText: 'Selling Price *',
-            hintText: 'Enter your username',
+            hintText: 'Enter selling price',
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter your username';
+              return 'Please enter selling price';
             }
             return null;
           },
           onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
         ),
         gapH8,
-        hideStockLevelUi
-            ? const SizedBox.shrink()
-            : TextFormField(
-                initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
-                decoration: const InputDecoration(
-                  labelText: 'Current Stock Level',
-                  hintText: 'Enter your username',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
-                },
-                onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
-              ),
-        hideStockLevelUi ? const SizedBox.shrink() : gapH8,
-        hideStockLevelUi
-            ? const SizedBox.shrink()
-            : TextFormField(
-                initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
-                decoration: const InputDecoration(
-                  labelText: 'Reorder Stock Level',
-                  hintText: 'Enter your username',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
-                },
-                keyboardType: const TextInputType.numberWithOptions(
-                  signed: false,
-                  decimal: false,
-                ),
-                onSaved: (value) =>
-                    reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
-              ),
+        TextFormField(
+          initialValue: widget.itemVariation?.barcode,
+          decoration: const InputDecoration(
+            labelText: 'Barcode *',
+            hintText: 'Enter barcode',
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter barcode';
+            }
+            return null;
+          },
+          onSaved: (value) => barcodeOrNone = optionOf(value),
+        ),
+        // hideStockLevelUi
+        //     ? const SizedBox.shrink()
+        //     : TextFormField(
+        //         initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
+        //         decoration: const InputDecoration(
+        //           labelText: 'Current Stock Level',
+        //           hintText: 'Enter your username',
+        //         ),
+        //         validator: (value) {
+        //           if (value == null || value.isEmpty) {
+        //             return 'Please enter your username';
+        //           }
+        //           return null;
+        //         },
+        //         onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
+        //       ),
+        // hideStockLevelUi ? const SizedBox.shrink() : gapH8,
+        // hideStockLevelUi
+        //     ? const SizedBox.shrink()
+        //     : TextFormField(
+        //         initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
+        //         decoration: const InputDecoration(
+        //           labelText: 'Reorder Stock Level',
+        //           hintText: 'Enter your username',
+        //         ),
+        //         validator: (value) {
+        //           if (value == null || value.isEmpty) {
+        //             return 'Please enter your username';
+        //           }
+        //           return null;
+        //         },
+        //         keyboardType: const TextInputType.numberWithOptions(
+        //           signed: false,
+        //           decimal: false,
+        //         ),
+        //         onSaved: (value) =>
+        //             reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
+        //       ),
       ]),
     ];
   }
