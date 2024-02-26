@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/item/entities.dart';
-import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
@@ -46,19 +45,9 @@ class PageContents extends ConsumerWidget {
     );
 
     if (newItemVariation != null) {
-      final payload = ItemVariationPayload(
-        name: oldItemVariation.name == newItemVariation.name ? null : newItemVariation.name,
-        pruchasePrice: oldItemVariation.purchasePriceMoney.amount == newItemVariation.purchasePriceMoney.amount
-            ? null
-            : newItemVariation.purchasePriceMoney.amountInDouble,
-        salePrice: oldItemVariation.salePriceMoney.amount == newItemVariation.salePriceMoney.amount
-            ? null
-            : newItemVariation.salePriceMoney.amountInDouble,
-      );
-
       await ref
           .read(itemControllerProvider(itemId: oldItemVariation.itemId!).notifier)
-          .updateItemVariation(payload: payload, itemVariationId: newItemVariation.id!);
+          .updateItemVariation(newItemVariation: newItemVariation, oldItemVariation: oldItemVariation);
     }
   }
 

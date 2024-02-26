@@ -56,6 +56,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   }
 
   Future<void> _submit() async {
+
     if (_validateAndSaveForm()) {
       if (itemVariationName.isSome() && purchasingPrice.isSome() && sellingPrice.isSome() && barcodeOrNone.isSome()) {
         final salePrice = sellingPrice.fold(() => 0.0, (a) => a);
@@ -65,6 +66,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         final purchasePriceMoney = PriceMoney.from(amount: purchasePrice, currencyCode: currencyCode);
         log("sale price money ${salePriceMoney.amount}");
         log("purchase price money ${purchasePriceMoney.amount}");
+
 
         final itemCount = currentStockLevel.fold(() => 0, (a) => a);
 
@@ -80,6 +82,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
           context.pop(itemVariation);
         } else {
+
           final itemVariation = widget.itemVariation!.copyWith(
               name: itemVariationName.fold(() => '', (a) => a),
               stockable: true,
@@ -87,7 +90,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
               salePriceMoney: salePriceMoney,
               purchasePriceMoney: purchasePriceMoney,
               itemCount: itemCount,
-              barcode: barcodeOrNone.toNullable());
+              barcode: barcodeOrNone.fold(() => '', (a) => a));
 
           context.pop(itemVariation);
         }
@@ -196,46 +199,10 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
             }
             return null;
           },
-          onSaved: (value) => barcodeOrNone = optionOf(value),
+          onSaved: (value) {
+            barcodeOrNone = optionOf(value);
+          },
         ),
-        // hideStockLevelUi
-        //     ? const SizedBox.shrink()
-        //     : TextFormField(
-        //         initialValue: currentStockLevel.fold(() => null, (a) => '$a'),
-        //         decoration: const InputDecoration(
-        //           labelText: 'Current Stock Level',
-        //           hintText: 'Enter your username',
-        //         ),
-        //         validator: (value) {
-        //           if (value == null || value.isEmpty) {
-        //             return 'Please enter your username';
-        //           }
-        //           return null;
-        //         },
-        //         onSaved: (value) => currentStockLevel = value == null ? const Some(0) : optionOf(int.tryParse(value)),
-        //       ),
-        // hideStockLevelUi ? const SizedBox.shrink() : gapH8,
-        // hideStockLevelUi
-        //     ? const SizedBox.shrink()
-        //     : TextFormField(
-        //         initialValue: reorderStockLevel.fold(() => null, (a) => '$a'),
-        //         decoration: const InputDecoration(
-        //           labelText: 'Reorder Stock Level',
-        //           hintText: 'Enter your username',
-        //         ),
-        //         validator: (value) {
-        //           if (value == null || value.isEmpty) {
-        //             return 'Please enter your username';
-        //           }
-        //           return null;
-        //         },
-        //         keyboardType: const TextInputType.numberWithOptions(
-        //           signed: false,
-        //           decimal: false,
-        //         ),
-        //         onSaved: (value) =>
-        //             reorderStockLevel = value == null ? optionOf(int.tryParse(value ?? '')) : const Some(0),
-        //       ),
       ]),
     ];
   }
