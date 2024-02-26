@@ -46,13 +46,25 @@ class ItemController extends _$ItemController {
   }
 
   Future<Unit> updateItemVariation({
-    required ItemVariationPayload payload,
-    required String itemVariationId,
+    required ItemVariation newItemVariation,
+    required ItemVariation oldItemVariation,
   }) async {
     state = const AsyncLoading();
+
+    final payload = ItemVariationPayload(
+      name: oldItemVariation.name == newItemVariation.name ? null : newItemVariation.name,
+      pruchasePrice: oldItemVariation.purchasePriceMoney.amount == newItemVariation.purchasePriceMoney.amount
+          ? null
+          : newItemVariation.purchasePriceMoney.amountInDouble,
+      salePrice: oldItemVariation.salePriceMoney.amount == newItemVariation.salePriceMoney.amount
+          ? null
+          : newItemVariation.salePriceMoney.amountInDouble,
+      barcode: oldItemVariation.barcode == newItemVariation.barcode ? null : newItemVariation.barcode,
+    );
+
     final updatedOrError = await ref
         .read(itemServiceProvider)
-        .updateItemVariation(payload: payload, itemId: itemId, itemVariationId: itemVariationId);
+        .updateItemVariation(payload: payload, itemId: itemId, itemVariationId: oldItemVariation.id!);
     return await updatedOrError.fold((l) {
       state = AsyncError(l, StackTrace.current);
       return unit;

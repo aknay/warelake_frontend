@@ -83,6 +83,7 @@ class ItemVariation {
   PriceMoney purchasePriceMoney;
   String sku;
   int? itemCount;
+  String? barcode;
 
   ItemVariation(
       {this.type,
@@ -96,7 +97,8 @@ class ItemVariation {
       required this.sku,
       required this.salePriceMoney,
       required this.purchasePriceMoney,
-      this.itemCount});
+      this.itemCount,
+      this.barcode});
 
   factory ItemVariation.create(
       {required String name,
@@ -104,7 +106,8 @@ class ItemVariation {
       required String sku,
       required PriceMoney salePriceMoney,
       required PriceMoney purchasePriceMoney,
-      int? itemCount}) {
+      int? itemCount,
+      String? barcode}) {
     var uuid = const Uuid();
     String newUuid = uuid.v4();
 
@@ -115,7 +118,8 @@ class ItemVariation {
         sku: sku,
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
-        itemCount: itemCount);
+        itemCount: itemCount,
+        barcode: barcode);
   }
 
   ItemVariation copyWith(
@@ -124,7 +128,8 @@ class ItemVariation {
       String? sku,
       PriceMoney? salePriceMoney,
       PriceMoney? purchasePriceMoney,
-      int? itemCount}) {
+      int? itemCount,
+      String? barcode}) {
     return ItemVariation(
         id: id,
         stockable: stockable ?? this.stockable,
@@ -132,7 +137,8 @@ class ItemVariation {
         sku: sku ?? this.sku,
         salePriceMoney: salePriceMoney ?? this.salePriceMoney,
         purchasePriceMoney: purchasePriceMoney ?? this.purchasePriceMoney,
-        itemCount: itemCount ?? this.itemCount);
+        itemCount: itemCount ?? this.itemCount,
+        barcode: barcode ?? this.barcode);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
@@ -148,7 +154,8 @@ class ItemVariation {
         sku: json['sku'],
         salePriceMoney: PriceMoney.fromJson(json['sale_price']),
         purchasePriceMoney: PriceMoney.fromJson(json['purchase_price']),
-        itemCount: json['item_count']);
+        itemCount: json['item_count'],
+        barcode: json['barcode']);
   }
 
   Map<String, dynamic> toJson() {
@@ -162,7 +169,8 @@ class ItemVariation {
       'stockable': stockable,
       'sku': sku,
       'sale_price': salePriceMoney.toJson(),
-      'purchase_price': purchasePriceMoney.toJson()
+      'purchase_price': purchasePriceMoney.toJson(),
+      'barcode': barcode
     };
   }
 }
