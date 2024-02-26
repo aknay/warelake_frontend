@@ -11,8 +11,8 @@ import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
 
-import 'helpers/sign.in.response.dart';
-import 'helpers/test.helper.dart';
+import '../helpers/sign.in.response.dart';
+import '../helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();

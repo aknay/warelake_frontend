@@ -31,14 +31,16 @@ class ItemVariationPayload {
   String? name;
   double? pruchasePrice;
   double? salePrice;
+  String? barcode;
 
-  ItemVariationPayload({this.name, this.pruchasePrice, this.salePrice});
+  ItemVariationPayload({this.name, this.pruchasePrice, this.salePrice, this.barcode});
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'purchase_price': pruchasePrice == null ? pruchasePrice : (pruchasePrice! * 1000).toInt(),
       'sale_price': salePrice == null ? salePrice : (salePrice! * 1000).toInt(),
+      'barcode' : barcode
     };
   }
 }

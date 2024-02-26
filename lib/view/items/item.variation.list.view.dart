@@ -30,8 +30,6 @@ class ItemVariationListView extends ConsumerWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _toPurchasePrice(e.purchasePriceMoney),
-                    _toSalePrice(e.salePriceMoney),
                     Text("Stock on hand: ${e.itemCount}")
                   ],
                 ),
@@ -41,7 +39,7 @@ class ItemVariationListView extends ConsumerWidget {
                           ref.read(itemVariationListControllerProvider.notifier).delete(e);
                         },
                         icon: const FaIcon(FontAwesomeIcons.xmark))
-                    : null,
+                    : const Icon(Icons.arrow_forward_ios),
                 onTap: () async {
                   if (isToSelectItemVariation) {
                     ref.read(selectedItemVariationProvider.notifier).state = Some(e);
@@ -102,13 +100,5 @@ class ItemVariationListView extends ConsumerWidget {
               ))
           .toList(),
     );
-  }
-
-  Text _toSalePrice(PriceMoney money) {
-    return Text("Sale Price: ${money.currency} ${money.amountInDouble}");
-  }
-
-  Text _toPurchasePrice(PriceMoney money) {
-    return Text("Purchase Price: ${money.currency} ${money.amountInDouble}");
   }
 }
