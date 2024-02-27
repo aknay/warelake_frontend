@@ -6,13 +6,14 @@ import 'package:warelake/view/items/item.image/item.image.controller.dart';
 
 class ItemImageWidget extends ConsumerWidget {
   final String itemId;
-  final int? size;
-  const ItemImageWidget({super.key, required this.itemId, this.size});
+
+  final bool isForTheList;
+  const ItemImageWidget({super.key, required this.itemId, required this.isForTheList});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final imageUrl = ref.watch(itemImageControllerProvider(itemId: itemId));
-    final imageSize = size?.toDouble() ?? 70.0;
+    final imageSize = isForTheList ? 48.0 : 70.0;
     final f = imageUrl.when(data: (data) {
       return data.fold(() {
         return SizedBox(
@@ -52,12 +53,8 @@ class ItemImageWidget extends ConsumerWidget {
     }, loading: () {
       return const CircularProgressIndicator();
     });
-
-    return GestureDetector(
-        child: f,
-        onTap: () {
-          ref.read(itemImageControllerProvider(itemId: itemId).notifier).pickImage();
-        });
+    final onClick = isForTheList ? null : ref.read(itemImageControllerProvider(itemId: itemId).notifier).pickImage;
+    return GestureDetector(onTap: onClick, child: f);
   }
 
   String replaceIpAddress(String originalUrl, String newIpAddress) {
