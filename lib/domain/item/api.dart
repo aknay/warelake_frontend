@@ -27,6 +27,11 @@ abstract class ItemApi {
     required ItemImageRequest request,
     required String token,
   });
+
+    Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({
+    required ItemVariationImageRequest request,
+    required String token,
+  });
   Future<Either<ErrorResponse, Unit>> updateItemVariation({
     required ItemVariationPayload payload,
     required String itemId,

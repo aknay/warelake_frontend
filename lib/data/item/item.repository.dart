@@ -216,6 +216,22 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({required ItemVariationImageRequest request, required String token}) async {
+    final response = await HttpHelper.postImage(
+        url: ApiEndPoint.getItemVariationImageEndPoint(itemId: request.itemId, itemVariationId: request.itemVariationId),
+        imageFile: request.imagePath,
+        token: token,
+        body: request.toJson(),
+        teamId: request.teamId);
+    if (response.statusCode == 200) {
+      return right(unit);
+    } else {
+      log('Image upload failed with status ${response.statusCode}');
+    }
+    return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+  }
 }
 
 @Riverpod(keepAlive: true)

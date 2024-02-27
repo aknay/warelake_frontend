@@ -84,6 +84,7 @@ class ItemVariation {
   String sku;
   int? itemCount;
   String? barcode;
+  String? imageUrl;
 
   ItemVariation(
       {this.type,
@@ -98,7 +99,8 @@ class ItemVariation {
       required this.salePriceMoney,
       required this.purchasePriceMoney,
       this.itemCount,
-      this.barcode});
+      this.barcode,
+      this.imageUrl});
 
   factory ItemVariation.create(
       {required String name,
@@ -155,7 +157,8 @@ class ItemVariation {
         salePriceMoney: PriceMoney.fromJson(json['sale_price']),
         purchasePriceMoney: PriceMoney.fromJson(json['purchase_price']),
         itemCount: json['item_count'],
-        barcode: json['barcode']);
+        barcode: json['barcode'],
+        imageUrl: json['image_url']);
   }
 
   Map<String, dynamic> toJson() {

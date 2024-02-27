@@ -93,7 +93,7 @@ class PageContents extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ItemImageWidget(itemId: item.id!),
+                ItemImageWidget(itemId: item.id!, isForTheList: false),
               ],
             ),
             gapH8,

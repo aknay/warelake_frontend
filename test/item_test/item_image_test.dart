@@ -56,7 +56,6 @@ void main() async {
     expect(accountListOrError.isRight(), true);
   });
 
-  // we skip this test for now
   test('you can crate image for an item', () async {
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
@@ -98,6 +97,54 @@ void main() async {
       final item = retrievedItemOrError.toIterable().first;
       expect(item.imageUrl != null, true);
       expect(item.imageUrl?.contains(teamId), true);
+    }
+  });
+
+  test('you can create image for an item variation', () async {
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShrt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+
+    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedItemOrError =
+        await itemRepo.getItem(itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
+    expect(retrievedItemOrError.isRight(), true);
+    final item = retrievedItemOrError.toIterable().first;
+
+//create image
+    {
+      String currentDirectory = Directory.current.path;
+
+      // Construct the path to the image file in the same directory as the test file
+      final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
+
+      final request = ItemVariationImageRequest(
+          itemId: item.id!, imagePath: File(imagePath), teamId: teamId, itemVariationId: item.variations.first.id!);
+
+      final createdImageOrError =
+          await itemRepo.upsertItemVariationImage(request: request, token: firstUserAccessToken);
+
+      expect(createdImageOrError.isRight(), true);
+    }
+    {
+      //check image url is updated in item
+      final retrievedItemOrError = await itemRepo.getItem(
+          itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
+      expect(retrievedItemOrError.isRight(), true);
+      final item = retrievedItemOrError.toIterable().first;
+      expect(item.variations.first.imageUrl != null, true);
+      expect(item.variations.first.imageUrl?.contains(teamId), true);
+      expect(item.variations.first.imageUrl?.contains(item.id!), true);
+      expect(item.variations.first.imageUrl?.contains(item.variations.first.id!), true);
     }
   });
 }

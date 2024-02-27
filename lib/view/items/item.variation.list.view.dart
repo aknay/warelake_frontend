@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
+import 'package:warelake/view/items/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/items/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
@@ -26,6 +27,7 @@ class ItemVariationListView extends ConsumerWidget {
     return ListView(
       children: itemVariationList
           .map((e) => ListTile(
+                leading: ItemVariationImageWidget(itemId: e.itemId!, itemVariationId: e.id!, isForTheList: true),
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

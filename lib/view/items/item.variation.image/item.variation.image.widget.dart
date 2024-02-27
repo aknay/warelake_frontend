@@ -2,17 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:warelake/view/items/item.image/item.image.controller.dart';
+import 'package:warelake/view/items/item.variation.image/item.variation.image.controller.dart';
 
-class ItemImageWidget extends ConsumerWidget {
+class ItemVariationImageWidget extends ConsumerWidget {
   final String itemId;
-
+  final String itemVariationId;
   final bool isForTheList;
-  const ItemImageWidget({super.key, required this.itemId, required this.isForTheList});
+  const ItemVariationImageWidget(
+      {super.key, required this.itemId, required this.itemVariationId, required this.isForTheList});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imageUrl = ref.watch(itemImageControllerProvider(itemId: itemId));
+    final imageUrl = ref.watch(itemVariationImageControllerProvider(itemId: itemId, itemVariationId: itemVariationId));
     final imageSize = isForTheList ? 48.0 : 70.0;
     final f = imageUrl.when(data: (data) {
       return data.fold(() {
@@ -36,7 +37,6 @@ class ItemImageWidget extends ConsumerWidget {
               width: imageSize,
               height: imageSize,
               decoration: BoxDecoration(
-                // shape: BoxShape.circle,
                 image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
               ),
             ),
@@ -53,21 +53,18 @@ class ItemImageWidget extends ConsumerWidget {
     }, loading: () {
       return const CircularProgressIndicator();
     });
-    final onClick = isForTheList ? null : ref.read(itemImageControllerProvider(itemId: itemId).notifier).pickImage;
+    final onClick = isForTheList
+        ? null
+        : ref
+            .read(itemVariationImageControllerProvider(itemId: itemId, itemVariationId: itemVariationId).notifier)
+            .pickImage;
     return GestureDetector(onTap: onClick, child: f);
   }
 
   String replaceIpAddress(String originalUrl, String newIpAddress) {
-    // Split the original URL by ':'
     List<String> parts = originalUrl.split(':');
-
-    // Extract the protocol and port part
     String protocol = parts[0];
     String portPart = parts.last;
-
-    // Replace the IP address with the new one
-    String replacedUrl = '$protocol://$newIpAddress:$portPart';
-
-    return replacedUrl;
+    return '$protocol://$newIpAddress:$portPart';
   }
 }
