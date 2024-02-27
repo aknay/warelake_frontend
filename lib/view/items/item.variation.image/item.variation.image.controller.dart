@@ -7,13 +7,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.image.service.dart';
 import 'package:warelake/data/item/item.service.dart';
 
-part 'item.image.controller.g.dart';
+part 'item.variation.image.controller.g.dart';
 
 @Riverpod(keepAlive: true)
-class ItemImageController extends _$ItemImageController {
+class ItemVariationImageController extends _$ItemVariationImageController {
   @override
-  Future<Option<String>> build({required String itemId}) async {
-    return await _getItemImageUrlOrNone(itemId: itemId);
+  Future<Option<String>> build({required String itemId, required String itemVariationId}) async {
+    return await _getItemVariationImageUrlOrNone(itemId: itemId, itemVariationId: itemVariationId);
   }
 
   Future<void> pickImage() async {
@@ -26,24 +26,27 @@ class ItemImageController extends _$ItemImageController {
         return;
       }
 
-      final uploadOrError = await ref.read(imageUploadServiceProvider).uploadImage(file: resizedImageOrError.toIterable().first, itemId: itemId);
+      final uploadOrError = await ref
+          .read(imageUploadServiceProvider)
+          .upsertItemVariationImage(file: resizedImageOrError.toIterable().first, itemId: itemId, itemVariationId: itemVariationId);
       uploadOrError.fold((l) {
         state = AsyncValue.error('Faile to upload an image', StackTrace.current);
       }, (r) async {
-        state = AsyncValue.data(await _getItemImageUrlOrNone(itemId: itemId));
+        state = AsyncValue.data(await _getItemVariationImageUrlOrNone(itemId: itemId, itemVariationId: itemVariationId));
       });
     }
   }
 
-  Future<Option<String>> _getItemImageUrlOrNone({required String itemId}) async {
+  Future<Option<String>> _getItemVariationImageUrlOrNone({required String itemId, required String itemVariationId}) async {
     if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
     final itemOrError = await ref.read(itemServiceProvider).getItem(itemId: itemId);
-    if (itemOrError.isRight()) {
-      return optionOf(itemOrError.toIterable().first.imageUrl);
-    }
-    throw Exception('unable to get item utilization');
+    return itemOrError.fold((l) => throw Exception('unable to get item'), (r) {
+      final itemVariations = r.variations.where((element) => element.id == itemVariationId);
+      if (itemVariations.isEmpty) throw Exception('item variation is empty');
+      return optionOf(itemVariations.first.imageUrl);
+    });
   }
 
   Either<String, File> _compressAndResizeImage(File file) {

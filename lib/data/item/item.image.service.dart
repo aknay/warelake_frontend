@@ -20,7 +20,7 @@ class ImageUploadService {
 
   ImageUploadService(this.imagePicker, this.itemRepository, this.authRepo, this.teamIdSharedRefRepository);
 
-  Future<XFile?> pickImageByGallary({required String itemId}) async {
+  Future<XFile?> pickImageByGallary() async {
     return await imagePicker.pickImage(source: ImageSource.gallery);
   }
 
@@ -33,6 +33,27 @@ class ImageUploadService {
 
     final token = await authRepo.shouldGetToken();
     final createdOrError = await itemRepository.createItemImage(request: iir, token: token);
+    return createdOrError.fold((l) => left(l.message), (r) => right(unit));
+  }
+
+  Future<Either<String, Unit>> upsertItemVariationImage({
+    required File file,
+    required String itemId,
+    required String itemVariationId,
+  }) async {
+    final teamIdOrNone = teamIdSharedRefRepository.existingTeamId;
+    if (teamIdOrNone.isNone()) {
+      throw Exception('team id cannot be none');
+    }
+    final ivmr = ItemVariationImageRequest(
+      imagePath: file,
+      itemId: itemId,
+      teamId: teamIdOrNone.toNullable()!,
+      itemVariationId: itemVariationId,
+    );
+
+    final token = await authRepo.shouldGetToken();
+    final createdOrError = await itemRepository.upsertItemVariationImage(request: ivmr, token: token);
     return createdOrError.fold((l) => left(l.message), (r) => right(unit));
   }
 }

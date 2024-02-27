@@ -5,6 +5,7 @@ import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/items/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
+import 'package:warelake/view/items/item.variation.image/item.variation.image.widget.dart';
 
 enum ItemVariationAction {
   delete,
@@ -105,6 +106,12 @@ class PageContents extends ConsumerWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ItemVariationImageWidget(itemId: item.id!, itemVariationId: itemVariationId, isForTheList: false),
+              ],
+            ),
             ListTile(
               title: const Text("Group Name"),
               trailing: Text(item.name, style: Theme.of(context).textTheme.bodyLarge),
