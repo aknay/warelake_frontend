@@ -111,11 +111,98 @@ void main() async {
     return double.parse((value).toStringAsFixed(2)); // Round to 2 decimal places
   }
 
+  Item getElectronics() {
+    final smartphone = ItemVariation.create(
+        name: "Smartphone",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: PriceMoney.from(amount: 1249, currencyCode: CurrencyCode.AUD),
+        purchasePriceMoney: PriceMoney.from(amount: 1105, currencyCode: CurrencyCode.AUD));
+
+    final laptop = ItemVariation.create(
+        name: "Laptop",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: PriceMoney.from(amount: 1249, currencyCode: CurrencyCode.AUD),
+        purchasePriceMoney: PriceMoney.from(amount: 1105, currencyCode: CurrencyCode.AUD));
+
+    final tablet = ItemVariation.create(
+        name: "Tablet",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: PriceMoney.from(amount: 328, currencyCode: CurrencyCode.AUD),
+        purchasePriceMoney: PriceMoney.from(amount: 255, currencyCode: CurrencyCode.AUD));
+
+    final smartwatch = ItemVariation.create(
+        name: "Smartwatch",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: PriceMoney.from(amount: 285, currencyCode: CurrencyCode.AUD),
+        purchasePriceMoney: PriceMoney.from(amount: 368, currencyCode: CurrencyCode.AUD));
+
+    final camera = ItemVariation.create(
+        name: "camera",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: PriceMoney.from(amount: 1541, currencyCode: CurrencyCode.AUD),
+        purchasePriceMoney: PriceMoney.from(amount: 1480, currencyCode: CurrencyCode.AUD));
+
+    return Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs');
+  }
+
   test('tiny populate data', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
+
+    {
+      //add electronics items
+      final electronics = getElectronics();
+      final itemOrError = await itemApi.createItem(item: electronics, teamId: team.id!, token: firstUserAccessToken);
+      final item = itemOrError.toIterable().first;
+
+      {
+        //insert image
+        String currentDirectory = Directory.current.path;
+        final String imagePath =
+            '$currentDirectory/test/images/electronics/electronics.jpeg'; // Adjust the image file name
+        if (File(imagePath).existsSync()) {
+          final request = ItemImageRequest(itemId: item.id!, imagePath: File(imagePath), teamId: team.id!);
+
+          final createdImageOrError = await itemApi.createItemImage(request: request, token: firstUserAccessToken);
+
+          expect(createdImageOrError.isRight(), true);
+        }
+      }
+      List<StockLineItem> lineItemList = [];
+      for (var variation in item.variations) {
+        String currentDirectory = Directory.current.path;
+        // Construct the path to the image file in the same directory as the test file
+        final imageFileName = '${variation.name.toLowerCase()}.png';
+        final String imagePath =
+            '$currentDirectory/test/images/electronics/$imageFileName'; // Adjust the image file name
+        if (File(imagePath).existsSync()) {
+          final request = ItemVariationImageRequest(
+              itemId: item.id!, itemVariationId: variation.id!, imagePath: File(imagePath), teamId: team.id!);
+
+          final createdImageOrError =
+              await itemApi.upsertItemVariationImage(request: request, token: firstUserAccessToken);
+
+          expect(createdImageOrError.isRight(), true);
+        }
+        Random random = Random();
+        final lineItem = StockLineItem.create(itemVariation: variation, quantity: random.nextInt(100) + 50);
+        lineItemList.add(lineItem);
+        final rawTx = StockTransaction.create(
+          date: randomDateTimeLast7Days(),
+          lineItems: lineItemList,
+          stockMovement: randomStockMovement(),
+        );
+
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+      }
+    }
 
     List<String> fruitList = [
       'Apple', 'Banana', 'Orange', 'Grapes', 'Watermelon',
