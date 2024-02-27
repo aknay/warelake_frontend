@@ -118,14 +118,14 @@ class PageContents extends ConsumerWidget {
               trailing: Text(barcodeText, style: Theme.of(context).textTheme.bodyLarge),
             ),
             ListTile(
-              title: const Text("Selling Price"),
-              trailing: Text("${itemVariation.salePriceMoney.currency} ${itemVariation.salePriceMoney.amountInDouble}",
-                  style: Theme.of(context).textTheme.bodyLarge),
-            ),
-            ListTile(
               title: const Text("Purchase Price"),
               trailing: Text(
                   "${itemVariation.purchasePriceMoney.currency} ${itemVariation.purchasePriceMoney.amountInDouble}",
+                  style: Theme.of(context).textTheme.bodyLarge),
+            ),
+            ListTile(
+              title: const Text("Selling Price"),
+              trailing: Text("${itemVariation.salePriceMoney.currency} ${itemVariation.salePriceMoney.amountInDouble}",
                   style: Theme.of(context).textTheme.bodyLarge),
             ),
           ],
