@@ -69,7 +69,7 @@ class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
         child: Column(
           children: [
             gapH8,
-            ItemImageWidget(itemId: widget.item.id!),
+            ItemImageWidget(itemId: widget.item.id!, isForTheList: false),
             gapH32,
             TextFormField(
               initialValue: itemName.getOrElse(() => ""),

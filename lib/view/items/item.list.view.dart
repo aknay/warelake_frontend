@@ -109,7 +109,7 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
 
   ListTile _getListTitle(Item item, BuildContext context) {
     return ListTile(
-      leading: ItemImageWidget(itemId: item.id!, size: 48),
+      leading: ItemImageWidget(itemId: item.id!, isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(item.name),

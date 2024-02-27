@@ -154,7 +154,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
       Column(children: [
         gapH8,
         TextFormField(
-          initialValue: widget.itemVariation?.salePriceMoney.amountInDouble.toString(),
+          initialValue: widget.itemVariation?.purchasePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
@@ -171,7 +171,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         ),
         gapH8,
         TextFormField(
-          initialValue: widget.itemVariation?.purchasePriceMoney.amountInDouble.toString(),
+          initialValue: widget.itemVariation?.salePriceMoney.amountInDouble.toString(),
           inputFormatters: <TextInputFormatter>[currencyFormatter],
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
