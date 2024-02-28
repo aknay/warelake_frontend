@@ -64,6 +64,7 @@ dependencies:
   cached_network_image: ^3.3.1
   image: ^4.1.7
   barcode_widget: ^2.0.4
+  mobile_scanner: ^4.0.1
 
 dev_dependencies:
   flutter_test:
