@@ -11,30 +11,52 @@ class BarcodeScannerWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const BarcodeScannerPage()),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (context) => const BarcodeScannerPage(),
+            ),
           );
         },
         icon: const FaIcon(FontAwesomeIcons.barcode));
   }
 }
 
-class BarcodeScannerPage extends ConsumerWidget {
+class BarcodeScannerPage extends ConsumerStatefulWidget {
   const BarcodeScannerPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _BarcodeScannerPageState();
+}
+
+class _BarcodeScannerPageState extends ConsumerState<BarcodeScannerPage> {
+  final controller = MobileScannerController(
+    detectionTimeoutMs: 500,
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
+  //Ref: https://github.com/breez/breezmobile/blob/276ca2fdbbdd76cb779ec62280f15e456b39462e/lib/routes/qr_scan.dart#L22
+  //we need to guard with opped variable so that it will not pop more than one time.
+  var popped = false;
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: MobileScanner(
         fit: BoxFit.contain,
-        controller: MobileScannerController(
-          detectionSpeed: DetectionSpeed.noDuplicates,
-        ),
+        controller: controller,
         onDetect: (capture) {
           final List<Barcode> barcodes = capture.barcodes;
-          for (final barcode in barcodes) {
-            ref.read(barcodeScannerValueControllerProvider.notifier).setBarcode(barcode.rawValue);
+          if (barcodes.isNotEmpty) {
+            if (popped || !mounted) {
+              return;
+            }
+            popped = true;
+            ref.read(barcodeScannerValueControllerProvider.notifier).setBarcode(barcodes.first.rawValue);
             Navigator.pop(context);
           }
         },
