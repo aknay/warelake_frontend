@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/view/barcode/barcode.scanner.value.controller.dart';
+import 'package:warelake/view/barcode/barcode.scanner.widget.dart';
 import 'package:warelake/view/common.widgets/responsive.center.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/constants/breakpoints.dart';
@@ -56,7 +58,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   }
 
   Future<void> _submit() async {
-
     if (_validateAndSaveForm()) {
       if (itemVariationName.isSome() && purchasingPrice.isSome() && sellingPrice.isSome() && barcodeOrNone.isSome()) {
         final salePrice = sellingPrice.fold(() => 0.0, (a) => a);
@@ -66,7 +67,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         final purchasePriceMoney = PriceMoney.from(amount: purchasePrice, currencyCode: currencyCode);
         log("sale price money ${salePriceMoney.amount}");
         log("purchase price money ${purchasePriceMoney.amount}");
-
 
         final itemCount = currentStockLevel.fold(() => 0, (a) => a);
 
@@ -82,7 +82,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
           context.pop(itemVariation);
         } else {
-
           final itemVariation = widget.itemVariation!.copyWith(
               name: itemVariationName.fold(() => '', (a) => a),
               stockable: true,
@@ -132,6 +131,35 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _buildFormChildren(),
       ),
+    );
+  }
+
+  Widget _barcodeTextFormField(WidgetRef ref) {
+    String? initialValue = widget.itemVariation?.barcode;
+    ref.watch(barcodeScannerValueControllerProvider).fold(() => (), (x) => { initialValue = x});
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            key: UniqueKey(),
+            initialValue: initialValue,
+            decoration: const InputDecoration(
+              labelText: 'Barcode *',
+              hintText: 'Enter barcode',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter barcode';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              barcodeOrNone = optionOf(value);
+            },
+          ),
+        ),
+        const BarcodeScannerWidget()
+      ],
     );
   }
 
@@ -187,22 +215,31 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
           onSaved: (value) => sellingPrice = value == null ? const Some(0) : optionOf(double.tryParse(value)),
         ),
         gapH8,
-        TextFormField(
-          initialValue: widget.itemVariation?.barcode,
-          decoration: const InputDecoration(
-            labelText: 'Barcode *',
-            hintText: 'Enter barcode',
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter barcode';
-            }
-            return null;
-          },
-          onSaved: (value) {
-            barcodeOrNone = optionOf(value);
-          },
-        ),
+        _barcodeTextFormField(ref)
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: TextFormField(
+        //         key: UniqueKey(),
+        //         initialValue: widget.itemVariation?.barcode,
+        //         decoration: const InputDecoration(
+        //           labelText: 'Barcode *',
+        //           hintText: 'Enter barcode',
+        //         ),
+        //         validator: (value) {
+        //           if (value == null || value.isEmpty) {
+        //             return 'Please enter barcode';
+        //           }
+        //           return null;
+        //         },
+        //         onSaved: (value) {
+        //           barcodeOrNone = optionOf(value);
+        //         },
+        //       ),
+        //     ),
+        //     const BarcodeScannerWidget()
+        //   ],
+        // ),
       ]),
     ];
   }

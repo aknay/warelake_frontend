@@ -27,7 +27,7 @@ class ItemVariationListView extends ConsumerWidget {
     return ListView(
       children: itemVariationList
           .map((e) => ListTile(
-                leading: ItemVariationImageWidget(itemId: e.itemId!, itemVariationId: e.id!, isForTheList: true),
+                leading: ItemVariationImageWidget(itemId: e.itemId, itemVariationId: e.id!, isForTheList: true),
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
