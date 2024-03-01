@@ -239,30 +239,20 @@ class ItemRepository extends ItemApi {
   Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationList(
       {required String teamId, required String token, ItemVariationSearchField? searchField}) async {
     try {
-      Map<String, String> additionalQuery = {};
-      if (searchField != null) {
-        if (searchField.startingAfterId != null) {
-          additionalQuery["starting_after"] = searchField.startingAfterId!;
-        }
-        if (searchField.itemName != null) {
-          additionalQuery["item_name"] = searchField.itemName!;
-        }
-      }
-      log("additional query $additionalQuery");
       final response = await HttpHelper.get(
         url: ApiEndPoint.getItemVariationsEndPoint,
         token: token,
         teamId: teamId,
-        additionalQuery: additionalQuery,
+        additionalQuery: searchField?.toMap(),
       );
 
-      log("item list response code ${response.statusCode}");
-      // log("item list response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), ItemVariation.fromJson);
         log("the response ${listResponse.data.length}");
         return Right(listResponse);
       }
+      log("item list response code ${response.statusCode}");
+      log("item list response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");

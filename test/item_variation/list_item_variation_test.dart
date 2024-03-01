@@ -62,18 +62,22 @@ void main() async {
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
     final whiteShirt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+      name: "White shirt",
+      stockable: true,
+      sku: 'sku 123',
+      salePriceMoney: salePriceMoney,
+      purchasePriceMoney: purchasePriceMoney,
+      barcode: '0001',
+    );
 
     final blackShirt = ItemVariation.create(
-        name: "Black shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+      name: "Black shirt",
+      stockable: true,
+      sku: 'sku 123',
+      salePriceMoney: salePriceMoney,
+      purchasePriceMoney: purchasePriceMoney,
+      barcode: '0002',
+    );
 
     final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
     final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
@@ -86,14 +90,16 @@ void main() async {
         stockable: true,
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+        purchasePriceMoney: purchasePriceMoney,
+        barcode: '0003');
 
     final iPhone15 = ItemVariation.create(
         name: "iPhone 15",
         stockable: true,
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+        purchasePriceMoney: purchasePriceMoney,
+        barcode: '0004');
     {
       final phones = Item.create(name: "phones", variations: [pixel8, iPhone15], unit: 'pcs');
       final itemCreated = await itemRepo.createItem(item: phones, teamId: teamId, token: firstUserAccessToken);
@@ -108,14 +114,16 @@ void main() async {
           stockable: true,
           sku: 'sku 123',
           salePriceMoney: salePriceMoney,
-          purchasePriceMoney: purchasePriceMoney);
+          purchasePriceMoney: purchasePriceMoney,
+          barcode: '0005');
 
       final novels = ItemVariation.create(
           name: "Novel",
           stockable: true,
           sku: 'sku 123',
           salePriceMoney: salePriceMoney,
-          purchasePriceMoney: purchasePriceMoney);
+          purchasePriceMoney: purchasePriceMoney,
+          barcode: '0006');
       {
         final item = Item.create(name: "books", variations: [textbook, novels], unit: 'pcs');
         final itemCreated = await itemRepo.createItem(item: item, teamId: teamId, token: firstUserAccessToken);
@@ -141,5 +149,14 @@ void main() async {
         await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 2);
+  });
+
+    test('you can search item variation by barcode', () async {
+    final searchField = ItemVariationSearchField(barcode: '0003');
+    final itemListOrError =
+        await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
+    expect(itemListOrError.isRight(), true);
+    expect(itemListOrError.toIterable().first.data.length, 1);
+    expect(itemListOrError.toIterable().first.data.first.barcode, '0003');
   });
 }

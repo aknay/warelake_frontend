@@ -16,4 +16,20 @@ class ItemVariationSearchField {
     this.itemName,
     this.barcode,
   });
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> additionalQuery = {};
+
+    if (startingAfterId != null) {
+      additionalQuery["starting_after"] = startingAfterId;
+    }
+    if (itemName != null) {
+      additionalQuery["item_name"] = itemName;
+    }
+
+    if (barcode != null) {
+      additionalQuery["barcode"] = barcode;
+    }
+
+    return additionalQuery;
+  }
 }
