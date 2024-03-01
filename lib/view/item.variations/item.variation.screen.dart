@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
-import 'package:warelake/view/items/add.item.variance.screen.dart';
+import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
-import 'package:warelake/view/items/item.variation.image/item.variation.image.widget.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 
 enum ItemVariationAction {
   delete,

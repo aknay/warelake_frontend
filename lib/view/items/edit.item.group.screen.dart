@@ -7,10 +7,10 @@ import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
-import 'package:warelake/view/items/item.variation.list.controller.dart';
+import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
-import 'item.variation.list.view.dart';
+import '../item.variations/item.variation.list.view.dart';
 
 class EditItemGroupScreen extends ConsumerStatefulWidget {
   const EditItemGroupScreen({super.key, required this.item});
