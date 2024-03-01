@@ -10,6 +10,7 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/auth/custom.sign.in.screen.dart';
 import 'package:warelake/view/bill.account/bill.account.screen.dart';
 import 'package:warelake/view/bill.account/bill.accounts.screen.dart';
+import 'package:warelake/view/item.variations/item.variations.screen/item.variations.screen.dart';
 import 'package:warelake/view/items/add.item.screen.dart';
 import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
@@ -72,6 +73,7 @@ enum AppRoute {
   stockAdjust,
   selectStockLineItemForStockAdjust,
   selectItemForStockAdjust,
+  itemVariations,
 }
 
 @riverpod
@@ -138,6 +140,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const ProfileScreen();
+        },
+      ),
+            GoRoute(
+        name: AppRoute.itemVariations.name,
+        path: '/item_variations',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ItemVariationsScreen();
         },
       ),
       GoRoute(

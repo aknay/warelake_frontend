@@ -37,12 +37,21 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
+            title: const Text('Item Groups'),
+            leading: const FaIcon(FontAwesomeIcons.layerGroup),
+            onTap: () {
+              context.goNamed(
+                AppRoute.items.name,
+              );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
             title: const Text('Items'),
             leading: const FaIcon(FontAwesomeIcons.cubesStacked),
             onTap: () {
-              log("are we going?");
               context.goNamed(
-                AppRoute.items.name,
+                AppRoute.itemVariations.name,
               );
               Navigator.pop(context);
             },
