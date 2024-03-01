@@ -8,6 +8,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -151,12 +152,36 @@ void main() async {
     expect(itemListOrError.toIterable().first.data.length, 2);
   });
 
-    test('you can search item variation by barcode', () async {
+  test('you can search item variation by barcode', () async {
     final searchField = ItemVariationSearchField(barcode: '0003');
     final itemListOrError =
         await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 1);
     expect(itemListOrError.toIterable().first.data.first.barcode, '0003');
+  });
+
+  test('you can still search item variation by barcode after barcode is altered', () async {
+    {
+      final pixel8 = phoneItem.variations.where((element) => element.name == 'Pixel 8').first;
+
+      final payload = ItemVariationPayload(barcode: '0007');
+      final updatedOrError = await itemRepo.updateItemVariation(
+          payload: payload,
+          itemId: phoneItem.id!,
+          itemVariationId: pixel8.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      expect(updatedOrError.isRight(), true);
+    }
+
+    final searchField = ItemVariationSearchField(barcode: '0007');
+    final itemListOrError =
+        await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
+    expect(itemListOrError.isRight(), true);
+    expect(itemListOrError.toIterable().first.data.length, 1);
+    expect(itemListOrError.toIterable().first.data.first.barcode, '0007');
+    expect(itemListOrError.toIterable().first.data.first.name, 'Pixel 8');
   });
 }
