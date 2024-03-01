@@ -8,6 +8,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
@@ -106,16 +107,17 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
     }
   }
 
-  ListTile _getListTitle(ItemVariation item, BuildContext context) {
+  ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
     return ListTile(
+      leading: ItemVariationImageWidget(itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
-        child: Text(item.name),
+        child: Text(itemVariation.name),
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
         context
-            .goNamed(AppRoute.itemVariationDetail.name, pathParameters: {'id' : item.id!}, queryParameters: {'itemId': item.itemId});
+            .goNamed(AppRoute.itemVariationDetail.name, pathParameters: {'id' : itemVariation.id!}, queryParameters: {'itemId': itemVariation.itemId});
       },
     );
   }
