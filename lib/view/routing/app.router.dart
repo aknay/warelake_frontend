@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/onboarding/team.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
@@ -10,11 +11,11 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/auth/custom.sign.in.screen.dart';
 import 'package:warelake/view/bill.account/bill.account.screen.dart';
 import 'package:warelake/view/bill.account/bill.accounts.screen.dart';
+import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
+import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variations.screen.dart';
 import 'package:warelake/view/items/add.item.screen.dart';
-import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
-import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/items/items.screen.dart';
 import 'package:warelake/view/main/main.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
@@ -33,7 +34,6 @@ import 'package:warelake/view/stock/stock.item.selection.dart';
 import 'package:warelake/view/stock/stock.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transaction.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transactions.screen.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.router.g.dart';
 
@@ -74,6 +74,7 @@ enum AppRoute {
   selectStockLineItemForStockAdjust,
   selectItemForStockAdjust,
   itemVariations,
+  itemVariationDetail,
 }
 
 @riverpod
@@ -142,13 +143,23 @@ GoRouter goRouter(GoRouterRef ref) {
           return const ProfileScreen();
         },
       ),
+      GoRoute(
+          name: AppRoute.itemVariations.name,
+          path: '/item_variations',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ItemVariationsScreen();
+          },
+          routes: [
             GoRoute(
-        name: AppRoute.itemVariations.name,
-        path: '/item_variations',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ItemVariationsScreen();
-        },
-      ),
+              name: AppRoute.itemVariationDetail.name,
+              path: ':id',
+              builder: (context, state) {
+                final itemVariationId = state.pathParameters['id']!;
+                final itemId = state.uri.queryParameters['itemId']!;
+                return ItemVariationScreen(itemId: itemId, itemVariationId: itemVariationId);
+              },
+            ),
+          ]),
       GoRoute(
           name: AppRoute.stockTransactions.name,
           path: '/stock_transactions',

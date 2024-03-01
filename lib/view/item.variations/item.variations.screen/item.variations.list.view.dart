@@ -9,7 +9,7 @@ import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
-import 'package:warelake/view/items/item.search.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state
@@ -114,6 +114,8 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
+        context
+            .goNamed(AppRoute.itemVariationDetail.name, pathParameters: {'id' : item.id!}, queryParameters: {'itemId': item.itemId});
       },
     );
   }
