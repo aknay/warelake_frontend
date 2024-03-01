@@ -34,6 +34,8 @@ class ApiEndPoint {
     return itemId == null ? "${getApiBaseUrl()}/v1/items" : "${getApiBaseUrl()}/v1/items/$itemId";
   }
 
+  static String get getItemVariationsEndPoint => "${getApiBaseUrl()}/v1/item_variations";
+
   static String get itemUtilizationEndPoint => "${getApiBaseUrl()}/v1/item_utilization";
 
   static String get itemSerchEndPoint => "${getApiBaseUrl()}/v1/items/search";

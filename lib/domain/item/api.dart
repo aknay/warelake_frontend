@@ -13,6 +13,12 @@ abstract class ItemApi {
     ItemSearchField? itemSearchField,
   });
 
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationList({
+    required String teamId,
+    required String token,
+    ItemVariationSearchField? searchField,
+  });
+
   Future<Either<ErrorResponse, Item>> createItem({
     required Item item,
     required String teamId,
@@ -28,7 +34,7 @@ abstract class ItemApi {
     required String token,
   });
 
-    Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({
+  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({
     required ItemVariationImageRequest request,
     required String token,
   });

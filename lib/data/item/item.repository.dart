@@ -216,11 +216,13 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({required ItemVariationImageRequest request, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage(
+      {required ItemVariationImageRequest request, required String token}) async {
     final response = await HttpHelper.postImage(
-        url: ApiEndPoint.getItemVariationImageEndPoint(itemId: request.itemId, itemVariationId: request.itemVariationId),
+        url:
+            ApiEndPoint.getItemVariationImageEndPoint(itemId: request.itemId, itemVariationId: request.itemVariationId),
         imageFile: request.imagePath,
         token: token,
         body: request.toJson(),
@@ -231,6 +233,41 @@ class ItemRepository extends ItemApi {
       log('Image upload failed with status ${response.statusCode}');
     }
     return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+  }
+
+  @override
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationList(
+      {required String teamId, required String token, ItemVariationSearchField? searchField}) async {
+    try {
+      Map<String, String> additionalQuery = {};
+      if (searchField != null) {
+        if (searchField.startingAfterId != null) {
+          additionalQuery["starting_after"] = searchField.startingAfterId!;
+        }
+        if (searchField.itemName != null) {
+          additionalQuery["item_name"] = searchField.itemName!;
+        }
+      }
+      log("additional query $additionalQuery");
+      final response = await HttpHelper.get(
+        url: ApiEndPoint.getItemVariationsEndPoint,
+        token: token,
+        teamId: teamId,
+        additionalQuery: additionalQuery,
+      );
+
+      log("item list response code ${response.statusCode}");
+      // log("item list response ${jsonDecode(response.body)}");
+      if (response.statusCode == 200) {
+        final listResponse = ListResponse.fromJson(jsonDecode(response.body), ItemVariation.fromJson);
+        log("the response ${listResponse.data.length}");
+        return Right(listResponse);
+      }
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
   }
 }
 
