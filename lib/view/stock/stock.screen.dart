@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
-import 'package:warelake/view/main/drawer/drawer.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
@@ -41,7 +40,6 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
     }
 
     return Scaffold(
-        drawer: const DrawerWidget(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             switch (widget.stockMovement) {
