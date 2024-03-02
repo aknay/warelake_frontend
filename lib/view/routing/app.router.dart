@@ -17,7 +17,7 @@ import 'package:warelake/view/item.variations/item.variations.screen/item.variat
 import 'package:warelake/view/items/add.item.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
 import 'package:warelake/view/items/items.screen.dart';
-import 'package:warelake/view/main/main.screen.dart';
+import 'package:warelake/view/main/dashboard.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.error.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.screen.dart';
@@ -64,14 +64,17 @@ enum AppRoute {
   billAccount,
   variationItem,
   stockIn,
+  stockInFromDashboard,
   selectStockLineItemForStockIn,
   selectItemForStockIn,
   stockTransactions,
   stockTransactionDetail,
   stockOut,
+  stockOutFromDashboard,
   selectStockLineItemForStockOut,
   selectItemForStockOut,
   stockAdjust,
+  stockAdjustFromDashboard,
   selectStockLineItemForStockAdjust,
   selectItemForStockAdjust,
   itemVariations,
@@ -142,6 +145,27 @@ GoRouter goRouter(GoRouterRef ref) {
               path: 'add_item_from_dashboard',
               builder: (BuildContext context, GoRouterState state) {
                 return const AddItemScreen(item: None());
+              },
+            ),
+            GoRoute(
+              name: AppRoute.stockInFromDashboard.name,
+              path: 'add_stock_in_from_dashboard',
+              builder: (BuildContext context, GoRouterState state) {
+                return const StockScreen(stockMovement: StockMovement.stockIn);
+              },
+            ),
+            GoRoute(
+              name: AppRoute.stockOutFromDashboard.name,
+              path: 'add_stock_out_from_dashboard',
+              builder: (BuildContext context, GoRouterState state) {
+                return const StockScreen(stockMovement: StockMovement.stockOut);
+              },
+            ),
+            GoRoute(
+              name: AppRoute.stockAdjustFromDashboard.name,
+              path: 'add_stock_adjust_from_dashboard',
+              builder: (BuildContext context, GoRouterState state) {
+                return const StockScreen(stockMovement: StockMovement.stockAdjust);
               },
             ),
           ]),

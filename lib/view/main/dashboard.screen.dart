@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/main/drawer/drawer.dart';
-import 'package:warelake/view/main/item.utilization.wiget.dart';
 import 'package:warelake/view/main/widgets/add.item.group.widget.dart';
+import 'package:warelake/view/main/widgets/item.utilization.wiget.dart';
+import 'package:warelake/view/main/widgets/stock.in.out.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -29,7 +30,9 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             ItemUtilizationWidget(),
             gapH16,
-            AddItemGroupWidget()
+            AddItemGroupWidget(),
+            gapH16,
+            StockInOutWidget(),
           ],
         ),
       ),

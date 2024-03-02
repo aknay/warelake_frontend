@@ -23,7 +23,7 @@ class AddItemGroupWidget extends ConsumerWidget {
             ),
             ListTile(
               leading: const FaIcon(FontAwesomeIcons.folderPlus),
-              title: const Text('Register new item groups'),
+              title: const Text('New item groups'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
                 context.goNamed(AppRoute.addItemFromDashboard.name);
