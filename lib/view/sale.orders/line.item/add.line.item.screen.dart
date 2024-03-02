@@ -59,11 +59,21 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
       TextButton(
           onPressed: () {
             final router = GoRouter.of(context);
-            final uri = router.routeInformationProvider.value.uri;
-            if (uri.path.contains('purchase_order')) {
-              context.goNamed(AppRoute.itemsSelectionForPurchaseOrder.name);
-            } else {
-              context.goNamed(AppRoute.itemsSelectionForSaleOrder.name);
+
+            final path = router.routeInformationProvider.value.uri.path;
+
+            if (path == router.namedLocation(AppRoute.addLineItemForPurchaseOrderFromDashboard.name)) {
+              context.goNamed(
+                AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name,
+              );
+            } else if (path == router.namedLocation(AppRoute.addLineItemForPurchaseOrder.name)) {
+              context.goNamed(
+                AppRoute.itemsSelectionForPurchaseOrder.name,
+              );
+            } else if (path == router.namedLocation(AppRoute.addLineItemForSaleOrder.name)) {
+              context.goNamed(
+                AppRoute.itemsSelectionForSaleOrder.name,
+              );
             }
           },
           child: Text(buttonText)),

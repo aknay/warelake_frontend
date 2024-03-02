@@ -65,24 +65,23 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const FaIcon(FontAwesomeIcons.fileInvoiceDollar),
-            title: const Text('Sale Orders'),
-            onTap: () {
-              log("are we going?");
-              context.goNamed(
-                AppRoute.saleOrders.name,
-              );
-
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
             leading: const FaIcon(FontAwesomeIcons.bagShopping),
             title: const Text('Purchase Orders'),
             onTap: () {
               context.goNamed(
                 AppRoute.purchaseOrders.name,
               );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const FaIcon(FontAwesomeIcons.fileInvoiceDollar),
+            title: const Text('Sale Orders'),
+            onTap: () {
+              context.goNamed(
+                AppRoute.saleOrders.name,
+              );
+
               Navigator.pop(context);
             },
           ),

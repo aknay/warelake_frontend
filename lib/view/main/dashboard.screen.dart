@@ -5,6 +5,7 @@ import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/main/drawer/drawer.dart';
 import 'package:warelake/view/main/widgets/add.item.group.widget.dart';
 import 'package:warelake/view/main/widgets/item.utilization.wiget.dart';
+import 'package:warelake/view/main/widgets/po.so.widget.dart';
 import 'package:warelake/view/main/widgets/stock.in.out.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
@@ -33,6 +34,8 @@ class DashboardScreen extends ConsumerWidget {
             AddItemGroupWidget(),
             gapH16,
             StockInOutWidget(),
+            gapH16,
+            PoSoWidget(),
           ],
         ),
       ),

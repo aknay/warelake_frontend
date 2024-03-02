@@ -54,27 +54,28 @@ enum AppRoute {
   addLineItemForSaleOrder,
   itemsSelectionForSaleOrder,
   itemsSelectionForPurchaseOrder,
+  itemsSelectionForPurchaseOrderFromDasboard,
   selectItemForSaleOrder,
   selectItemForPurchaseOrder,
+  selectItemForPurchaseOrderFromDashboard,
   purchaseOrders,
   purchaseOrder,
   addPurchaseOrder,
+  addPurchaseOrderFromDashboard,
   addLineItemForPurchaseOrder,
+  addLineItemForPurchaseOrderFromDashboard,
   billAccounts,
   billAccount,
   variationItem,
   stockIn,
-  stockInFromDashboard,
   selectStockLineItemForStockIn,
   selectItemForStockIn,
   stockTransactions,
   stockTransactionDetail,
   stockOut,
-  stockOutFromDashboard,
   selectStockLineItemForStockOut,
   selectItemForStockOut,
   stockAdjust,
-  stockAdjustFromDashboard,
   selectStockLineItemForStockAdjust,
   selectItemForStockAdjust,
   itemVariations,
@@ -140,6 +141,14 @@ GoRouter goRouter(GoRouterRef ref) {
             return const DashboardScreen();
           },
           routes: [
+            GoRoute(
+              name: AppRoute.addItemFromDashboard.name,
+              path: 'add_item_from_dashboard',
+              pageBuilder: (context, state) => const MaterialPage(
+                fullscreenDialog: true,
+                child: AddItemScreen(item: None()),
+              ),
+            ),
             GoRoute(
                 name: AppRoute.stockIn.name,
                 path: 'stock_in',
@@ -216,6 +225,90 @@ GoRouter goRouter(GoRouterRef ref) {
                         ),
                       ]),
                 ]),
+            GoRoute(
+                name: AppRoute.addPurchaseOrderFromDashboard.name,
+                path: 'add_purchase_order_from_dashboard',
+                pageBuilder: (context, state) => const MaterialPage(
+                      fullscreenDialog: true,
+                      child: AddPurchaseOrderScreen(),
+                    ),
+                routes: <RouteBase>[
+                  GoRoute(
+                      name: AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
+                      path: 'line_item',
+                      builder: (BuildContext context, GoRouterState state) {
+                        LineItem? lineItem = state.extra as LineItem?;
+                        return AddLineItemScreen(lineItem: optionOf(lineItem));
+                      },
+                      routes: <RouteBase>[
+                        GoRoute(
+                            name: AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name,
+                            path: 'item_selection',
+                            builder: (BuildContext context, GoRouterState state) {
+                              return const ItemSelectionScreen();
+                            },
+                            routes: [
+                              GoRoute(
+                                name: AppRoute.selectItemForPurchaseOrderFromDashboard.name,
+                                path: ':id',
+                                builder: (context, state) {
+                                  final id = state.pathParameters['id']!;
+                                  return ItemScreen(itemId: id, isToSelectItemVariation: true);
+                                },
+                              ),
+                            ]),
+                      ]),
+                ]),
+
+            //       GoRoute(
+            // name: AppRoute.addPurchaseOrderFromDashboard.name,
+            // path: 'purchase_orders',
+            // builder: (BuildContext context, GoRouterState state) {
+            //   return const PurchaseOrdersScreen();
+            // },
+            // routes: <RouteBase>[
+            //   GoRoute(
+            //       name: AppRoute.addPurchaseOrder.name,
+            //       path: 'add',
+            //       builder: (context, state) {
+            //         return const AddPurchaseOrderScreen();
+            //       },
+            //       routes: <RouteBase>[
+            //         GoRoute(
+            //             name: AppRoute.addLineItemForPurchaseOrder.name,
+            //             path: 'line_item',
+            //             builder: (BuildContext context, GoRouterState state) {
+            //               LineItem? lineItem = state.extra as LineItem?;
+            //               return AddLineItemScreen(lineItem: optionOf(lineItem));
+            //             },
+            //             routes: <RouteBase>[
+            //               GoRoute(
+            //                   name: AppRoute.itemsSelectionForPurchaseOrder.name,
+            //                   path: 'item_selection',
+            //                   builder: (BuildContext context, GoRouterState state) {
+            //                     return const ItemSelectionScreen();
+            //                   },
+            //                   routes: [
+            //                     GoRoute(
+            //                       name: AppRoute.selectItemForPurchaseOrder.name,
+            //                       path: ':id',
+            //                       builder: (context, state) {
+            //                         final id = state.pathParameters['id']!;
+            //                         return ItemScreen(itemId: id, isToSelectItemVariation: true);
+            //                       },
+            //                     ),
+            //                   ]),
+            //             ]),
+            //       ]),
+            //   GoRoute(
+            //     name: AppRoute.purchaseOrder.name,
+            //     path: ':id',
+            //     builder: (context, state) {
+            //       final id = state.pathParameters['id']!;
+            //       return PurchaseOrderScreen(pruchaseOrderId: id, isToSelectItemVariation: false);
+            //     },
+            //   ),
+            // ]),
           ]),
       GoRoute(
         name: AppRoute.profile.name,
