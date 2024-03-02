@@ -42,6 +42,7 @@ enum AppRoute {
   signIn,
   dashboard,
   addItem,
+  addItemFromDashboard,
   viewItem,
   addItemVariation,
   onboarding,
@@ -130,12 +131,20 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) => const OnboardingErrorScreen(),
       ),
       GoRoute(
-        name: AppRoute.dashboard.name,
-        path: '/dashboard',
-        builder: (BuildContext context, GoRouterState state) {
-          return const DashboardScreen();
-        },
-      ),
+          name: AppRoute.dashboard.name,
+          path: '/dashboard',
+          builder: (BuildContext context, GoRouterState state) {
+            return const DashboardScreen();
+          },
+          routes: [
+            GoRoute(
+              name: AppRoute.addItemFromDashboard.name,
+              path: 'add_item_from_dashboard',
+              builder: (BuildContext context, GoRouterState state) {
+                return const AddItemScreen(item: None());
+              },
+            ),
+          ]),
       GoRoute(
         name: AppRoute.profile.name,
         path: '/profile',
