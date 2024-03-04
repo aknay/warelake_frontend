@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.page.dart';
 
-final _billAccountProvider = StateProvider<Option<BillAccount>>(
+final _billAccountProvider = StateProvider.autoDispose<Option<BillAccount>>(
   (ref) {
     return const None();
   },
