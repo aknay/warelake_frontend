@@ -31,9 +31,7 @@ class ItemVariationListView extends ConsumerWidget {
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Stock on hand: ${e.itemCount}")
-                  ],
+                  children: [Text("Stock on hand: ${e.itemCount}")],
                 ),
                 trailing: e.itemId == null
                     ? IconButton(
@@ -49,7 +47,14 @@ class ItemVariationListView extends ConsumerWidget {
                     final router = GoRouter.of(context);
                     final uri = router.routeInformationProvider.value.uri;
 
-                    if (uri.path.contains('stock_in')) {
+                    final poOrSo =
+                        uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) ||
+                            uri.path.contains(router.namedLocation(AppRoute.addSaleOrderFromDashboard.name));
+
+                    if (poOrSo) {
+                      GoRouter.of(context).pop();
+                      GoRouter.of(context).pop();
+                    } else if (uri.path.contains('stock_in')) {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));

@@ -57,46 +57,10 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Stock In'),
-            leading: const FaIcon(FontAwesomeIcons.arrowRightToBracket),
-            onTap: () {
-              context.goNamed(AppRoute.stockIn.name);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: const Text('Stock Out'),
-            leading: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
-            onTap: () {
-              context.goNamed(AppRoute.stockOut.name);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const FaIcon(FontAwesomeIcons.rightLeft),
-            title: const Text('Stock Adjust'),
-            onTap: () {
-              context.goNamed(AppRoute.stockAdjust.name);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
             leading: const FaIcon(FontAwesomeIcons.arrowsRotate),
-            title: const Text('Transactions'),
+            title: const Text('Stock Transactions'),
             onTap: () {
               context.goNamed(AppRoute.stockTransactions.name);
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const FaIcon(FontAwesomeIcons.fileInvoiceDollar),
-            title: const Text('Sale Orders'),
-            onTap: () {
-              log("are we going?");
-              context.goNamed(
-                AppRoute.saleOrders.name,
-              );
-
               Navigator.pop(context);
             },
           ),
@@ -107,6 +71,17 @@ class DrawerWidget extends StatelessWidget {
               context.goNamed(
                 AppRoute.purchaseOrders.name,
               );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const FaIcon(FontAwesomeIcons.fileInvoiceDollar),
+            title: const Text('Sale Orders'),
+            onTap: () {
+              context.goNamed(
+                AppRoute.saleOrders.name,
+              );
+
               Navigator.pop(context);
             },
           ),

@@ -65,21 +65,21 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         },
         onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
       ),
-     
       BillAccountSelectionWidget(onValueChanged: (value) {
         log("value ${value.isSome()}");
         _billAccountOrNone = value;
       }),
-       TextButton(
+      TextButton(
           onPressed: () async {
             final router = GoRouter.of(context);
-            final uri = router.routeInformationProvider.value.uri;
 
-            if (uri.path.contains('purchase_order')) {
+            final path = router.routeInformationProvider.value.uri.path;
+
+            if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
               context.goNamed(
-                AppRoute.addLineItemForPurchaseOrder.name,
+                AppRoute.addLineItemForSaleOrderFromDashboard.name,
               );
-            } else {
+            } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
               context.goNamed(
                 AppRoute.addLineItemForSaleOrder.name,
               );
@@ -94,7 +94,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
     if (_validateAndSaveForm()) {
       final lineItems = ref.read(lineItemControllerProvider);
 
-  if (billAccountOrNone.isNone()) {
+      if (billAccountOrNone.isNone()) {
         showAlertDialog(
           context: context,
           title: "Empty",
@@ -113,9 +113,6 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         );
         return;
       }
-
-
-
 
       final subTotal =
           lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
