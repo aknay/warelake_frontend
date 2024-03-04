@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 
 class PoSoWidget extends ConsumerWidget {
   const PoSoWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // we need to listen this because we are adding po from the dashboard and we need to the purchaseOrderListControllerProvider to add
+    ref.watch(purchaseOrderListControllerProvider);
+    ref.watch(saleOrderListControllerProvider);
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).highlightColor, borderRadius: const BorderRadius.all(Radius.circular(8))),
@@ -34,17 +39,9 @@ class PoSoWidget extends ConsumerWidget {
               title: const Text('Sale Order'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockOut.name);
+                context.goNamed(AppRoute.addSaleOrderFromDashboard.name);
               },
             ),
-            // ListTile(
-            //   leading: const FaIcon(FontAwesomeIcons.rightLeft),
-            //   title: const Text('Stock Adjust'),
-            //   trailing: const FaIcon(FontAwesomeIcons.angleRight),
-            //   onTap: () {
-            //     context.goNamed(AppRoute.stockAdjust.name);
-            //   },
-            // )
           ],
         ),
       ),

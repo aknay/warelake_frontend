@@ -122,48 +122,35 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
           final path = router.routeInformationProvider.value.uri.path;
           final pathParameters = {'id': item.id!};
 
-          if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name)) {
-            context.goNamed(AppRoute.selectItemForPurchaseOrderFromDashboard.name, pathParameters: pathParameters);
-          } else if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrder.name)) {
+          // not from dashboard
+          if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrder.name)) {
             context.goNamed(AppRoute.selectItemForPurchaseOrder.name, pathParameters: pathParameters);
-          }else if (path == router.namedLocation(AppRoute.itemsSelectionForSaleOrder.name)) {
+          } else if (path == router.namedLocation(AppRoute.itemsSelectionForSaleOrder.name)) {
             context.goNamed(AppRoute.selectItemForSaleOrder.name, pathParameters: pathParameters);
           }
+          // from dashboard
+          else if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name)) {
+            context.goNamed(AppRoute.selectItemForPurchaseOrderFromDashboard.name, pathParameters: pathParameters);
+          } else if (path == router.namedLocation(AppRoute.itemsSelectionForSaleOrderFromDashboard.name)) {
+            context.goNamed(AppRoute.selectItemForSaleOrderFromDashboard.name, pathParameters: pathParameters);
 
-          // else if (path == router.namedLocation(AppRoute.addLineItemForPurchaseOrder.name)) {
-          //   context.goNamed(
-          //     AppRoute.itemsSelectionForPurchaseOrder.name,
-          //   );
-          // }
-
-          // log("item list ${uri.path}");
-
-          // else if (uri.path.contains('stock_in')) {
-          //   context.goNamed(
-          //     AppRoute.selectItemForStockIn.name,
-          //     pathParameters: {'id': item.id!},
-          //   );
-          // } else if (uri.path.contains('stock_out')) {
-          //   context.goNamed(
-          //     AppRoute.selectItemForStockOut.name,
-          //     pathParameters: {'id': item.id!},
-          //   );
-          // } else if (uri.path.contains('stock_adjust')) {
-          //   context.goNamed(
-          //     AppRoute.selectItemForStockAdjust.name,
-          //     pathParameters: {'id': item.id!},
-          //   );
-          // } else if (uri.path.contains('purchase_order')) {
-          //   context.goNamed(
-          //     AppRoute.selectItemForPurchaseOrder.name,
-          //     pathParameters: {'id': item.id!},
-          //   );
-          // } else {
-          //   context.goNamed(
-          //     AppRoute.selectItemForSaleOrder.name,
-          //     pathParameters: {'id': item.id!},
-          //   );
-          // }
+            // for stock in/out/adjust
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockIn.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockIn.name,
+              pathParameters: {'id': item.id!},
+            );
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockOut.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockOut.name,
+              pathParameters: {'id': item.id!},
+            );
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockAdjust.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockAdjust.name,
+              pathParameters: {'id': item.id!},
+            );
+          }
         } else {
           context.goNamed(
             AppRoute.viewItem.name,

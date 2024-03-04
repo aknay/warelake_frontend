@@ -47,7 +47,11 @@ class ItemVariationListView extends ConsumerWidget {
                     final router = GoRouter.of(context);
                     final uri = router.routeInformationProvider.value.uri;
 
-                    if (uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name))) {
+                    final poOrSo =
+                        uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) ||
+                            uri.path.contains(router.namedLocation(AppRoute.addSaleOrderFromDashboard.name));
+
+                    if (poOrSo) {
                       GoRouter.of(context).pop();
                       GoRouter.of(context).pop();
                     } else if (uri.path.contains('stock_in')) {

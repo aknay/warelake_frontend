@@ -74,6 +74,10 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
               context.goNamed(
                 AppRoute.itemsSelectionForSaleOrder.name,
               );
+            } else if (path == router.namedLocation(AppRoute.addLineItemForSaleOrderFromDashboard.name)) {
+              context.goNamed(
+                AppRoute.itemsSelectionForSaleOrderFromDashboard.name,
+              );
             }
           },
           child: Text(buttonText)),
