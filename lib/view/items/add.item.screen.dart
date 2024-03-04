@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
-import 'package:warelake/view/items/item.variation.list.controller.dart';
-import 'package:warelake/view/items/item.variation.list.view.dart';
+import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
+import 'package:warelake/view/item.variations/item.variation.list.view.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 

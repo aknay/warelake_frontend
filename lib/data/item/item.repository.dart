@@ -216,11 +216,13 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({required ItemVariationImageRequest request, required String token}) async {
+  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage(
+      {required ItemVariationImageRequest request, required String token}) async {
     final response = await HttpHelper.postImage(
-        url: ApiEndPoint.getItemVariationImageEndPoint(itemId: request.itemId, itemVariationId: request.itemVariationId),
+        url:
+            ApiEndPoint.getItemVariationImageEndPoint(itemId: request.itemId, itemVariationId: request.itemVariationId),
         imageFile: request.imagePath,
         token: token,
         body: request.toJson(),
@@ -231,6 +233,31 @@ class ItemRepository extends ItemApi {
       log('Image upload failed with status ${response.statusCode}');
     }
     return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+  }
+
+  @override
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationList(
+      {required String teamId, required String token, ItemVariationSearchField? searchField}) async {
+    try {
+      final response = await HttpHelper.get(
+        url: ApiEndPoint.getItemVariationsEndPoint,
+        token: token,
+        teamId: teamId,
+        additionalQuery: searchField?.toMap(),
+      );
+
+      if (response.statusCode == 200) {
+        final listResponse = ListResponse.fromJson(jsonDecode(response.body), ItemVariation.fromJson);
+        log("the response ${listResponse.data.length}");
+        return Right(listResponse);
+      }
+      log("item list response code ${response.statusCode}");
+      log("item list response ${jsonDecode(response.body)}");
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
   }
 }
 

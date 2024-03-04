@@ -9,7 +9,7 @@ import 'package:warelake/view/items/edit.item.group.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
 import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
-import 'package:warelake/view/items/item.variation.list.view.dart';
+import 'package:warelake/view/item.variations/item.variation.list.view.dart';
 
 enum ItemAction { delete }
 
