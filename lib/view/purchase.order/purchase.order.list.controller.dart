@@ -25,11 +25,11 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
       state = AsyncError(l, StackTrace.current);
       return false;
     }, (r) async {
-      final saleOrdersOrError = await _list();
-      if (saleOrdersOrError.isLeft()) {
+      final purchaseOrdersOrError = await _list();
+      if (purchaseOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(saleOrdersOrError.toIterable().first.data);
+      state = AsyncValue.data(purchaseOrdersOrError.toIterable().first.data);
       return true;
     });
   }
@@ -42,11 +42,11 @@ class PurchaseOrderListController extends _$PurchaseOrderListController {
       state = AsyncError(l, StackTrace.current);
       return false;
     }, (r) async {
-      final saleOrdersOrError = await _list();
-      if (saleOrdersOrError.isLeft()) {
+      final purchaseOrdersOrError = await _list();
+      if (purchaseOrdersOrError.isLeft()) {
         throw AssertionError("error while fetching items");
       }
-      state = AsyncValue.data(saleOrdersOrError.toIterable().first.data);
+      state = AsyncValue.data(purchaseOrdersOrError.toIterable().first.data);
       return true;
     });
   }

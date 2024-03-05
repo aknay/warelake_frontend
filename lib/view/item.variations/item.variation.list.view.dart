@@ -5,9 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
-import 'package:warelake/view/items/add.item.variance.screen.dart';
-import 'package:warelake/view/items/item.variation.image/item.variation.image.widget.dart';
-import 'package:warelake/view/items/item.variation.list.controller.dart';
+import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
+import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
@@ -31,9 +31,7 @@ class ItemVariationListView extends ConsumerWidget {
                 title: Text(e.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Stock on hand: ${e.itemCount}")
-                  ],
+                  children: [Text("Stock on hand: ${e.itemCount}")],
                 ),
                 trailing: e.itemId == null
                     ? IconButton(
@@ -49,7 +47,14 @@ class ItemVariationListView extends ConsumerWidget {
                     final router = GoRouter.of(context);
                     final uri = router.routeInformationProvider.value.uri;
 
-                    if (uri.path.contains('stock_in')) {
+                    final poOrSo =
+                        uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) ||
+                            uri.path.contains(router.namedLocation(AppRoute.addSaleOrderFromDashboard.name));
+
+                    if (poOrSo) {
+                      GoRouter.of(context).pop();
+                      GoRouter.of(context).pop();
+                    } else if (uri.path.contains('stock_in')) {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));

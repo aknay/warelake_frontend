@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:warelake/view/items/item.variation.image/item.variation.image.controller.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.controller.dart';
 
 class ItemVariationImageWidget extends ConsumerWidget {
   final String? itemId;

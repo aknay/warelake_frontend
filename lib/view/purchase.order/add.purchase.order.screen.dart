@@ -67,9 +67,19 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
       ),
       TextButton(
         onPressed: () async {
-          context.goNamed(
-            AppRoute.addLineItemForPurchaseOrder.name,
-          );
+          final router = GoRouter.of(context);
+
+          final path = router.routeInformationProvider.value.uri.path;
+
+          if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
+            context.goNamed(
+              AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
+            );
+          } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
+            context.goNamed(
+              AppRoute.addLineItemForPurchaseOrder.name,
+            );
+          }
         },
         child: const Text("Add Line Item"),
       ),
