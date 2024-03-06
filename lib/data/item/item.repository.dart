@@ -30,7 +30,7 @@ class ItemRepository extends ItemApi {
       }
       log("error while creating an item: response code ${response.statusCode}");
       log("error while creating an item: response ${jsonDecode(response.body)}");
-      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+      return Left(ErrorResponse.fromJson(json: jsonDecode(response.body), statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
       return Left(ErrorResponse.withOtherError(message: e.toString()));
