@@ -132,12 +132,5 @@ void main() async {
         expect(l.code, ErrorCode.itemVarationForPersonalPlanLimitExecced);
       }, (r) => null);
     }
-
-    // {
-    //   final itemListOrError = await itemRepo.getItemList(teamId: team.id!, token: firstUserAccessToken);
-    //   final itemList = itemListOrError.toIterable().first;
-    //   expect(itemList.data.length, 1);
-    //   expect(itemList.hasMore, false);
-    // }
   });
 }

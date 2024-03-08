@@ -214,16 +214,9 @@ void main() async {
 
     List<String> fruitAttrs = [
       'Dry',
-      'Green',
       'Fresh',
       'Big',
       'Small',
-      'Expensive',
-      'Cheap',
-      'Exotic',
-      'Light',
-      'Heavy',
-      'Air Flown'
     ];
     Random random = Random();
     List<ItemVariation> retrievedItemVariationList = [];
