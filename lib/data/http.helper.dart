@@ -77,6 +77,7 @@ class HttpHelper {
       map.addAll(additionalQuery);
     }
 
+    //query must all string type //it will faill if int type
     final uri = teamId == null ? Uri.parse(url) : Uri.parse(url).replace(queryParameters: map);
     return http.get(uri, headers: {'Authorization': 'Bearer $token'});
   }
