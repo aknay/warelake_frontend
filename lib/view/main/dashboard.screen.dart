@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
@@ -7,6 +8,7 @@ import 'package:warelake/view/main/widgets/add.item.group.widget.dart';
 import 'package:warelake/view/main/widgets/item.utilization.wiget.dart';
 import 'package:warelake/view/main/widgets/po.so.widget.dart';
 import 'package:warelake/view/main/widgets/stock.in.out.widget.dart';
+import 'package:warelake/view/monthly.order.summary/monthly.order.summary.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -30,6 +32,8 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           children: [
             ItemUtilizationWidget(),
+            gapH16,
+            SizedBox(height: 100, child: MonthlyOrderSummaryWdiget()),
             gapH16,
             AddItemGroupWidget(),
             gapH16,

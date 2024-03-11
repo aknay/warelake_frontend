@@ -13,10 +13,10 @@ part 'monthly.order.summary.repository.g.dart';
 
 class MonthlyOrderSummaryRepository extends MonthlyOrderSummaryApi {
   @override
-  Future<Either<ErrorResponse, MonthlyOrderSummary>> get({required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, MonthlyOrderSummary>> get({required String teamId, required String token, DateTime? date}) async {
     try {
       Map<String, String> additionalQuery = {};
-      final now = DateTime.now();
+      final now = date ?? DateTime.now();
       additionalQuery['month'] = now.month.toString();
       additionalQuery['year'] = now.year.toString();
 
