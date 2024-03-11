@@ -149,12 +149,12 @@ void main() async {
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
@@ -368,12 +368,12 @@ void main() async {
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));

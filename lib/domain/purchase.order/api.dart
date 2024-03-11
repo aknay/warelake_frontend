@@ -5,13 +5,13 @@ import 'package:warelake/domain/purchase.order/search.field.dart';
 import 'package:warelake/domain/responses.dart';
 
 abstract class PurchaseOrderApi {
-  Future<Either<ErrorResponse, PurchaseOrder>> issuedPurchaseOrder({
+  Future<Either<ErrorResponse, PurchaseOrder>> setToIssued({
     required PurchaseOrder purchaseOrder,
     required String teamId,
     required String token,
   });
 
-  Future<Either<ErrorResponse, PurchaseOrder>> receivedItems({
+  Future<Either<ErrorResponse, PurchaseOrder>> setToReceived({
     required String purchaseOrderId,
     required DateTime date,
     required String teamId,

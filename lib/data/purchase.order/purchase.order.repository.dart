@@ -16,7 +16,7 @@ part 'purchase.order.repository.g.dart';
 
 class PurchaseOrderRepository extends PurchaseOrderApi {
   @override
-  Future<Either<ErrorResponse, PurchaseOrder>> issuedPurchaseOrder(
+  Future<Either<ErrorResponse, PurchaseOrder>> setToIssued(
       {required PurchaseOrder purchaseOrder, required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.post(
@@ -34,7 +34,7 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, PurchaseOrder>> receivedItems(
+  Future<Either<ErrorResponse, PurchaseOrder>> setToReceived(
       {required String purchaseOrderId, required DateTime date, required String teamId, required String token}) async {
     try {
       final payload = PurchaseOrderUpdatePayload.create(date: date);

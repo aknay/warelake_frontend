@@ -345,7 +345,7 @@ void main() async {
           total: totalAmount,
           purchaseOrderNumber: "P0-0000$i");
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
@@ -355,7 +355,7 @@ void main() async {
       final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
 
       for (var element in poIdList) {
-        await purchaseOrderApi.receivedItems(
+        await purchaseOrderApi.setToReceived(
             purchaseOrderId: element, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
         await Future.delayed(const Duration(milliseconds: 1000));
       }
@@ -499,7 +499,7 @@ void main() async {
           total: totalAmount,
           purchaseOrderNumber: "P0-0000$i");
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
       await Future.delayed(const Duration(milliseconds: 1000));
     }
@@ -509,7 +509,7 @@ void main() async {
       final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
 
       for (var element in poIdList) {
-        await purchaseOrderApi.receivedItems(
+        await purchaseOrderApi.setToReceived(
             purchaseOrderId: element, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
         await Future.delayed(const Duration(milliseconds: 1000));
       }
