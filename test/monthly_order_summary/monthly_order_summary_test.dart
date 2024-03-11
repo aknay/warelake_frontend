@@ -92,13 +92,13 @@ void main() async {
 
     final poCreatedOrError =
         await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
-      await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     expect(poCreatedOrError.isRight(), true);
 
     {
       final now = DateTime.now();
       final po = poCreatedOrError.toIterable().first;
-      
+
       await purchaseOrderApi.receivedItems(
           purchaseOrderId: po.id!, date: now, teamId: teamId, token: firstUserAccessToken);
 
@@ -116,5 +116,54 @@ void main() async {
         .map((e) => e.rate * e.quantity)
         .fold(0, (previousValue, element) => previousValue + element);
     expect(monthlyOrderSummary.purchaseOrderAmount, amount / 1000);
+  });
+
+  test('monthly order summary will be decrease for PO when a po is deleted', () async {
+    final po = PurchaseOrder.create(
+        accountId: billAccountId,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        purchaseOrderNumber: "PO-0001",
+        total: 20);
+
+    final poCreatedOrError =
+        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+    await Future.delayed(const Duration(seconds: 1));
+    expect(poCreatedOrError.isRight(), true);
+
+    {
+      final now = DateTime.now();
+      final po = poCreatedOrError.toIterable().first;
+
+      await purchaseOrderApi.receivedItems(
+          purchaseOrderId: po.id!, date: now, teamId: teamId, token: firstUserAccessToken);
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      await purchaseOrderApi.get(purchaseOrderId: po.id!, teamId: teamId, token: firstUserAccessToken);
+    }
+    {
+      final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
+      expect(monthlyOrderSummaryOrError.isRight(), true);
+      final monthlyOrderSummary = monthlyOrderSummaryOrError.toIterable().first;
+      expect(monthlyOrderSummary.purchaseOrderCount, 1);
+      final poCreated = poCreatedOrError.toIterable().first;
+      final amount = poCreated.lineItems
+          .map((e) => e.rate * e.quantity)
+          .fold(0, (previousValue, element) => previousValue + element);
+      expect(monthlyOrderSummary.purchaseOrderAmount, amount / 1000);
+    }
+    {
+      final po = poCreatedOrError.toIterable().first;
+      await purchaseOrderApi.delete(purchaseOrderId: po.id!, teamId: teamId, token: firstUserAccessToken);
+      await Future.delayed(const Duration(seconds: 1));
+      final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
+      final monthlyOrderSummary = monthlyOrderSummaryOrError.toIterable().first;
+
+      expect(monthlyOrderSummary.purchaseOrderAmount, 0);
+      expect(monthlyOrderSummary.purchaseOrderCount, 0);
+    }
   });
 }
