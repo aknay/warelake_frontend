@@ -8,9 +8,11 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/monthly.order.summary/monthly.order.summary.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
+import 'package:warelake/data/sale.order/sale.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -22,6 +24,7 @@ void main() async {
   final monthlyOrderSummaryApi = MonthlyOrderSummaryRepository();
   final billAccountApi = BillAccountRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
+  final saleOrderApi = SaleOrderRepository();
   late String firstUserAccessToken;
 
   late String teamId;
@@ -165,5 +168,43 @@ void main() async {
       expect(monthlyOrderSummary.purchaseOrderAmount, 0);
       expect(monthlyOrderSummary.purchaseOrderCount, 0);
     }
+  });
+
+  test('monthly order summary will be increased for SO when a So is added', () async {
+    final so = SaleOrder.create(
+        accountId: billAccountId,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        saleOrderNumber: "SO-0001",
+        total: 20);
+
+    final soCreatedOrError = await saleOrderApi.setToIssued(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
+    await Future.delayed(const Duration(seconds: 1));
+    expect(soCreatedOrError.isRight(), true);
+
+    {
+      final now = DateTime.now();
+      final so = soCreatedOrError.toIterable().first;
+
+      await saleOrderApi.setToDelivered(saleOrderId: so.id!, date: now, teamId: teamId, token: firstUserAccessToken);
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      await saleOrderApi.get(saleOrderId: so.id!, teamId: teamId, token: firstUserAccessToken);
+    }
+
+    final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
+    expect(monthlyOrderSummaryOrError.isRight(), true);
+    final monthlyOrderSummary = monthlyOrderSummaryOrError.toIterable().first;
+    expect(monthlyOrderSummary.saleOrderCount, 1);
+    final poCreated = soCreatedOrError.toIterable().first;
+    final amount = poCreated.lineItems
+        .map((e) => e.rate * e.quantity)
+        .fold(0, (previousValue, element) => previousValue + element);
+    expect(monthlyOrderSummary.saleOrderAmount, amount / 1000);
+    expect(monthlyOrderSummary.purchaseOrderAmount, 0);
+    expect(monthlyOrderSummary.purchaseOrderCount, 0);
   });
 }

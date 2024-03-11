@@ -18,7 +18,7 @@ class SaleOrderRepository extends SaleOrderApi {
   SaleOrderRepository();
 
   @override
-  Future<Either<ErrorResponse, Unit>> deliveredItems({
+  Future<Either<ErrorResponse, Unit>> setToDelivered({
     required String saleOrderId,
     required DateTime date,
     required String teamId,
@@ -45,7 +45,7 @@ class SaleOrderRepository extends SaleOrderApi {
   }
 
   @override
-  Future<Either<ErrorResponse, SaleOrder>> issued(
+  Future<Either<ErrorResponse, SaleOrder>> setToIssued(
       {required SaleOrder saleOrder, required String teamId, required String token}) async {
     try {
       final response = await HttpHelper.post(

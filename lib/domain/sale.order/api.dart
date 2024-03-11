@@ -10,9 +10,9 @@ abstract class SaleOrderApi {
     required String token,
     SaleOrderSearchField? searchField,
   });
-  Future<Either<ErrorResponse, SaleOrder>> issued(
+  Future<Either<ErrorResponse, SaleOrder>> setToIssued(
       {required SaleOrder saleOrder, required String teamId, required String token});
-  Future<Either<ErrorResponse, Unit>> deliveredItems({
+  Future<Either<ErrorResponse, Unit>> setToDelivered({
     required String saleOrderId,
     required DateTime date,
     required String teamId,
