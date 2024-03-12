@@ -138,14 +138,14 @@ void main() async {
           subTotal: total,
           total: total);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
 
       expect(poCreatedOrError.isRight(), true);
       final createdPo = poCreatedOrError.toIterable().first;
 
-      final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+      final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: teamId, token: firstUserAccessToken);
       expect(poItemsReceivedOrError.isRight(), true);
 
@@ -179,14 +179,14 @@ void main() async {
           subTotal: total,
           total: total);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
 
       expect(poCreatedOrError.isRight(), true);
       final createdPo = poCreatedOrError.toIterable().first;
 
-      final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+      final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: teamId, token: firstUserAccessToken);
       expect(poItemsReceivedOrError.isRight(), true);
 

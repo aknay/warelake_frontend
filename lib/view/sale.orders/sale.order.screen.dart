@@ -44,7 +44,7 @@ class PageContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.processing
+    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.issued
         ? [
             const PopupMenuItem(
               value: SaleOrderAction.delivered,
@@ -75,7 +75,7 @@ class PageContents extends ConsumerWidget {
                         ref.invalidate(saleOrderProvider(so.id!));
                       }
                     case SaleOrderAction.delete:
-                             if (context.mounted) {
+                      if (context.mounted) {
                         final toDeleteOrNull = await showDialog<bool?>(
                           context: context,
                           builder: (BuildContext context) {

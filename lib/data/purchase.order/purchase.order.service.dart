@@ -25,8 +25,7 @@ class PurchaseOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError =
-          await _purchaseOrderRepo.issuedPurchaseOrder(purchaseOrder: po, teamId: teamId, token: token);
+      final createdOrError = await _purchaseOrderRepo.setToIssued(purchaseOrder: po, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
@@ -57,7 +56,7 @@ class PurchaseOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _purchaseOrderRepo.receivedItems(
+      final items = await _purchaseOrderRepo.setToReceived(
           purchaseOrderId: purchaseOrderId, date: date, teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => const Right(unit));
     });

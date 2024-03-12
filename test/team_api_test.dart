@@ -106,4 +106,12 @@ void main() async {
     expect(teamListOrError.isRight(), true);
     expect(teamListOrError.toIterable().first.data.isNotEmpty, true);
   });
+
+  test('the plan will be free when creating a new team', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    final team = createdOrError.toIterable().first;
+    expect(team.planType, 1212);
+    expect(team.planName, 'personal plan');
+  });
 }

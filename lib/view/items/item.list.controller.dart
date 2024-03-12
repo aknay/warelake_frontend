@@ -35,30 +35,6 @@ class ItemListController extends _$ItemListController {
     });
   }
 
-  // Future<void> search(String text) async {
-  //   if (text.length > 2) {
-  //     state = const AsyncLoading();
-  //     final itemsOrError = await _list(searchField: ItemSearchField(itemName: text));
-  //     if (itemsOrError.isLeft()) {
-  //       throw AssertionError("error while fetching items");
-  //     }
-  //     state = AsyncValue.data(itemsOrError.toIterable().first.data);
-  //   } else if (text.isEmpty) {
-  //     state = const AsyncLoading();
-  //     final itemsOrError = await _list();
-  //     if (itemsOrError.isLeft()) {
-  //       throw AssertionError("error while fetching items");
-  //     }
-  //     state = AsyncValue.data(itemsOrError.toIterable().first.data);
-  //   }
-  // }
-
-  // Future<Either<String, ListResponse<Item>>> list({String? searchText, String? startingAfterItemId}) async {
-  //   log("call this?");
-  //   final textToSearch = searchText != null && searchText.length > 2 ? searchText : null;
-  //   final searchField = ItemSearchField(itemName: textToSearch, startingAfterItemId: startingAfterItemId);
-  //   return ref.read(itemServiceProvider).list(itemSearchField: searchField);
-  // }
 
   Future<Either<String, ListResponse<Item>>> _list({ItemSearchField? searchField}) async {
     if (kDebugMode) {

@@ -121,11 +121,11 @@ void main() async {
           subTotal: 10,
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-  await Future.delayed(const Duration(seconds: 1));
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      await Future.delayed(const Duration(seconds: 1));
       expect(poCreatedOrError.isRight(), true);
       purchaseOrder = poCreatedOrError.toIterable().first;
-      final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+      final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
           purchaseOrderId: purchaseOrder.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
       expect(poItemsReceivedOrError.isRight(), true);
     }
@@ -155,8 +155,7 @@ void main() async {
   });
 
   test('item utilization count is correct after new item variations can be added to the item', () async {
-
-  {
+    {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
@@ -189,6 +188,5 @@ void main() async {
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalItemVariationsCount, 5);
     }
-
   });
 }

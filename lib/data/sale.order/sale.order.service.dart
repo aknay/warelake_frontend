@@ -25,7 +25,7 @@ class SaleOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _saleOrderRepo.issued(saleOrder: saleOrder, teamId: teamId, token: token);
+      final createdOrError = await _saleOrderRepo.create(saleOrder: saleOrder, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
     });
   }
@@ -54,7 +54,7 @@ class SaleOrderService {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
-      final items = await _saleOrderRepo.deliveredItems(
+      final items = await _saleOrderRepo.setToDelivered(
           saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });

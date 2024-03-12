@@ -80,10 +80,14 @@ class ApiEndPoint {
         : "${getApiBaseUrl()}/v1/bill_accounts/$billAccountId";
   }
 
-  static String getMonthlySummaryEndPoint({required String billAccountId, String? monthlySummary}) {
+  static String getMonthlyBillSummaryEndPoint({required String billAccountId, String? monthlySummary}) {
     return monthlySummary == null
         ? "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId"
         : "${getApiBaseUrl()}/v1/monthly_summary/$billAccountId/$monthlySummary";
+  }
+
+  static String getMonthlyOrderSummaryEndPoint() {
+    return "${getApiBaseUrl()}/v1/monthly_order_summary";
   }
 
   static String getStockTransacitonEndPoint({String? stockTransactionId}) {

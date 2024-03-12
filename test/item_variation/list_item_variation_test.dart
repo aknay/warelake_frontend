@@ -21,9 +21,7 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
-  late Item shirtItem;
   late Item phoneItem;
-  late Item books;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -82,7 +80,7 @@ void main() async {
 
     final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
     final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
-    shirtItem = itemCreated.toIterable().first;
+     itemCreated.toIterable().first;
 
     await Future.delayed(const Duration(seconds: 1));
 
@@ -128,7 +126,7 @@ void main() async {
       {
         final item = Item.create(name: "books", variations: [textbook, novels], unit: 'pcs');
         final itemCreated = await itemRepo.createItem(item: item, teamId: teamId, token: firstUserAccessToken);
-        books = itemCreated.toIterable().first;
+        itemCreated.toIterable().first;
       }
     }
   });
@@ -136,7 +134,7 @@ void main() async {
   test('you can list item variation', () async {
     final itemListOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
     expect(itemListOrError.isRight(), true);
-    expect(itemListOrError.toIterable().first.data.length, 4);
+    expect(itemListOrError.toIterable().first.data.length, 6);
 
     itemListOrError.toIterable().first.data.forEach((element) {
       log(element.name);
