@@ -16,16 +16,16 @@ class PurchaseOrderSearchField {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> additionalQuery = {};
     if (startingAfterPurchaseOrderId != null) {
-      additionalQuery['starting_after'] = startingAfterPurchaseOrderId;
+      additionalQuery['starting_after'] = startingAfterPurchaseOrderId!;
     }
     if (status != null) {
-      additionalQuery['status'] = status?.name;
+      additionalQuery['status'] = status!.name;
     }
     if (itemVariationName != null) {
-      additionalQuery['item_variation_name'] = itemVariationName;
+      additionalQuery['item_variation_name'] = itemVariationName!;
     }
     if (dateRange != null) {
-      additionalQuery['date_range'] = dateRange?.toMap();
+      additionalQuery['date_range'] = dateRange!.toMap();
     }
 
     return additionalQuery;

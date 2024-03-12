@@ -17,8 +17,8 @@ import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/sale.order/search.field.dart';
 import 'package:warelake/domain/team/entities.dart';
 
-import 'helpers/sign.in.response.dart';
-import 'helpers/test.helper.dart';
+import '../helpers/sign.in.response.dart';
+import '../helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
@@ -88,11 +88,11 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError = await saleOrderApi.issued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'processing');
+    expect(createdPo.status, 'issued');
 
     final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
 
@@ -120,7 +120,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
@@ -147,12 +147,12 @@ void main() async {
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
@@ -169,10 +169,10 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.issued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
       expect(soCreatedOrError.isRight(), true);
 
-      final poItemsReceivedOrError = await saleOrderApi.deliveredItems(
+      final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
           saleOrderId: soCreatedOrError.toIterable().first.id!,
           date: date,
           teamId: team.id!,
@@ -200,16 +200,16 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
     final createdSo = soCreatedOrError.toIterable().first;
 
     // testing receiving items
     {
-    final soItemDeliveredOrError = await saleOrderApi.deliveredItems(
-        saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
-    expect(soItemDeliveredOrError.isRight(), true);
+      final soItemDeliveredOrError = await saleOrderApi.setToDelivered(
+          saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
+      expect(soItemDeliveredOrError.isRight(), true);
     }
   });
 
@@ -251,15 +251,15 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError = await saleOrderApi.issued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'processing');
+    expect(createdSo.status, 'issued');
 
     // testing receiving items
 
-    final poItemsReceivedOrError = await saleOrderApi.deliveredItems(
+    final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
         saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -327,7 +327,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
@@ -362,12 +362,12 @@ void main() async {
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
@@ -385,10 +385,10 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       retrievedSo = soCreatedOrError.toIterable().first;
 
-      final soItemsReceivedOrError = await saleOrderApi.deliveredItems(
+      final soItemsReceivedOrError = await saleOrderApi.setToDelivered(
           saleOrderId: retrievedSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
 
       expect(soItemsReceivedOrError.isRight(), true);
@@ -439,12 +439,12 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
     final createdSo = soCreatedOrError.toIterable().first;
-    final poItemsReceivedOrError = await saleOrderApi.deliveredItems(
+    final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
         saleOrderId: createdSo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -501,7 +501,7 @@ void main() async {
       total: 20,
       saleOrderNumber: "SO-0001",
     );
-    final poCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
 
@@ -526,7 +526,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       firstPo = soCreatedOrError.toIterable().first;
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -540,7 +540,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00002");
-      final poCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       secondPo = poCreatedOrError.toIterable().first;
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -585,13 +585,13 @@ void main() async {
       total: 20,
       saleOrderNumber: "SO-0001",
     );
-    final soCreatedOrError = await saleOrderApi.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
     {
       // for issued, we have a list with one po
-      final searchField = SaleOrderSearchField(status: SaleOrderStatus.processing);
+      final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
           await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
@@ -609,7 +609,7 @@ void main() async {
     {
       // receiving items
       final now = DateTime.now();
-      await saleOrderApi.deliveredItems(
+      await saleOrderApi.setToDelivered(
           date: now,
           saleOrderId: soCreatedOrError.toIterable().first.id!,
           teamId: team.id!,
@@ -619,7 +619,7 @@ void main() async {
     }
     {
       // for issued, we have a empty list
-      final searchField = SaleOrderSearchField(status: SaleOrderStatus.processing);
+      final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
           await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);

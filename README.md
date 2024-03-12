@@ -10,7 +10,6 @@
     <img src="screenshots/flutter_01.png" alt="Items" width="200"/>
     <img src="screenshots/flutter_02.png" alt="Item Group" width="200"/>
     <img src="screenshots/flutter_03.png" alt="Drawer" width="200"/>
-    <img src="screenshots/flutter_04.png" alt="Stock Transaction" width="200"/>
 </p>
 
 

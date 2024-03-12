@@ -89,7 +89,7 @@ void main() async {
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
-        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
@@ -104,7 +104,7 @@ void main() async {
     }
 
     // // testing receiving items
-    final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+    final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
         date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -136,9 +136,9 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       final createdPo = poOrError.toIterable().first;
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
     }
     {
@@ -167,9 +167,9 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       final createdPo = poOrError.toIterable().first;
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
 
       DateTime previousMonth = DateTime(now.year, now.month - 1, now.day);
@@ -179,7 +179,7 @@ void main() async {
         previousMonth = DateTime(now.year - 1, 12, now.day);
       }
 
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           date: previousMonth, purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
 
       DateTime firstDayOfMonth = DateTime(previousMonth.year, previousMonth.month, 1);
@@ -240,7 +240,7 @@ void main() async {
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
-        await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
     final firstPo = poCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -251,7 +251,7 @@ void main() async {
     }
 
     // // testing receiving items
-    final poItemsReceivedOrError = await purchaseOrderApi.receivedItems(
+    final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
         date: DateTime.now(), purchaseOrderId: firstPo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -285,9 +285,9 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.issuedPurchaseOrder(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       secondPo = poOrError.toIterable().first;
-      await purchaseOrderApi.receivedItems(
+      await purchaseOrderApi.setToReceived(
           date: DateTime.now(), purchaseOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
     }
     {
@@ -356,11 +356,11 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError = await saleOrderRepo.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'processing');
+    expect(createdSo.status, 'issued');
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -372,7 +372,7 @@ void main() async {
 
     // // testing receiving items
 
-    final soReceivedOrError = await saleOrderRepo.deliveredItems(
+    final soReceivedOrError = await saleOrderRepo.setToDelivered(
         saleOrderId: createdSo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(soReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -399,9 +399,9 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00002");
 
-      final soOrError = await saleOrderRepo.issued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
-      await saleOrderRepo.deliveredItems(
+      await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
         date: DateTime.now(),
         teamId: team.id!,
@@ -441,9 +441,9 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00003");
 
-      final soOrError = await saleOrderRepo.issued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
-      await saleOrderRepo.deliveredItems(
+      await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
         date: DateTime.now(),
         teamId: team.id!,
@@ -503,8 +503,8 @@ void main() async {
         lineItems: [lineItem],
         subTotal: 10,
         total: 20);
-    final soCreatedOrError = await saleOrderRepo.issued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
-     await Future.delayed(const Duration(seconds: 1));
+    final soCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    await Future.delayed(const Duration(seconds: 1));
     final firstSo = soCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -515,7 +515,7 @@ void main() async {
     }
 
     // // testing receiving items
-    final poItemsReceivedOrError = await saleOrderRepo.deliveredItems(
+    final poItemsReceivedOrError = await saleOrderRepo.setToDelivered(
         date: DateTime.now(), saleOrderId: firstSo.id!, teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
@@ -550,9 +550,9 @@ void main() async {
           subTotal: 10,
           total: 20);
 
-      final soOrError = await saleOrderRepo.issued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
       secondPo = soOrError.toIterable().first;
-      await saleOrderRepo.deliveredItems(
+      await saleOrderRepo.setToDelivered(
           date: DateTime.now(), saleOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
     }
     {
