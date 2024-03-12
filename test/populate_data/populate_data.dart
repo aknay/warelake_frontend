@@ -18,7 +18,7 @@ import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
-import 'helpers/sign.in.response.dart';
+import '../helpers/sign.in.response.dart';
 
 void main() async {
   final teamApi = TeamRepository();

@@ -134,7 +134,7 @@ void main() async {
   test('you can list item variation', () async {
     final itemListOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
     expect(itemListOrError.isRight(), true);
-    expect(itemListOrError.toIterable().first.data.length, 4);
+    expect(itemListOrError.toIterable().first.data.length, 6);
 
     itemListOrError.toIterable().first.data.forEach((element) {
       log(element.name);

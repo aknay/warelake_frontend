@@ -92,7 +92,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'processing');
+    expect(createdPo.status, 'issued');
 
     final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
 
@@ -255,7 +255,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'processing');
+    expect(createdSo.status, 'issued');
 
     // testing receiving items
 
@@ -591,7 +591,7 @@ void main() async {
 
     {
       // for issued, we have a list with one po
-      final searchField = SaleOrderSearchField(status: SaleOrderStatus.processing);
+      final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
           await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
@@ -619,7 +619,7 @@ void main() async {
     }
     {
       // for issued, we have a empty list
-      final searchField = SaleOrderSearchField(status: SaleOrderStatus.processing);
+      final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
           await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);

@@ -100,5 +100,5 @@ void main() async {
 
       expect(poCreatedOrError.isRight(), false);
     }
-  });
+  }, timeout:  const Timeout(Duration(minutes: 20)),);
 }

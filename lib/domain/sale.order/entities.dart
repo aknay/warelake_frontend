@@ -3,7 +3,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 
 enum SaleOrderStatus {
-  processing,
+  issued,
   delivered,
 }
 
@@ -99,20 +99,19 @@ class SaleOrder {
 
   static SaleOrder fromJson(Map<String, dynamic> json) {
     return SaleOrder(
-      id: json['id'],
-      saleOrderNumber: json['sale_order_number'],
-      date: json['date'],
-      status: json['status'],
-      currencyCode: json['currency_code'],
-      lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
-      subTotal: json['sub_total'],
-      total: json['total'],
-      notes: json['notes'],
-      accountId: json['account_id'],
-      createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-      deliveredAt: json['delivered_at']
-    );
+        id: json['id'],
+        saleOrderNumber: json['sale_order_number'],
+        date: json['date'],
+        status: json['status'],
+        currencyCode: json['currency_code'],
+        lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
+        subTotal: json['sub_total'],
+        total: json['total'],
+        notes: json['notes'],
+        accountId: json['account_id'],
+        createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+        modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+        deliveredAt: json['delivered_at']);
   }
 }
 

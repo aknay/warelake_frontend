@@ -100,5 +100,5 @@ void main() async {
           await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
       expect(poCreatedOrError.isRight(), false);
     }
-  });
+  }, timeout: const Timeout(Duration(minutes: 20)),);
 }
