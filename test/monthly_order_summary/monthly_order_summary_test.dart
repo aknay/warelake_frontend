@@ -83,7 +83,31 @@ void main() async {
     expect(monthlyOrderSummaryOrError.isRight(), true);
   });
 
-  test('monthly order summary will be increased for PO when a po is added', () async {
+  test('monthly order summary count will be increased for PO when a po is added', () async {
+    final po = PurchaseOrder.create(
+        accountId: billAccountId,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        purchaseOrderNumber: "PO-0001",
+        total: 20);
+
+    final poCreatedOrError =
+        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+    await Future.delayed(const Duration(seconds: 1));
+    expect(poCreatedOrError.isRight(), true);
+    {
+      final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
+      expect(monthlyOrderSummaryOrError.isRight(), true);
+      final monthlyOrderSummary = monthlyOrderSummaryOrError.toIterable().first;
+      expect(monthlyOrderSummary.purchaseOrderCount, 1);
+
+      expect(monthlyOrderSummary.purchaseOrderAmount, 0);
+    }
+  });
+
+  test('monthly order summary amount will be increased for PO when a po is issued', () async {
     final po = PurchaseOrder.create(
         accountId: billAccountId,
         date: DateTime.now(),
@@ -99,6 +123,7 @@ void main() async {
     expect(poCreatedOrError.isRight(), true);
 
     {
+      //set to received
       final now = DateTime.now();
       final po = poCreatedOrError.toIterable().first;
 
@@ -169,8 +194,28 @@ void main() async {
       expect(monthlyOrderSummary.purchaseOrderCount, 0);
     }
   });
+  test('monthly order summary count will be increased for SO when a So is issued', () async {
+    final so = SaleOrder.create(
+        accountId: billAccountId,
+        date: DateTime.now(),
+        currencyCode: CurrencyCode.AUD,
+        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        subTotal: 10,
+        saleOrderNumber: "SO-0001",
+        total: 20);
 
-  test('monthly order summary will be increased for SO when a So is added', () async {
+    final soCreatedOrError = await saleOrderApi.setToIssued(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
+    await Future.delayed(const Duration(seconds: 1));
+    expect(soCreatedOrError.isRight(), true);
+    final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
+    expect(monthlyOrderSummaryOrError.isRight(), true);
+    final monthlyOrderSummary = monthlyOrderSummaryOrError.toIterable().first;
+    expect(monthlyOrderSummary.saleOrderCount, 1);
+    expect(monthlyOrderSummary.saleOrderAmount, 0);
+    expect(monthlyOrderSummary.purchaseOrderAmount, 0);
+    expect(monthlyOrderSummary.purchaseOrderCount, 0);
+  });
+  test('monthly order summary amount will be increased for SO when a So is delivered', () async {
     final so = SaleOrder.create(
         accountId: billAccountId,
         date: DateTime.now(),
