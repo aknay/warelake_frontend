@@ -306,8 +306,7 @@ void main() async {
           subTotal: totalAmount,
           total: totalAmount,
           saleOrderNumber: "S0-0000$i");
-      final soCreatedOrError =
-          await saleOrderApi.setToIssued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
       saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
     }
@@ -460,8 +459,7 @@ void main() async {
           subTotal: totalAmount,
           total: totalAmount,
           saleOrderNumber: "S0-0000$i");
-      final soCreatedOrError =
-          await saleOrderApi.setToIssued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
       saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
     }

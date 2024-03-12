@@ -204,7 +204,7 @@ void main() async {
         saleOrderNumber: "SO-0001",
         total: 20);
 
-    final soCreatedOrError = await saleOrderApi.setToIssued(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
     await Future.delayed(const Duration(seconds: 1));
     expect(soCreatedOrError.isRight(), true);
     final monthlyOrderSummaryOrError = await monthlyOrderSummaryApi.get(teamId: teamId, token: firstUserAccessToken);
@@ -225,7 +225,7 @@ void main() async {
         saleOrderNumber: "SO-0001",
         total: 20);
 
-    final soCreatedOrError = await saleOrderApi.setToIssued(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
     await Future.delayed(const Duration(seconds: 1));
     expect(soCreatedOrError.isRight(), true);
 
@@ -263,7 +263,7 @@ void main() async {
         saleOrderNumber: "PO-0001",
         total: 20);
 
-    final soCreatedOrError = await saleOrderApi.setToIssued(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
     await Future.delayed(const Duration(seconds: 1));
     expect(soCreatedOrError.isRight(), true);
 

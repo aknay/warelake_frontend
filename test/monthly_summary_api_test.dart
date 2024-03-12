@@ -356,8 +356,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError =
-        await saleOrderRepo.setToIssued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
@@ -400,8 +399,7 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00002");
 
-      final soOrError =
-          await saleOrderRepo.setToIssued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
@@ -443,8 +441,7 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00003");
 
-      final soOrError =
-          await saleOrderRepo.setToIssued(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
@@ -506,8 +503,7 @@ void main() async {
         lineItems: [lineItem],
         subTotal: 10,
         total: 20);
-    final soCreatedOrError =
-        await saleOrderRepo.setToIssued(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
     await Future.delayed(const Duration(seconds: 1));
     final firstSo = soCreatedOrError.toIterable().first;
     {
@@ -554,7 +550,7 @@ void main() async {
           subTotal: 10,
           total: 20);
 
-      final soOrError = await saleOrderRepo.setToIssued(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
       secondPo = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
           date: DateTime.now(), saleOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
