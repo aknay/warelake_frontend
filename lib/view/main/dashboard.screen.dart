@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
@@ -18,7 +17,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard"),
+        title: const Text("Warelake"),
         actions: [
           IconButton(
               onPressed: () {
@@ -33,7 +32,7 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             ItemUtilizationWidget(),
             gapH16,
-            SizedBox(height: 100, child: MonthlyOrderSummaryWdiget()),
+            MonthlyOrderSummaryWdiget(),
             gapH16,
             AddItemGroupWidget(),
             gapH16,
