@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class StockLineItemListView extends ConsumerWidget {
@@ -36,12 +35,14 @@ class StockLineItemListView extends ConsumerWidget {
                   ),
                 ),
                 child: ListTile(
+                  leading: ItemVariationImageWidget(
+                      itemId: e.itemVariation.itemId, itemVariationId: e.itemVariation.id!, isForTheList: true),
                   title: Text(e.itemVariation.name),
                   trailing: SizedBox(
                     width: 80,
                     child: TextFormField(
                       //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
-                      key: Key('${Random().nextInt(100000)}'),
+                      key: UniqueKey(),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       initialValue: e.quantity.toString(),
@@ -54,7 +55,6 @@ class StockLineItemListView extends ConsumerWidget {
                       },
                     ),
                   ),
-                  onTap: () {},
                 ),
               ))
           .toList(),
