@@ -9,7 +9,7 @@ import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {

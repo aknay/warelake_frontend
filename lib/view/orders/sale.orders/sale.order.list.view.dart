@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 import 'package:warelake/view/utils/async_value_ui.dart';
 
 class SaleOrderListView extends ConsumerStatefulWidget {

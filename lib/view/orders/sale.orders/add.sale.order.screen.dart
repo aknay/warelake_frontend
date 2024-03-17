@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.list.view.dart';
-import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.list.view.dart';
+import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddSaleOrderScreen extends ConsumerStatefulWidget {
@@ -44,9 +46,12 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
   Widget _buildForm({required WidgetRef ref}) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildFormChildren(ref: ref),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _buildFormChildren(ref: ref),
+        ),
       ),
     );
   }
@@ -65,27 +70,33 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         },
         onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
       ),
+      gapH8,
       BillAccountSelectionWidget(onValueChanged: (value) {
         log("value ${value.isSome()}");
         _billAccountOrNone = value;
       }),
-      TextButton(
-          onPressed: () async {
-            final router = GoRouter.of(context);
-
-            final path = router.routeInformationProvider.value.uri.path;
-
-            if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
-              context.goNamed(
-                AppRoute.addLineItemForSaleOrderFromDashboard.name,
-              );
-            } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
-              context.goNamed(
-                AppRoute.addLineItemForSaleOrder.name,
-              );
-            }
-          },
-          child: const Text("Add Line Item")),
+      gapH8,
+      Row(
+        children: [
+          const Spacer(),
+          AddLineItemButton(onPressed: (){
+                       final router = GoRouter.of(context);
+          
+                final path = router.routeInformationProvider.value.uri.path;
+          
+                if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
+                  context.goNamed(
+                    AppRoute.addLineItemForSaleOrderFromDashboard.name,
+                  );
+                } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
+                  context.goNamed(
+                    AppRoute.addLineItemForSaleOrder.name,
+                  );
+                }
+          }),
+          const Spacer()
+        ],
+      ),
       const Expanded(child: LineItemListView())
     ];
   }

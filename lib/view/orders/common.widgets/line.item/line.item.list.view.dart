@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:warelake/view/sale.orders/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 
 class LineItemListView extends ConsumerWidget {
   const LineItemListView({super.key});
@@ -17,18 +18,31 @@ class LineItemListView extends ConsumerWidget {
     if (lineItems.isEmpty) {
       return const Center(child: Text("Empty"));
     }
-    return ListView(
-      children: lineItems
-          .map((e) => ListTile(
-                title: Text(e.itemVariation.name),
-                subtitle:
-                    Row(children: [Text(e.quantity.toString()), const Text(" X "), Text(e.rateInDouble.toString())]),
-                onTap: () {
-                  _showDialog(context: context, lineItem: e, ref: ref);
-                },
-              ))
-          .toList(),
-    );
+
+    final middle = lineItems
+        .map((e) => ListTile(
+              title: Text(e.itemVariation.name),
+              subtitle:
+                  Row(children: [Text(e.quantity.toString()), const Text(" X "), Text(e.rateInDouble.toString())]),
+              trailing: Text("${e.totalAmount}", style: Theme.of(context).textTheme.bodyLarge),
+              onTap: () {
+                _showDialog(context: context, lineItem: e, ref: ref);
+              },
+            ))
+        .toList();
+
+    const top = Row(children: [gapW16, Text('Items'), Spacer(), Text('Amount'), gapW20]);
+    final total = lineItems.map((e) => e.totalAmount).fold(0.0, (previousValue, element) => previousValue + element);
+    final bottom = Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+
+      // const Spacer(),
+      const Text('Total:'),
+      gapW8,
+      Text('$total', style: Theme.of(context).textTheme.bodyLarge),
+      gapW20
+    ]);
+    return Expanded(child: Column(children: [top, const Divider(), ...middle, const Divider(), bottom]));
+    // return ListView(children: [top] + middle);
   }
 
   void _showDialog({required BuildContext context, required LineItem lineItem, required WidgetRef ref}) {
