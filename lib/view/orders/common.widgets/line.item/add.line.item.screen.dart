@@ -6,8 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.selection.widget.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
@@ -45,42 +46,20 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   Widget _buildForm({required WidgetRef ref}) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildFormChildren(ref: ref),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _buildFormChildren(ref: ref),
+        ),
       ),
     );
   }
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
-    final selectedLineItemOrNone = ref.watch(selectedItemVariationProvider);
-    final buttonText = selectedLineItemOrNone.fold(() => "Select Item", (r) => r.name);
     return [
-      TextButton(
-          onPressed: () {
-            final router = GoRouter.of(context);
-
-            final path = router.routeInformationProvider.value.uri.path;
-
-            if (path == router.namedLocation(AppRoute.addLineItemForPurchaseOrderFromDashboard.name)) {
-              context.goNamed(
-                AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name,
-              );
-            } else if (path == router.namedLocation(AppRoute.addLineItemForPurchaseOrder.name)) {
-              context.goNamed(
-                AppRoute.itemsSelectionForPurchaseOrder.name,
-              );
-            } else if (path == router.namedLocation(AppRoute.addLineItemForSaleOrder.name)) {
-              context.goNamed(
-                AppRoute.itemsSelectionForSaleOrder.name,
-              );
-            } else if (path == router.namedLocation(AppRoute.addLineItemForSaleOrderFromDashboard.name)) {
-              context.goNamed(
-                AppRoute.itemsSelectionForSaleOrderFromDashboard.name,
-              );
-            }
-          },
-          child: Text(buttonText)),
+      const LineItemSelectionWidget(),
+      gapH8,
       Row(
         children: [
           Expanded(
@@ -102,6 +81,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
               onSaved: (value) => quantity = value != null ? optionOf(int.tryParse(value)) : const Some(0),
             ),
           ),
+          gapW8,
           Expanded(
             child: TextFormField(
               initialValue: rate.fold(() => null, (a) => a.toString()),
