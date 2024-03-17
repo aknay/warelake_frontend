@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
-import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 class LineItemListView extends ConsumerWidget {
   const LineItemListView({super.key});
@@ -16,7 +16,7 @@ class LineItemListView extends ConsumerWidget {
     final lineItems = ref.watch(lineItemControllerProvider);
     ref.watch(selectedItemVariationProvider); // so that this will be still alive to be received in AddLineItemScreen
     if (lineItems.isEmpty) {
-      return const Center(child: Text("Empty"));
+      return const Center(child: Text("No line item to display"));
     }
 
     final middle = lineItems
@@ -33,34 +33,37 @@ class LineItemListView extends ConsumerWidget {
 
     const top = Row(children: [gapW16, Text('Items'), Spacer(), Text('Amount'), gapW20]);
     final total = lineItems.map((e) => e.totalAmount).fold(0.0, (previousValue, element) => previousValue + element);
-    final bottom = Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-
-      // const Spacer(),
-      const Text('Total:'),
-      gapW8,
-      Text('$total', style: Theme.of(context).textTheme.bodyLarge),
-      gapW20
-    ]);
+    final bottom = Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [const Text('Total:'), gapW8, Text('$total', style: Theme.of(context).textTheme.bodyLarge), gapW20]);
     return Expanded(child: Column(children: [top, const Divider(), ...middle, const Divider(), bottom]));
-    // return ListView(children: [top] + middle);
   }
 
   void _showDialog({required BuildContext context, required LineItem lineItem, required WidgetRef ref}) {
-    final uri = GoRouter.of(context).routeInformationProvider.value.uri;
-    final route = uri.path.contains('purchase_orders')
-        ? AppRoute.addLineItemForPurchaseOrder.name
-        : AppRoute.addLineItemForSaleOrder.name;
+    final router = GoRouter.of(context);
+
+    final path = router.routeInformationProvider.value.uri.path;
+    String nextRoute = '/';
+    if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
+      nextRoute = AppRoute.addLineItemForPurchaseOrderFromDashboard.name;
+    } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
+      nextRoute = AppRoute.addLineItemForPurchaseOrder.name;
+    } else if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
+      nextRoute = AppRoute.addLineItemForSaleOrderFromDashboard.name;
+    } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
+      nextRoute = AppRoute.addLineItemForSaleOrder.name;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Edit/Delete?'),
-          // content: const Text('This is the dialog content.'),
           actions: [
             TextButton(
                 onPressed: () {
                   ref.read(selectedItemVariationProvider.notifier).state = Some(lineItem.itemVariation);
-                  context.goNamed(route, extra: lineItem);
+                  context.goNamed(nextRoute, extra: lineItem);
                   Navigator.pop(context);
                 },
                 child: const Text('EDIT')),
