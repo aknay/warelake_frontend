@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
-import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.list.view.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.list.view.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddPurchaseOrderScreen extends ConsumerStatefulWidget {
@@ -42,17 +44,33 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   }
 
   Widget _buildForm({required WidgetRef ref}) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildFormChildren(ref: ref),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: _buildFormChildren(ref: ref),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
     return [
+      gapH8,
       TextFormField(
         decoration: const InputDecoration(
           labelText: 'Purchase Order # *',
@@ -65,29 +83,36 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
         },
         onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
       ),
-      TextButton(
-        onPressed: () async {
-          final router = GoRouter.of(context);
-
-          final path = router.routeInformationProvider.value.uri.path;
-
-          if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
-            context.goNamed(
-              AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
-            );
-          } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
-            context.goNamed(
-              AppRoute.addLineItemForPurchaseOrder.name,
-            );
-          }
-        },
-        child: const Text("Add Line Item"),
-      ),
+      gapH8,
       BillAccountSelectionWidget(onValueChanged: (value) {
         log("value ${value.isSome()}");
         _billAccountOrNone = value;
       }),
-      const Expanded(child: LineItemListView())
+      gapH8,
+      Row(
+        children: [
+          const Spacer(),
+          AddLineItemButton(
+            onPressed: () {
+              final router = GoRouter.of(context);
+
+              final path = router.routeInformationProvider.value.uri.path;
+
+              if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
+                context.goNamed(
+                  AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
+                );
+              } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
+                context.goNamed(
+                  AppRoute.addLineItemForPurchaseOrder.name,
+                );
+              }
+            },
+          ),
+          const Spacer()
+        ],
+      ),
+      const LineItemListView()
     ];
   }
 
@@ -145,3 +170,33 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
     return false;
   }
 }
+
+// class AddLineItemButton extends StatelessWidget {
+//   const AddLineItemButton({super.key, required this.context, required this.onPressed});
+
+//   final BuildContext context;
+//   final void Function() onPressed;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return OutlinedButton(
+//       style: OutlinedButton.styleFrom(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(8.0),
+//         ),
+//       ),
+//       onPressed: onPressed,
+//       child: const Padding(
+//         padding: EdgeInsets.only(top: 8, bottom: 8),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Icon(Icons.add_circle),
+//             gapW4,
+//             Text("Add Line Item"),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

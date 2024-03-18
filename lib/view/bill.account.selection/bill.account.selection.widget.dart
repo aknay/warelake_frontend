@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.page.dart';
 
@@ -32,7 +33,10 @@ class BillAccountSelectionWidget extends ConsumerWidget {
       child: TextFormField(
         enabled: false, // Make it non-editable
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.currency_exchange_outlined, color: Colors.white),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.only(left: 12, top: 8),
+            child: FaIcon(FontAwesomeIcons.fileInvoiceDollar, color: Colors.white),
+          ),
           labelText: currencyText,
           labelStyle: Theme.of(context).textTheme.bodyLarge,
           border: const OutlineInputBorder(),

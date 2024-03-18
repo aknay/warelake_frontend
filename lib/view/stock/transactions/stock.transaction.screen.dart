@@ -6,6 +6,7 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 
@@ -138,6 +139,7 @@ class PageContents extends ConsumerWidget {
       }
 
       return ListTile(
+        leading: ItemVariationImageWidget(itemId: sli.itemVariation.itemId, itemVariationId: sli.itemVariation.id!, isForTheList: true),
         title: Text(sli.itemVariation.name),
         trailing: Text("${getSign(st.stockMovement)} ${sli.quantity}", style: Theme.of(context).textTheme.labelLarge),
       );

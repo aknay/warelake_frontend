@@ -136,7 +136,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
   Widget _barcodeTextFormField(WidgetRef ref) {
     String? initialValue = widget.itemVariation?.barcode;
-    ref.watch(barcodeScannerValueControllerProvider).fold(() => (), (x) => { initialValue = x});
+    ref.watch(barcodeScannerValueControllerProvider).fold(() => (), (x) => {initialValue = x});
     return Row(
       children: [
         Expanded(
@@ -216,30 +216,6 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         ),
         gapH8,
         _barcodeTextFormField(ref)
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: TextFormField(
-        //         key: UniqueKey(),
-        //         initialValue: widget.itemVariation?.barcode,
-        //         decoration: const InputDecoration(
-        //           labelText: 'Barcode *',
-        //           hintText: 'Enter barcode',
-        //         ),
-        //         validator: (value) {
-        //           if (value == null || value.isEmpty) {
-        //             return 'Please enter barcode';
-        //           }
-        //           return null;
-        //         },
-        //         onSaved: (value) {
-        //           barcodeOrNone = optionOf(value);
-        //         },
-        //       ),
-        //     ),
-        //     const BarcodeScannerWidget()
-        //   ],
-        // ),
       ]),
     ];
   }

@@ -21,15 +21,15 @@ import 'package:warelake/view/main/dashboard.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.error.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.screen.dart';
-import 'package:warelake/view/purchase.order/add.purchase.order.screen.dart';
-import 'package:warelake/view/purchase.order/purchase.order.screen.dart';
-import 'package:warelake/view/purchase.order/purchase.orders.screen.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/add.line.item.screen.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/item.selection/item.selection.screen.dart';
+import 'package:warelake/view/orders/purchase.order/add.purchase.order.screen.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.screen.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.orders.screen.dart';
+import 'package:warelake/view/orders/sale.orders/add.sale.order.screen.dart';
+import 'package:warelake/view/orders/sale.orders/sale.order.screen.dart';
+import 'package:warelake/view/orders/sale.orders/sale.orders.screen.dart';
 import 'package:warelake/view/routing/go_router_refresh_stream.dart';
-import 'package:warelake/view/sale.orders/add.sale.order.screen.dart';
-import 'package:warelake/view/sale.orders/line.item/add.line.item.screen.dart';
-import 'package:warelake/view/sale.orders/line.item/item.selection/item.selection.screen.dart';
-import 'package:warelake/view/sale.orders/sale.order.screen.dart';
-import 'package:warelake/view/sale.orders/sale.orders.screen.dart';
 import 'package:warelake/view/stock/stock.item.selection.dart';
 import 'package:warelake/view/stock/stock.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transaction.screen.dart';
@@ -240,9 +240,12 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                       name: AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
                       path: 'line_item',
-                      builder: (BuildContext context, GoRouterState state) {
+                      pageBuilder: (context, state) {
                         LineItem? lineItem = state.extra as LineItem?;
-                        return AddLineItemScreen(lineItem: optionOf(lineItem));
+                        return MaterialPage(
+                          fullscreenDialog: true,
+                          child: AddLineItemScreen(lineItem: optionOf(lineItem)),
+                        );
                       },
                       routes: <RouteBase>[
                         GoRoute(
@@ -274,9 +277,12 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                       name: AppRoute.addLineItemForSaleOrderFromDashboard.name,
                       path: 'line_item',
-                      builder: (BuildContext context, GoRouterState state) {
+                      pageBuilder: (context, state) {
                         LineItem? lineItem = state.extra as LineItem?;
-                        return AddLineItemScreen(lineItem: optionOf(lineItem));
+                        return MaterialPage(
+                          fullscreenDialog: true,
+                          child: AddLineItemScreen(lineItem: optionOf(lineItem)),
+                        );
                       },
                       routes: <RouteBase>[
                         GoRoute(
@@ -371,9 +377,12 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                       name: AppRoute.addLineItemForPurchaseOrder.name,
                       path: 'line_item',
-                      builder: (BuildContext context, GoRouterState state) {
+                      pageBuilder: (context, state) {
                         LineItem? lineItem = state.extra as LineItem?;
-                        return AddLineItemScreen(lineItem: optionOf(lineItem));
+                        return MaterialPage(
+                          fullscreenDialog: true,
+                          child: AddLineItemScreen(lineItem: optionOf(lineItem)),
+                        );
                       },
                       routes: <RouteBase>[
                         GoRoute(
@@ -420,10 +429,12 @@ GoRouter goRouter(GoRouterRef ref) {
                   GoRoute(
                       name: AppRoute.addLineItemForSaleOrder.name,
                       path: 'line_item',
-                      builder: (BuildContext context, GoRouterState state) {
-                        log("come to here?");
+                      pageBuilder: (context, state) {
                         LineItem? lineItem = state.extra as LineItem?;
-                        return AddLineItemScreen(lineItem: optionOf(lineItem));
+                        return MaterialPage(
+                          fullscreenDialog: true,
+                          child: AddLineItemScreen(lineItem: optionOf(lineItem)),
+                        );
                       },
                       routes: <RouteBase>[
                         GoRoute(
