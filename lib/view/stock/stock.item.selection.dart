@@ -12,7 +12,10 @@ class StockItemSelectionScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text("Select an item")),
       body: const Column(
         children: [
-          ItemSearchWidget(),
+          Padding(
+            padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+            child: ItemSearchWidget(),
+          ),
           Expanded(child: ItemListView(isToSelectItemVariation: true)),
         ],
       ),

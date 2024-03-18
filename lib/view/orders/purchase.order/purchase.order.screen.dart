@@ -1,80 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warelake/data/sale.order/sale.order.service.dart';
+import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
-import 'package:warelake/domain/sale.order/entities.dart';
+import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 
-final saleOrderProvider = FutureProvider.family<SaleOrder, String>((ref, id) async {
-  final saleOrderOrError = await ref.watch(saleOrderServiceProvider).getSaleOrder(saleOrderId: id);
+final purchaseOrderProvider = FutureProvider.family<PurchaseOrder, String>((ref, id) async {
+  final saleOrderOrError = await ref.watch(purchaseOrderServiceProvider).getPurchaseOrder(purchaseOrderId: id);
   if (saleOrderOrError.isLeft()) {
     throw AssertionError("cannot item");
   }
   return saleOrderOrError.toIterable().first;
 });
 
-enum SaleOrderAction {
+enum PurchaseOrderAction {
   delivered,
   delete,
 }
 
-class SaleOrderScreen extends ConsumerWidget {
-  const SaleOrderScreen({super.key, required this.isToSelectItemVariation, required this.saleOrderId});
+class PurchaseOrderScreen extends ConsumerWidget {
+  const PurchaseOrderScreen({super.key, required this.isToSelectItemVariation, required this.pruchaseOrderId});
 
-  final String saleOrderId;
+  final String pruchaseOrderId;
   final bool isToSelectItemVariation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final saleOrderAsync = ref.watch(saleOrderProvider(saleOrderId));
-    return ScaffoldAsyncValueWidget<SaleOrder>(
+    final saleOrderAsync = ref.watch(purchaseOrderProvider(pruchaseOrderId));
+    return ScaffoldAsyncValueWidget<PurchaseOrder>(
       value: saleOrderAsync,
-      data: (job) => PageContents(so: job),
+      data: (job) => PageContents(po: job),
     );
   }
 }
 
 class PageContents extends ConsumerWidget {
-  const PageContents({super.key, required this.so});
-  final SaleOrder so;
+  const PageContents({super.key, required this.po});
+  final PurchaseOrder po;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.issued
+    final popupMenuItems = po.orderStatus == PurchaseOrderStatus.issued
         ? [
             const PopupMenuItem(
-              value: SaleOrderAction.delivered,
-              child: Text('Convert to Delivered'),
+              value: PurchaseOrderAction.delivered,
+              child: Text('Convert to Received'),
             ),
             const PopupMenuItem(
-              value: SaleOrderAction.delete,
+              value: PurchaseOrderAction.delete,
               child: Text('Delete'),
             ),
           ]
         : [
             const PopupMenuItem(
-              value: SaleOrderAction.delete,
+              value: PurchaseOrderAction.delete,
               child: Text('Delete'),
             ),
           ];
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(so.saleOrderNumber!),
+          title: Text(po.purchaseOrderNumber!),
           actions: [
-            PopupMenuButton<SaleOrderAction>(
-                onSelected: (SaleOrderAction value) async {
+            PopupMenuButton<PurchaseOrderAction>(
+                onSelected: (PurchaseOrderAction value) async {
                   switch (value) {
-                    case SaleOrderAction.delivered:
-                      final isSuccess = await ref.read(saleOrderListControllerProvider.notifier).convertToDelivered(so);
+                    case PurchaseOrderAction.delivered:
+                      //TODO need to get a date from users
+                      final now = DateTime.now();
+                      final isSuccess =
+                          await ref.read(purchaseOrderListControllerProvider.notifier).convertToReceived(po, now);
                       if (isSuccess) {
-                        ref.invalidate(saleOrderProvider(so.id!));
+                        ref.invalidate(purchaseOrderProvider(po.id!));
                       }
-                    case SaleOrderAction.delete:
+                    case PurchaseOrderAction.delete:
                       if (context.mounted) {
                         final toDeleteOrNull = await showDialog<bool?>(
                           context: context,
@@ -88,9 +91,9 @@ class PageContents extends ConsumerWidget {
                         );
 
                         if (toDeleteOrNull != null && toDeleteOrNull) {
-                          final isSuccess = await ref.read(saleOrderListControllerProvider.notifier).delete(so);
+                          final isSuccess = await ref.read(purchaseOrderListControllerProvider.notifier).delete(po);
                           if (isSuccess && context.mounted) {
-                            context.goNamed(AppRoute.saleOrders.name);
+                            context.goNamed(AppRoute.purchaseOrders.name);
                           }
                         }
                       }
@@ -106,14 +109,14 @@ class PageContents extends ConsumerWidget {
                 Column(
                   children: [
                     const Text("Total Amount"),
-                    Text("${so.currencyCodeEnum.name} ${so.totalInDouble}"),
+                    Text("${po.currencyCodeEnum.name} ${po.totalInDouble}"),
                   ],
                 ),
                 const Spacer(),
-                Text(so.status!.toUpperCase())
+                Text(po.status.toUpperCase())
               ],
             ),
-            Expanded(child: _getListView(so.lineItems))
+            Expanded(child: _getListView(po.lineItems))
           ],
         ));
   }

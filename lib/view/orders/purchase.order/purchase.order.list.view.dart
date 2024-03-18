@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
-import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/async_value_ui.dart';
 

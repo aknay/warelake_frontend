@@ -195,6 +195,8 @@ class LineItem {
   });
 
   double get rateInDouble => (rate / 1000).toDouble();
+  double get totalAmount => rateInDouble * quantity;
+
 
   factory LineItem.create(
       {required ItemVariation itemVariation, required double rate, required int quantity, required String unit}) {
@@ -210,7 +212,6 @@ class LineItem {
       'rate': rate,
       'quantity': quantity,
       'unit': unit,
-      // 'itemTotal': itemTotal,
     };
   }
 
@@ -223,7 +224,6 @@ class LineItem {
       rate: json['rate'],
       quantity: json['quantity'],
       unit: json['unit'],
-      // itemTotal: json['itemTotal'],
     );
   }
 }

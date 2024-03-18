@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/line.item.list.view.dart';
+import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.controller.dart';
-import 'package:warelake/view/sale.orders/line.item/line.item.list.view.dart';
-import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddSaleOrderScreen extends ConsumerStatefulWidget {
@@ -42,17 +44,34 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
   }
 
   Widget _buildForm({required WidgetRef ref}) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildFormChildren(ref: ref),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      //what to fill with expanded for LineItemListView// Ref: https://stackoverflow.com/a/62097942
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: _buildFormChildren(ref: ref),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
     return [
+      gapH8,
       TextFormField(
         decoration: const InputDecoration(
           labelText: 'Sale Order # *',
@@ -65,12 +84,16 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
         },
         onSaved: (value) => _saleOrderNumberOrNone = value != null ? optionOf(value) : const None(),
       ),
+      gapH8,
       BillAccountSelectionWidget(onValueChanged: (value) {
         log("value ${value.isSome()}");
         _billAccountOrNone = value;
       }),
-      TextButton(
-          onPressed: () async {
+      gapH8,
+      Row(
+        children: [
+          const Spacer(),
+          AddLineItemButton(onPressed: () {
             final router = GoRouter.of(context);
 
             final path = router.routeInformationProvider.value.uri.path;
@@ -84,9 +107,11 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
                 AppRoute.addLineItemForSaleOrder.name,
               );
             }
-          },
-          child: const Text("Add Line Item")),
-      const Expanded(child: LineItemListView())
+          }),
+          const Spacer()
+        ],
+      ),
+      const LineItemListView()
     ];
   }
 

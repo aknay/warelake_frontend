@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warelake/view/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 
 class PoSoWidget extends ConsumerWidget {
   const PoSoWidget({super.key});
@@ -24,7 +24,7 @@ class PoSoWidget extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Purchase/Sale', style: Theme.of(context).textTheme.titleLarge),
+              child: Text('Order', style: Theme.of(context).textTheme.titleLarge),
             ),
             ListTile(
               leading: const FaIcon(FontAwesomeIcons.bagShopping),
