@@ -170,33 +170,3 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
     return false;
   }
 }
-
-// class AddLineItemButton extends StatelessWidget {
-//   const AddLineItemButton({super.key, required this.context, required this.onPressed});
-
-//   final BuildContext context;
-//   final void Function() onPressed;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return OutlinedButton(
-//       style: OutlinedButton.styleFrom(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(8.0),
-//         ),
-//       ),
-//       onPressed: onPressed,
-//       child: const Padding(
-//         padding: EdgeInsets.only(top: 8, bottom: 8),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(Icons.add_circle),
-//             gapW4,
-//             Text("Add Line Item"),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
