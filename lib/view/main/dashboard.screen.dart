@@ -26,20 +26,22 @@ class DashboardScreen extends ConsumerWidget {
               icon: const Icon(Icons.account_circle_outlined)),
         ],
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            ItemUtilizationWidget(),
-            gapH16,
-            MonthlyOrderSummaryWdiget(),
-            gapH16,
-            AddItemGroupWidget(),
-            gapH16,
-            StockInOutWidget(),
-            gapH16,
-            PoSoWidget(),
-          ],
+      body: const SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              ItemUtilizationWidget(),
+              gapH8,
+              MonthlyOrderSummaryWdiget(),
+              gapH8,
+              AddItemGroupWidget(),
+              gapH8,
+              StockInOutWidget(),
+              gapH8,
+              PoSoWidget(),
+            ],
+          ),
         ),
       ),
       drawer: const DrawerWidget(),

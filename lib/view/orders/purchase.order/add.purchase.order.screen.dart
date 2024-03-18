@@ -7,12 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
-import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
-import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.list.view.dart';
+import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddPurchaseOrderScreen extends ConsumerStatefulWidget {
@@ -44,13 +44,15 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   }
 
   Widget _buildForm({required WidgetRef ref}) {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _buildFormChildren(ref: ref),
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: _buildFormChildren(ref: ref),
+          ),
         ),
       ),
     );
@@ -58,6 +60,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
     return [
+      gapH8,
       TextFormField(
         decoration: const InputDecoration(
           labelText: 'Purchase Order # *',
@@ -99,7 +102,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
           const Spacer()
         ],
       ),
-      const Expanded(child: LineItemListView())
+      const LineItemListView()
     ];
   }
 

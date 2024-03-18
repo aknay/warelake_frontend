@@ -36,7 +36,7 @@ class LineItemListView extends ConsumerWidget {
     final bottom = Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [const Text('Total:'), gapW8, Text('$total', style: Theme.of(context).textTheme.bodyLarge), gapW20]);
-    return Expanded(child: Column(children: [top, const Divider(), ...middle, const Divider(), bottom]));
+    return Column(children: [top, const Divider(), ...middle, const Divider(), bottom]);
   }
 
   void _showDialog({required BuildContext context, required LineItem lineItem, required WidgetRef ref}) {
