@@ -44,16 +44,26 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   }
 
   Widget _buildForm({required WidgetRef ref}) {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: _buildFormChildren(ref: ref),
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: _buildFormChildren(ref: ref),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

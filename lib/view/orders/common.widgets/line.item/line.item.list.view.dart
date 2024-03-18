@@ -16,7 +16,11 @@ class LineItemListView extends ConsumerWidget {
     final lineItems = ref.watch(lineItemControllerProvider);
     ref.watch(selectedItemVariationProvider); // so that this will be still alive to be received in AddLineItemScreen
     if (lineItems.isEmpty) {
-      return const Center(child: Text("No line item to display"));
+      return const Expanded(
+        child: Center(
+          child: Text("No line item to display"),
+        ),
+      );
     }
 
     final middle = lineItems
