@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 
 class ReadOnlyLineItemListView extends ConsumerWidget {
@@ -21,8 +22,8 @@ class ReadOnlyLineItemListView extends ConsumerWidget {
         .map((e) => ListTile(
               title: Text(e.itemVariation.name),
               subtitle:
-                  Row(children: [Text(e.quantity.toString()), const Text(" X "), Text(e.rateInDouble.toString())]),
-              trailing: Text("${e.totalAmount}", style: Theme.of(context).textTheme.bodyLarge),
+                  Row(children: [Text(e.quantity.toString()), const Text(" X "), AmountText(e.rateInDouble)]),
+              trailing: AmountText(e.totalAmount, style: Theme.of(context).textTheme.bodyLarge),
             ))
         .toList();
 
@@ -30,7 +31,7 @@ class ReadOnlyLineItemListView extends ConsumerWidget {
     final total = lineItems.map((e) => e.totalAmount).fold(0.0, (previousValue, element) => previousValue + element);
     final bottom = Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [const Text('Total:'), gapW8, Text('$total', style: Theme.of(context).textTheme.bodyLarge), gapW20]);
+        children: [const Text('Total:'), gapW8, AmountText(total, style: Theme.of(context).textTheme.bodyLarge), gapW20]);
     return Column(children: [top, const Divider(), ...middle, const Divider(), bottom]);
   }
 }

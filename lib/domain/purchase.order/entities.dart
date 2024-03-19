@@ -6,7 +6,7 @@ import 'package:warelake/domain/purchase.order/valueobject.dart';
 class PurchaseOrder {
   String? id;
   String? purchaseOrderNumber;
-  String date;
+  DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
   String status; // received, cancelled, partially_received
@@ -60,10 +60,9 @@ class PurchaseOrder {
       required int total,
       required String accountId,
       required String purchaseOrderNumber}) {
-    final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return PurchaseOrder(
         accountId: accountId,
-        date: dateInString,
+        date: date,
         status: "issued",
         currencyCode: currencyCode.name,
         lineItems: lineItems,
@@ -82,7 +81,7 @@ class PurchaseOrder {
     return {
       'id': id,
       'purchase_order_number': purchaseOrderNumber,
-      'date': date,
+      'date': DateFormat('yyyy-MM-dd').format(date),
       'expectedDeliveryDate': expectedDeliveryDate,
       // 'referenceNumber': referenceNumber,
       'status': status,
@@ -108,7 +107,7 @@ class PurchaseOrder {
     return PurchaseOrder(
       id: json['id'],
       purchaseOrderNumber: json['purchase_order_number'],
-      date: json['date'],
+      date: DateTime.parse(json['date']),
       // expectedDeliveryDate: json['expectedDeliveryDate'],
       // referenceNumber: json['referenceNumber'],
       status: json['status'],
@@ -196,7 +195,6 @@ class LineItem {
 
   double get rateInDouble => (rate / 1000).toDouble();
   double get totalAmount => rateInDouble * quantity;
-
 
   factory LineItem.create(
       {required ItemVariation itemVariation, required double rate, required int quantity, required String unit}) {

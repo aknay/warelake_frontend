@@ -10,7 +10,7 @@ enum SaleOrderStatus {
 class SaleOrder {
   String? id;
   String? saleOrderNumber;
-  String date;
+  DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
   String? status; // received, cancelled, partially_received
@@ -66,10 +66,9 @@ class SaleOrder {
       required int total,
       required String accountId,
       required String saleOrderNumber}) {
-    final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return SaleOrder(
         accountId: accountId,
-        date: dateInString,
+        date: date,
         currencyCode: currencyCode.name,
         lineItems: lineItems,
         subTotal: subTotal,
@@ -85,7 +84,7 @@ class SaleOrder {
     return {
       'id': id,
       'sale_order_number': saleOrderNumber,
-      'date': date,
+      'date': DateFormat('yyyy-MM-dd').format(date),
       'expectedDeliveryDate': expectedDeliveryDate,
       'status': status,
       'currency_code': currencyCode,
@@ -101,7 +100,7 @@ class SaleOrder {
     return SaleOrder(
         id: json['id'],
         saleOrderNumber: json['sale_order_number'],
-        date: json['date'],
+        date: DateTime.parse(json['date']),
         status: json['status'],
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),

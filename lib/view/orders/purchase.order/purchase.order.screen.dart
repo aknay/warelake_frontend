@@ -5,6 +5,7 @@ import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/currency.amount.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
@@ -115,11 +116,11 @@ class PageContents extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("Total Amount"),
-                      Text("${po.currencyCodeEnum.name} ${po.totalInDouble}"),
+                      CurrencyAmountText(amount: po.totalInDouble, currencyCode:  po.currencyCodeEnum),
                     ],
                   ),
                   const Spacer(),
-                  PurchaseOrderStausWidget(status: po.orderStatus),
+                  PurchaseOrderStausWidget(po.orderStatus),
                 ],
               ),
             ),
@@ -128,6 +129,4 @@ class PageContents extends ConsumerWidget {
           ],
         ));
   }
-
-
 }
