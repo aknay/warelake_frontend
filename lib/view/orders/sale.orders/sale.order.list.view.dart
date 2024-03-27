@@ -7,8 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/common.widgets/currency.amount.text.dart';
+import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/orders/sale.orders/widgets/sale.order.status.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/async_value_ui.dart';
 
 class SaleOrderListView extends ConsumerStatefulWidget {
@@ -91,62 +94,28 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
 
   ListTile _getListTitle(SaleOrder so, BuildContext context) {
     return ListTile(
+      isThreeLine: true,
       title: Text(so.saleOrderNumber!),
-      subtitle: Text(so.status!.toUpperCase()),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DateText(so.date),
+          // Text(so.date),
+          SaleOrderStausWidget(status: so.saleOrderStatus),
+          // Text(so.status!.toUpperCase()),
+        ],
+      ),
       onTap: () {
         context.goNamed(
           AppRoute.saleOrder.name,
           pathParameters: {'id': so.id!},
         );
-        // Navigator.pop(context, e);
       },
-      trailing: Text(
-        " ${so.currencyCodeEnum.name} ${so.totalInDouble}",
+      trailing: CurrencyAmountText(
+        amount: so.totalInDouble,
+        currencyCode: so.currencyCodeEnum,
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
   }
 }
-
-// class SaleOrderListView extends ConsumerWidget {
-//   const SaleOrderListView({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     ref.listen<AsyncValue>(
-//       saleOrderListControllerProvider,
-//       (_, state) => state.showAlertDialogOnError(context),
-//     );
-
-//     final asyncItemList = ref.watch(saleOrderListControllerProvider);
-
-//     return asyncItemList.when(
-//         data: (data) {
-//           if (data.isEmpty) {
-//             return const Center(child: Text("Empty Sale Order"));
-//           }
-
-//           return ListView(children: data.map((e) => _getListTitle(e, context)).toList());
-//         },
-//         error: (Object error, StackTrace stackTrace) => Text('Error: $error'),
-//         loading: () => const Center(child: CircularProgressIndicator()));
-//   }
-
-//   ListTile _getListTitle(SaleOrder so, BuildContext context) {
-//     return ListTile(
-//       title: Text(so.saleOrderNumber!),
-//       subtitle: Text(so.status!.toUpperCase()),
-//       onTap: () {
-//         context.goNamed(
-//           AppRoute.saleOrder.name,
-//           pathParameters: {'id': so.id!},
-//         );
-//         // Navigator.pop(context, e);
-//       },
-//       trailing: Text(
-//         " ${so.currencyCodeEnum.name} ${so.totalInDouble}",
-//         style: Theme.of(context).textTheme.titleMedium,
-//       ),
-//     );
-//   }
-// }

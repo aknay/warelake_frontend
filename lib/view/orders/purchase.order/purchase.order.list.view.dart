@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/view/common.widgets/currency.amount.text.dart';
+import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/orders/purchase.order/widgets/purchase.order.status.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/async_value_ui.dart';
 
@@ -87,16 +90,24 @@ class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
 
   ListTile _getListTitle(PurchaseOrder po, BuildContext context) {
     return ListTile(
+      isThreeLine: true,
       title: Text(po.purchaseOrderNumber!),
-      subtitle: Text(po.status.toUpperCase()),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DateText(po.date),
+          PurchaseOrderStausWidget(po.orderStatus),
+        ],
+      ),
       onTap: () {
         context.goNamed(
           AppRoute.purchaseOrder.name,
           pathParameters: {'id': po.id!},
         );
       },
-      trailing: Text(
-        " ${po.currencyCodeEnum.name} ${po.totalInDouble}",
+      trailing: CurrencyAmountText(
+        currencyCode: po.currencyCodeEnum,
+        amount: po.totalInDouble,
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
