@@ -21,7 +21,7 @@ class ItemVariationListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (itemVariationList.isEmpty) {
-      return const Center(child: Text("Empty item list."));
+      return const Center(child: Text("Please add at least one item"));
     }
 
     return ListView(

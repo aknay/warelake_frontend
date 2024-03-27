@@ -32,11 +32,11 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
 
     switch (widget.stockMovement) {
       case StockMovement.stockIn:
-        title = "Stock In";
+        title = "New Stock In";
       case StockMovement.stockOut:
-        title = "Stock Out";
+        title = "New Stock Out";
       case StockMovement.stockAdjust:
-        title = "Stock Adjust";
+        title = "New Stock Adjust";
     }
 
     return Scaffold(

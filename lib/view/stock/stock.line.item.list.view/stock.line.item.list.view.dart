@@ -16,7 +16,7 @@ class StockLineItemListView extends ConsumerWidget {
 
     final lineItems = ref.watch(stockLineItemControllerProvider);
     if (lineItems.isEmpty) {
-      return const Center(child: Text("Empty. Please add"));
+      return const Center(child: Text("Please add at least one item"));
     }
     return ListView(
       children: lineItems
