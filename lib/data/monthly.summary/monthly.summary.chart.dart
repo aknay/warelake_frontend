@@ -70,7 +70,7 @@ class IncomingOutGoingAmountChartState extends ConsumerState<MonthlySummaryChart
   GroupData _getGroupData(
       {required index, required MonthYear monthYear, required List<MonthlySummary> monthlySummaryList}) {
     final monthSummaryList =
-        monthlySummaryList.where((element) => element.monthYear == monthYear.toYearMonthDayString());
+        monthlySummaryList.where((element) => element.monthYear == monthYear);
 
     return monthSummaryList.isEmpty
         ? GroupData.withEmpty(index: index)

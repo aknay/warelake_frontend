@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/config/api.endpoint.dart';
 import 'package:warelake/data/http.helper.dart';
 import 'package:warelake/domain/errors/response.dart';
@@ -10,7 +11,6 @@ import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/payloads.dart';
 import 'package:warelake/domain/purchase.order/search.field.dart';
 import 'package:warelake/domain/responses.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'purchase.order.repository.g.dart';
 
@@ -80,11 +80,12 @@ class PurchaseOrderRepository extends PurchaseOrderApi {
     try {
       final response = await HttpHelper.get(
           url: ApiEndPoint.getPurchaseOrderEndPoint(purchaseOrderId: purchaseOrderId), token: token, teamId: teamId);
-      log("sale order get response code ${response.statusCode}");
-      log("sale order get response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 200) {
         return Right(PurchaseOrder.fromJson(jsonDecode(response.body)));
       }
+      log("sale order get response code ${response.statusCode}");
+      log("sale order get response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");

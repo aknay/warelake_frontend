@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 
@@ -29,7 +28,7 @@ class SaleOrder {
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
-  String? deliveredAt;
+  DateTime? deliveredAt;
 
   SaleOrder({
     this.id,
@@ -84,7 +83,7 @@ class SaleOrder {
     return {
       'id': id,
       'sale_order_number': saleOrderNumber,
-      'date': DateFormat('yyyy-MM-dd').format(date),
+      'date': date.toUtc().toIso8601String(),
       'expectedDeliveryDate': expectedDeliveryDate,
       'status': status,
       'currency_code': currencyCode,
@@ -110,7 +109,7 @@ class SaleOrder {
         accountId: json['account_id'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
         modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-        deliveredAt: json['delivered_at']);
+        deliveredAt: json['delivered_at'] != null ? DateTime.parse(json['delivered_at']) : null);
   }
 }
 

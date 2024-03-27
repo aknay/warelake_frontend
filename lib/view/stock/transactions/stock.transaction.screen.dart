@@ -93,7 +93,7 @@ class PageContents extends ConsumerWidget {
                   const Text('Date'),
                   gapW8,
                   Text(
-                    stockTransaction.date,
+                    stockTransaction.date.toString(),
                   ),
                 ],
               ),

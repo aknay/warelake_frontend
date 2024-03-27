@@ -115,7 +115,7 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
     return ListTile(
       leading: icon,
       title: Text(stockMovementText),
-      trailing: Text(stx.date),
+      trailing: Text(stx.date.toString()),
       onTap: () {
         context.goNamed(
           AppRoute.stockTransactionDetail.name,
