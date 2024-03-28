@@ -106,7 +106,7 @@ class PurchaseOrder {
     return PurchaseOrder(
       id: json['id'],
       purchaseOrderNumber: json['purchase_order_number'],
-      date: DateTime.parse(json['date']),
+      date: DateTime.parse(json['date']).toLocal(),
       // expectedDeliveryDate: json['expectedDeliveryDate'],
       // referenceNumber: json['referenceNumber'],
       status: json['status'],

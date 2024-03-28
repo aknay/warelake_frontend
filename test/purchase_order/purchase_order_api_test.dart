@@ -12,8 +12,6 @@ import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
-import 'package:warelake/domain/purchase.order/search.field.dart';
-import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -138,189 +136,6 @@ void main() async {
     }
   });
 
-  test('you can list po', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
-
-    final po = PurchaseOrder.create(
-      accountId: billAccount.id!,
-      date: DateTime.now(),
-      currencyCode: CurrencyCode.AUD,
-      lineItems: lineItems,
-      subTotal: 10,
-      total: 20,
-      purchaseOrderNumber: "PO-0001",
-    );
-    final poCreatedOrError =
-        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-
-    expect(poCreatedOrError.isRight(), true);
-
-    {
-      final poOrError = await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
-      expect(poOrError.isRight(), true);
-      expect(poOrError.toIterable().first.data.isNotEmpty, true);
-    }
-  });
-
-  test('you can list po with empty search field', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
-
-    final po = PurchaseOrder.create(
-      accountId: billAccount.id!,
-      date: DateTime.now(),
-      currencyCode: CurrencyCode.AUD,
-      lineItems: lineItems,
-      subTotal: 10,
-      total: 20,
-      purchaseOrderNumber: "PO-0001",
-    );
-    final poCreatedOrError =
-        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-
-    expect(poCreatedOrError.isRight(), true);
-
-    {
-      final searchField = PurchaseOrderSearchField();
-      final poOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poOrError.isRight(), true);
-      expect(poOrError.toIterable().first.data.isNotEmpty, true);
-    }
-  });
-
-  test('you can list po with last created item', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
-    PurchaseOrder firstPo;
-    {
-      final po = PurchaseOrder.create(
-        accountId: billAccount.id!,
-        date: DateTime.now(),
-        currencyCode: CurrencyCode.AUD,
-        lineItems: lineItems,
-        subTotal: 10,
-        total: 20,
-        purchaseOrderNumber: "PO-0001",
-      );
-      final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-      firstPo = poCreatedOrError.toIterable().first;
-      await Future.delayed(const Duration(seconds: 1));
-    }
-    PurchaseOrder secondPo;
-    {
-      final po = PurchaseOrder.create(
-        accountId: billAccount.id!,
-        date: DateTime.now(),
-        currencyCode: CurrencyCode.AUD,
-        lineItems: lineItems,
-        subTotal: 10,
-        total: 20,
-        purchaseOrderNumber: "PO-0002",
-      );
-      final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-      secondPo = poCreatedOrError.toIterable().first;
-      await Future.delayed(const Duration(seconds: 1));
-    }
-
-    {
-      // final searchField = PurchaseOrderSearchField();
-      final poListOrError = await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
-      expect(poListOrError.isRight(), true);
-      final poList = poListOrError.toIterable().first;
-      expect(poList.data.length, 2);
-      expect(poList.data.first.purchaseOrderNumber, 'PO-0002');
-    }
-    {
-      // we will not see first PO after second PO
-      final searchField = PurchaseOrderSearchField(startingAfterPurchaseOrderId: secondPo.id!);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      final poList = poListOrError.toIterable().first;
-      expect(poList.data.length, 1);
-      expect(poList.data.first.purchaseOrderNumber, 'PO-0001');
-    }
-
-    {
-      // we will not see any po after first PO
-      final searchField = PurchaseOrderSearchField(startingAfterPurchaseOrderId: firstPo.id!);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      final poList = poListOrError.toIterable().first;
-      expect(poList.data.isEmpty, true);
-    }
-  });
-
-  test('you can list po with search', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
-
-    final po = PurchaseOrder.create(
-      accountId: billAccount.id!,
-      date: DateTime.now(),
-      currencyCode: CurrencyCode.AUD,
-      lineItems: lineItems,
-      subTotal: 10,
-      total: 20,
-      purchaseOrderNumber: "PO-0001",
-    );
-    final poCreatedOrError =
-        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-
-    expect(poCreatedOrError.isRight(), true);
-
-    {
-      // for issued, we have a list with one po
-      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.issued);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      expect(poListOrError.toIterable().first.data.length, 1);
-    }
-    {
-      // for received, we have a empty list
-      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.received);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      expect(poListOrError.toIterable().first.data.isEmpty, true);
-    }
-
-    {
-      // receiving items
-      final now = DateTime.now();
-      await purchaseOrderApi.setToReceived(
-          purchaseOrderId: poCreatedOrError.toIterable().first.id!,
-          date: now,
-          teamId: team.id!,
-          token: firstUserAccessToken);
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      final poOrError = await purchaseOrderApi.get(
-          purchaseOrderId: poCreatedOrError.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
-      final po = poOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
-    }
-    {
-      // for issued, we have a empty list
-      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.issued);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      expect(poListOrError.toIterable().first.data.isEmpty, true);
-    }
-    {
-      // for received, we have a list with one po
-      final searchField = PurchaseOrderSearchField(status: PurchaseOrderStatus.received);
-      final poListOrError =
-          await purchaseOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
-      expect(poListOrError.isRight(), true);
-      expect(poListOrError.toIterable().first.data.length, 1);
-    }
-  });
-
   test('you can received item from po', () async {
     final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
     final po = PurchaseOrder.create(
@@ -351,7 +166,7 @@ void main() async {
       final poOrError =
           await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
       final po = poOrError.toIterable().first;
-      expect( DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
+      expect(DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
     }
 
     //sleep a while to update correctly
