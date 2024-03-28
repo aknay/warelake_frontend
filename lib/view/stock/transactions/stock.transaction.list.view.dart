@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 import 'package:warelake/view/stock/transactions/entities.dart';
@@ -115,7 +116,7 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
     return ListTile(
       leading: icon,
       title: Text(stockMovementText),
-      trailing: Text(stx.date),
+      trailing: DateText(stx.date),
       onTap: () {
         context.goNamed(
           AppRoute.stockTransactionDetail.name,

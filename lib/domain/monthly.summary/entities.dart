@@ -10,7 +10,7 @@ typedef Timestamp = int;
 class MonthlySummary with _$MonthlySummary {
   const factory MonthlySummary({
     required String id,
-    required String monthYear,
+    required MonthYear monthYear,
     required int incomingMilliAmount,
     required int outgoingMilliAmount,
   }) = _MonthlySummary;
@@ -21,13 +21,10 @@ class MonthlySummary with _$MonthlySummary {
     final id = json["id"];
     final incomingAmount = json['incoming_amount'];
     final outgoingAmount = json['outgoing_amount'];
-    final monthYearTimestamp = json['month'];
+    final monthYear = MonthYear(month: json['month'], year: json['year']);
 
     return MonthlySummary(
-        id: id,
-        monthYear: monthYearTimestamp,
-        incomingMilliAmount: incomingAmount,
-        outgoingMilliAmount: outgoingAmount);
+        id: id, monthYear: monthYear, incomingMilliAmount: incomingAmount, outgoingMilliAmount: outgoingAmount);
   }
 
   Amount get incomingAmount => (incomingMilliAmount / 1000);

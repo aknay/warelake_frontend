@@ -19,7 +19,7 @@ class StockInOutWidget extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Stock In / Out', style: Theme.of(context).textTheme.titleLarge),
+              child: Text('New Stock In / Out', style: Theme.of(context).textTheme.titleLarge),
             ),
             ListTile(
               leading: const FaIcon(FontAwesomeIcons.rightToBracket),

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
@@ -11,6 +10,7 @@ import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/sale.order/sale.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/monthly.summary/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -119,9 +119,9 @@ void main() async {
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
       expect(monthlySummary.incomingAmount, 0);
 
-      DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
-      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
-      expect(monthlySummary.monthYear, formattedDate);
+      // DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+      // String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+      expect(monthlySummary.monthYear, MonthYear(month: now.month, year: now.year));
       expect(monthlySummary.outgoingAmount, 12.5);
     }
     {
@@ -182,11 +182,9 @@ void main() async {
       await purchaseOrderApi.setToReceived(
           date: previousMonth, purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
 
-      DateTime firstDayOfMonth = DateTime(previousMonth.year, previousMonth.month, 1);
+      final monthYear = MonthYear(year: previousMonth.year, month: previousMonth.month);
 
       // Using intl package to format the date
-      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
-
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       // check outgoing amount is accumulated
@@ -196,7 +194,7 @@ void main() async {
       expect(monthlySummaryListOrError.toIterable().first.length, 2);
       final monthlySummaryList = monthlySummaryListOrError.toIterable().first;
 
-      final monthlySummary = monthlySummaryList.where((element) => element.monthYear == formattedDate).first;
+      final monthlySummary = monthlySummaryList.where((element) => element.monthYear == monthYear).first;
 
       expect(monthlySummary.incomingAmount, 0);
       expect(monthlySummary.outgoingAmount, 12.5);
@@ -266,9 +264,9 @@ void main() async {
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
       expect(monthlySummary.incomingAmount, 0);
 
-      DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
-      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
-      expect(monthlySummary.monthYear, formattedDate);
+      final firstDayOfMonth = MonthYear(year: now.year, month: now.month);
+      // String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+      expect(monthlySummary.monthYear, firstDayOfMonth);
       expect(monthlySummary.outgoingAmount, 12.5);
     }
     PurchaseOrder secondPo;
@@ -450,8 +448,8 @@ void main() async {
         token: firstUserAccessToken,
       );
 
-      DateTime firstDayOfMonth = DateTime(previousMonth.year, previousMonth.month, 1);
-      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+      final firstDayOfMonth = MonthYear(year: previousMonth.year, month: previousMonth.month);
+      // String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
 
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
@@ -461,7 +459,7 @@ void main() async {
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 2);
       final monthlySummary =
-          monthlySummaryListOrError.toIterable().first.where((element) => element.monthYear == formattedDate).first;
+          monthlySummaryListOrError.toIterable().first.where((element) => element.monthYear == firstDayOfMonth).first;
       expect(monthlySummary.incomingAmount, 13.5);
       expect(monthlySummary.outgoingAmount, 0);
     }
@@ -531,9 +529,9 @@ void main() async {
       expect(monthlySummary.incomingAmount, 12.5);
       expect(monthlySummary.outgoingAmount, 0);
 
-      DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
-      String formattedDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
-      expect(monthlySummary.monthYear, formattedDate);
+      final firstDayOfMonth = MonthYear(year: now.year, month: now.month);
+
+      expect(monthlySummary.monthYear, firstDayOfMonth);
       expect(monthlySummary.incomingAmount, 12.5);
       expect(monthlySummary.outgoingAmount, 0);
     }

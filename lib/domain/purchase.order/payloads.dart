@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+
 
 class PurchaseOrderUpdatePayload {
   DateTime date;
@@ -6,7 +6,7 @@ class PurchaseOrderUpdatePayload {
 
   Map<String, dynamic> toMap() {
     return {
-      'date': DateFormat('yyyy-MM-dd').format(date),
+      'date': date.toUtc().toIso8601String(),
     };
   }
 

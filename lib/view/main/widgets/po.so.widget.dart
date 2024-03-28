@@ -24,7 +24,7 @@ class PoSoWidget extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Order', style: Theme.of(context).textTheme.titleLarge),
+              child: Text('New Order', style: Theme.of(context).textTheme.titleLarge),
             ),
             ListTile(
               leading: const FaIcon(FontAwesomeIcons.bagShopping),
