@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.service.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
@@ -92,9 +93,7 @@ class PageContents extends ConsumerWidget {
                 children: [
                   const Text('Date'),
                   gapW8,
-                  Text(
-                    stockTransaction.date.toString(),
-                  ),
+                  DateText(stockTransaction.date),
                 ],
               ),
             ),
@@ -114,14 +113,20 @@ class PageContents extends ConsumerWidget {
   Widget _toTotalItemCount(StockTransaction st, BuildContext context) {
     final totalCount = st.lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
     return Column(
-      children: [Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),  Text('Quantity', style:  Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))],
+      children: [
+        Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),
+        Text('Quantity', style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))
+      ],
     );
   }
 
   Widget _toItemCount(StockTransaction st, BuildContext context) {
     final totalCount = st.lineItems.length;
     return Column(
-      children: [Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),  Text('Items',  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))],
+      children: [
+        Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),
+        Text('Items', style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).hintColor))
+      ],
     );
   }
 
@@ -139,7 +144,8 @@ class PageContents extends ConsumerWidget {
       }
 
       return ListTile(
-        leading: ItemVariationImageWidget(itemId: sli.itemVariation.itemId, itemVariationId: sli.itemVariation.id!, isForTheList: true),
+        leading: ItemVariationImageWidget(
+            itemId: sli.itemVariation.itemId, itemVariationId: sli.itemVariation.id!, isForTheList: true),
         title: Text(sli.itemVariation.name),
         trailing: Text("${getSign(st.stockMovement)} ${sli.quantity}", style: Theme.of(context).textTheme.labelLarge),
       );

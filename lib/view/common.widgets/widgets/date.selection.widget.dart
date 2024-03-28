@@ -41,6 +41,11 @@ class DateSelectionWidget extends ConsumerWidget {
   }
 
   String _formattedDate(DateTime dt) {
+    final now = DateTime.now();
+    if (dt.day == now.day && dt.month == now.month && dt.year == now.year) {
+      return 'Today';
+    }
+
     return DateFormat('d MMM yyyy').format(dt);
   }
 }
