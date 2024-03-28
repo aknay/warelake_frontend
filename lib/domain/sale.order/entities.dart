@@ -99,7 +99,7 @@ class SaleOrder {
     return SaleOrder(
         id: json['id'],
         saleOrderNumber: json['sale_order_number'],
-        date: DateTime.parse(json['date']),
+        date: DateTime.parse(json['date']).toLocal(),
         status: json['status'],
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
