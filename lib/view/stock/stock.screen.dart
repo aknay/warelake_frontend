@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +25,7 @@ class StockScreen extends ConsumerStatefulWidget {
 class _StockInScreenState extends ConsumerState<StockScreen> {
   final _formKey = GlobalKey<FormState>();
   var _dateTime = DateTime.now();
-  String? _note;
+  Option<String> _note = const None();
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +93,8 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
       ),
       Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8),
-        child: NoteTextFormField(onValueChanged: (value) {
-          _note = value;
+        child: NoteTextFormField(onChanged: (value) {
+          _note = Some(value);
         }),
       ),
       gapH12,

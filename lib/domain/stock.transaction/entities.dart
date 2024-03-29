@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:warelake/domain/item/entities.dart';
 
 enum StockMovement { stockIn, stockOut, stockAdjust }
@@ -48,7 +49,7 @@ class StockTransaction {
   StockMovement stockMovement;
   String? updatedBy;
   List<StockLineItem> lineItems;
-  String? notes;
+  Option<String> notes;
   DateTime? createdTime;
   DateTime? modifiedAt;
 
@@ -58,13 +59,13 @@ class StockTransaction {
     required this.stockMovement,
     this.updatedBy,
     required this.lineItems,
-    this.notes,
+    this.notes = const None(),
     this.createdTime,
     this.modifiedAt,
   });
 
   factory StockTransaction.create(
-      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement, String? notes}) {
+      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement, Option<String> notes  = const None()}) {
     return StockTransaction(date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date, notes: notes);
   }
 

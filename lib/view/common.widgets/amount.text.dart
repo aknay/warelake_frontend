@@ -8,6 +8,6 @@ class AmountText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String formattedValue = amount.toStringAsFixed(2);
-    return Text(formattedValue, style: style);
+    return Text('\$$formattedValue', style: style);
   }
 }

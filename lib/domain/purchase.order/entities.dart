@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/valueobject.dart';
@@ -8,7 +9,7 @@ class PurchaseOrder {
   DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
-  String status; // received, cancelled, partially_received
+  Option<PurchaseOrderStatus> status; // received, cancelled, partially_received
   int? vendorId;
   String? vendorName;
   int? contactPersons;
@@ -20,7 +21,7 @@ class PurchaseOrder {
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
-  String? notes;
+  Option<String> notes;
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
@@ -32,7 +33,7 @@ class PurchaseOrder {
     required this.date,
     this.expectedDeliveryDate,
     this.referenceNumber,
-    required this.status,
+    this.status = const None(),
     this.vendorId,
     this.vendorName,
     this.contactPersons,
@@ -44,7 +45,7 @@ class PurchaseOrder {
     this.taxes,
     this.pricePrecision,
     this.billingAddress,
-    this.notes,
+    this.notes = const None(),
     required this.accountId,
     this.createdTime,
     this.modifiedAt,
@@ -58,19 +59,20 @@ class PurchaseOrder {
       required int subTotal,
       required int total,
       required String accountId,
-      required String purchaseOrderNumber}) {
+      required String purchaseOrderNumber,
+      Option<String> notes = const None()}) {
     return PurchaseOrder(
         accountId: accountId,
         date: date,
-        status: "issued",
         currencyCode: currencyCode.name,
         lineItems: lineItems,
         subTotal: subTotal,
         total: total,
-        purchaseOrderNumber: purchaseOrderNumber);
+        purchaseOrderNumber: purchaseOrderNumber,
+        notes: notes);
   }
 
-  PurchaseOrderStatus get orderStatus => PurchaseOrderStatus.values.byName(status);
+  // PurchaseOrderStatus get orderStatus => PurchaseOrderStatus.values.byName(status);
 
   double get totalInDouble => (total / 1000).toDouble();
 
@@ -83,7 +85,7 @@ class PurchaseOrder {
       'date': date.toUtc().toIso8601String(),
       'expectedDeliveryDate': expectedDeliveryDate,
       // 'referenceNumber': referenceNumber,
-      'status': status,
+      // 'status': status,
       // 'vendorId': vendorId,
       // 'vendorName': vendorName,
       // 'contactPersons': contactPersons,
@@ -109,7 +111,7 @@ class PurchaseOrder {
       date: DateTime.parse(json['date']).toLocal(),
       // expectedDeliveryDate: json['expectedDeliveryDate'],
       // referenceNumber: json['referenceNumber'],
-      status: json['status'],
+      status: json['status'] == null ? const None() : Some(PurchaseOrderStatus.values.byName(json['status'])),
       // vendorId: json['vendorId'],
       // vendorName: json['vendorName'],
       // contactPersons: json['contactPersons'],
@@ -122,7 +124,7 @@ class PurchaseOrder {
       // taxes: (json['taxes'] as List<dynamic>).map((tax) => Tax.fromJson(tax)).toList(),
       // pricePrecision: json['pricePrecision'],
       // billingAddress: (json['billingAddress'] as List<dynamic>).map((address) => Address.fromJson(address)).toList(),
-      notes: json['notes'],
+      notes: optionOf(json['notes']),
       accountId: json['account_id'],
       createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,

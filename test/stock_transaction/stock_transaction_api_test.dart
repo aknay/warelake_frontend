@@ -120,14 +120,14 @@ void main() async {
       date: DateTime.now(),
       lineItems: lineItems,
       stockMovement: StockMovement.stockIn,
-      notes: 'hello'
+      notes: optionOf('hello')
     );
     final stCreatedOrError =
         await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
 
     expect(stCreatedOrError.isRight(), true);
     final st = stCreatedOrError.toIterable().first;
-    expect(st.notes, 'hello');
+    expect(st.notes, const Some('hello'));
 
   });
 
