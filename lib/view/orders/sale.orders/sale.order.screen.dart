@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/data/sale.order/sale.order.service.dart';
-import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/currency.amount.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
+import 'package:warelake/view/orders/sale.orders/widgets/sale.order.status.widget.dart';
+import 'package:warelake/view/routing/app.router.dart';
 
 final saleOrderProvider = FutureProvider.family<SaleOrder, String>((ref, id) async {
   final saleOrderOrError = await ref.watch(saleOrderServiceProvider).getSaleOrder(saleOrderId: id);
@@ -82,7 +85,7 @@ class PageContents extends ConsumerWidget {
                             return const YesOrNoDialog(
                               actionWord: "Delete",
                               title: "Delete?",
-                              content: "Are you sure you want to delete this purchase order?",
+                              content: "Are you sure you want to delete this sale order?",
                             );
                           },
                         );
@@ -101,33 +104,25 @@ class PageContents extends ConsumerWidget {
         ),
         body: Column(
           children: [
-            Row(
-              children: [
-                Column(
-                  children: [
-                    const Text("Total Amount"),
-                    Text("${so.currencyCodeEnum.name} ${so.totalInDouble}"),
-                  ],
-                ),
-                const Spacer(),
-                Text(so.status!.toUpperCase())
-              ],
+            Padding(
+              padding: const EdgeInsets.only(left: 12, right: 16),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Total Amount"),
+                      CurrencyAmountText(amount: so.totalInDouble, currencyCode: so.currencyCodeEnum),
+                    ],
+                  ),
+                  const Spacer(),
+                  SaleOrderStausWidget(status: so.saleOrderStatus),
+                ],
+              ),
             ),
-            Expanded(child: _getListView(so.lineItems))
+            gapH20,
+            ReadOnlyLineItemListView(lineItems: so.lineItems),
           ],
         ));
-  }
-
-  ListView _getListView(List<LineItem> lineItems) {
-    return ListView(
-      children: lineItems
-          .map((e) => ListTile(
-                title: Text(e.itemVariation.name),
-                subtitle:
-                    Row(children: [Text(e.quantity.toString()), const Text(" X "), Text(e.rateInDouble.toString())]),
-                // onTap: () {},
-              ))
-          .toList(),
-    );
   }
 }

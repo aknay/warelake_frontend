@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 
@@ -10,7 +9,7 @@ enum SaleOrderStatus {
 class SaleOrder {
   String? id;
   String? saleOrderNumber;
-  String date;
+  DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
   String? status; // received, cancelled, partially_received
@@ -29,7 +28,7 @@ class SaleOrder {
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
-  String? deliveredAt;
+  DateTime? deliveredAt;
 
   SaleOrder({
     this.id,
@@ -66,10 +65,9 @@ class SaleOrder {
       required int total,
       required String accountId,
       required String saleOrderNumber}) {
-    final dateInString = DateFormat('yyyy-MM-dd').format(date);
     return SaleOrder(
         accountId: accountId,
-        date: dateInString,
+        date: date,
         currencyCode: currencyCode.name,
         lineItems: lineItems,
         subTotal: subTotal,
@@ -85,7 +83,7 @@ class SaleOrder {
     return {
       'id': id,
       'sale_order_number': saleOrderNumber,
-      'date': date,
+      'date': date.toUtc().toIso8601String(),
       'expectedDeliveryDate': expectedDeliveryDate,
       'status': status,
       'currency_code': currencyCode,
@@ -101,7 +99,7 @@ class SaleOrder {
     return SaleOrder(
         id: json['id'],
         saleOrderNumber: json['sale_order_number'],
-        date: json['date'],
+        date: DateTime.parse(json['date']).toLocal(),
         status: json['status'],
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
@@ -111,7 +109,7 @@ class SaleOrder {
         accountId: json['account_id'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
         modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-        deliveredAt: json['delivered_at']);
+        deliveredAt: json['delivered_at'] != null ? DateTime.parse(json['delivered_at']) : null);
   }
 }
 

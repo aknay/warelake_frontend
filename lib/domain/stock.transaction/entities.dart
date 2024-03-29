@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:intl/intl.dart';
 import 'package:warelake/domain/item/entities.dart';
 
 enum StockMovement { stockIn, stockOut, stockAdjust }
@@ -45,7 +44,7 @@ extension StockMovementExtension on StockMovement {
 
 class StockTransaction {
   String? id;
-  String date;
+  DateTime date;
   StockMovement stockMovement;
   String? updatedBy;
   List<StockLineItem> lineItems;
@@ -66,25 +65,24 @@ class StockTransaction {
 
   factory StockTransaction.create(
       {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement}) {
-    final dateInString = DateFormat('yyyy-MM-dd').format(date);
-    return StockTransaction(date: dateInString, lineItems: lineItems, stockMovement: stockMovement, createdTime: date);
+    return StockTransaction(date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date);
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'date': date,
+      'date': date.toUtc().toIso8601String(),
       'stock_movement': stockMovement.toFormattedString(),
       'line_items': lineItems.map((item) => item.toJson()).toList(),
       'notes': notes,
-      'created_at' : createdTime?.toUtc().toIso8601String()
+      'created_at': createdTime?.toUtc().toIso8601String()
     };
   }
 
   static StockTransaction fromMap(Map<String, dynamic> json) {
     return StockTransaction(
         id: json['id'],
-        date: json['date'],
+        date: DateTime.parse(json['date']).toLocal(),
         stockMovement: StockMovementExtension.fromFormattedString(json['stock_movement']),
         lineItems: List<StockLineItem>.from(json['line_items'].map((v) => StockLineItem.fromJson(v))),
         // lineItems: [],

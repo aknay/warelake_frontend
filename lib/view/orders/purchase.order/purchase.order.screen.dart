@@ -5,8 +5,12 @@ import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
+import 'package:warelake/view/common.widgets/currency.amount.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
+import 'package:warelake/view/orders/purchase.order/widgets/purchase.order.status.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
 final purchaseOrderProvider = FutureProvider.family<PurchaseOrder, String>((ref, id) async {
@@ -104,33 +108,25 @@ class PageContents extends ConsumerWidget {
         ),
         body: Column(
           children: [
-            Row(
-              children: [
-                Column(
-                  children: [
-                    const Text("Total Amount"),
-                    Text("${po.currencyCodeEnum.name} ${po.totalInDouble}"),
-                  ],
-                ),
-                const Spacer(),
-                Text(po.status.toUpperCase())
-              ],
+            Padding(
+              padding: const EdgeInsets.only(left: 12, right: 16),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Total Amount"),
+                      CurrencyAmountText(amount: po.totalInDouble, currencyCode:  po.currencyCodeEnum),
+                    ],
+                  ),
+                  const Spacer(),
+                  PurchaseOrderStausWidget(po.orderStatus),
+                ],
+              ),
             ),
-            Expanded(child: _getListView(po.lineItems))
+            gapH20,
+            ReadOnlyLineItemListView(lineItems: po.lineItems),
           ],
         ));
-  }
-
-  ListView _getListView(List<LineItem> lineItems) {
-    return ListView(
-      children: lineItems
-          .map((e) => ListTile(
-                title: Text(e.itemVariation.name),
-                subtitle:
-                    Row(children: [Text(e.quantity.toString()), const Text(" X "), Text(e.rateInDouble.toString())]),
-                // onTap: () {},
-              ))
-          .toList(),
-    );
   }
 }

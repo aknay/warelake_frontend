@@ -88,42 +88,45 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            gapH8,
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Item Group Name *',
-                hintText: 'Enter Item Group Name',
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              gapH8,
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Item Group Name *',
+                  hintText: 'Enter Item Group Name',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a item name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => itemName = optionOf(value),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a item name';
-                }
-                return null;
-              },
-              onSaved: (value) => itemName = optionOf(value),
-            ),
-            gapH8,
-            TextFormField(
-              // initialValue: widget.itemVariation == null ? null : widget.itemVariation!.type,
-              decoration: const InputDecoration(
-                labelText: 'Unit *',
-                hintText: 'Enter unit',
+              gapH8,
+              TextFormField(
+                // initialValue: widget.itemVariation == null ? null : widget.itemVariation!.type,
+                decoration: const InputDecoration(
+                  labelText: 'Unit *',
+                  hintText: 'Enter unit',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a unit';
+                  }
+                  return null;
+                },
+                onSaved: (value) => itemUnit = optionOf(value),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a unit';
-                }
-                return null;
-              },
-              onSaved: (value) => itemUnit = optionOf(value),
-            ),
-            Expanded(
-              child:
-                  ItemVariationListView(itemVariationList: itemVariationList.toList(), isToSelectItemVariation: false),
-            )
-          ],
+              Expanded(
+                child:
+                    ItemVariationListView(itemVariationList: itemVariationList.toList(), isToSelectItemVariation: false),
+              )
+            ],
+          ),
         ),
       ),
     );

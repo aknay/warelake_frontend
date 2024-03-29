@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
@@ -20,6 +21,7 @@ class StockScreen extends ConsumerStatefulWidget {
 
 class _StockInScreenState extends ConsumerState<StockScreen> {
   final _formKey = GlobalKey<FormState>();
+  var _dateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
     final stockTransactionListAsync = ref.watch(stockTransactionListControllerProvider);
@@ -32,11 +34,11 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
 
     switch (widget.stockMovement) {
       case StockMovement.stockIn:
-        title = "Stock In";
+        title = "New Stock In";
       case StockMovement.stockOut:
-        title = "Stock Out";
+        title = "New Stock Out";
       case StockMovement.stockAdjust:
-        title = "Stock Adjust";
+        title = "New Stock Adjust";
     }
 
     return Scaffold(
@@ -78,6 +80,12 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
     return [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DateSelectionWidget(onValueChanged: (value) {
+          _dateTime = value;
+        }),
+      ),
       Expanded(child: StockLineItemListView(
         onValueChanged: (stockLinItemList) {
           ref.read(_stockLineItemProvider.notifier).state = stockLinItemList;
@@ -96,7 +104,7 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
       }
 
       final rawTx = StockTransaction.create(
-        date: DateTime.now(),
+        date: _dateTime,
         lineItems: stockLineItemList,
         stockMovement: widget.stockMovement,
       );

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
+import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
@@ -26,6 +25,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<BillAccount> _billAccountOrNone = const None();
   Option<String> _saleOrderNumberOrNone = const None();
+  var _dateTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +85,11 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
       ),
       gapH8,
       BillAccountSelectionWidget(onValueChanged: (value) {
-        log("value ${value.isSome()}");
         _billAccountOrNone = value;
+      }),
+      gapH8,
+      DateSelectionWidget(onValueChanged: (value) {
+        _dateTime = value;
       }),
       gapH8,
       Row(
@@ -145,7 +148,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
       final billAccount = billAccountOrNone.toIterable().first;
 
       final saleOrder = PurchaseOrder.create(
-          date: DateTime.now(),
+          date: _dateTime,
           currencyCode: billAccount.currencyCodeAsEnum,
           lineItems: lineItems,
           subTotal: subTotal,
@@ -170,33 +173,3 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
     return false;
   }
 }
-
-// class AddLineItemButton extends StatelessWidget {
-//   const AddLineItemButton({super.key, required this.context, required this.onPressed});
-
-//   final BuildContext context;
-//   final void Function() onPressed;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return OutlinedButton(
-//       style: OutlinedButton.styleFrom(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(8.0),
-//         ),
-//       ),
-//       onPressed: onPressed,
-//       child: const Padding(
-//         padding: EdgeInsets.only(top: 8, bottom: 8),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(Icons.add_circle),
-//             gapW4,
-//             Text("Add Line Item"),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
