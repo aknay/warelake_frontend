@@ -64,8 +64,8 @@ class StockTransaction {
   });
 
   factory StockTransaction.create(
-      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement}) {
-    return StockTransaction(date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date);
+      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement, String? notes}) {
+    return StockTransaction(date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date, notes: notes);
   }
 
   Map<String, dynamic> toMap() {
@@ -85,7 +85,6 @@ class StockTransaction {
         date: DateTime.parse(json['date']).toLocal(),
         stockMovement: StockMovementExtension.fromFormattedString(json['stock_movement']),
         lineItems: List<StockLineItem>.from(json['line_items'].map((v) => StockLineItem.fromJson(v))),
-        // lineItems: [],
         updatedBy: json['updated_by'],
         notes: json['notes'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']).toLocal() : null,

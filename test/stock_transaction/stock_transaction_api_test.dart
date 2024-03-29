@@ -99,6 +99,38 @@ void main() async {
     }
   });
 
+    test('creating stx with stock in and you can get back the note', () async {
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    expect(createdOrError.isRight(), true);
+    final team = createdOrError.toIterable().first;
+
+    final shirt = getShirt();
+    final jean = getJean();
+
+    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreated = shirtCreatedOrError.toIterable().first;
+
+    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeanCreated = jeansCreatedOrError.toIterable().first;
+
+    final lineItems = getStocklLineItemWithRandomCount(createdItemList: [shirtCreated, jeanCreated]);
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: lineItems,
+      stockMovement: StockMovement.stockIn,
+      notes: 'hello'
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+    final st = stCreatedOrError.toIterable().first;
+    expect(st.notes, 'hello');
+
+  });
+
   test('creating stx with different date', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
