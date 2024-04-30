@@ -101,7 +101,7 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
         children: [
           DateText(so.date),
           // Text(so.date),
-          SaleOrderStausWidget(status: so.saleOrderStatus),
+          SaleOrderStausWidget(statusOrNone: so.status),
           // Text(so.status!.toUpperCase()),
         ],
       ),

@@ -21,6 +21,7 @@ Future<void> main() async {
 
 // Ideal time to initialize
   if (kDebugMode) {
+    //real device: use local ip address such as 192.168.1.4 eg. await FirebaseAuth.instance.useAuthEmulator('192.168.1.4', 9099)
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 

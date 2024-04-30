@@ -5,8 +5,9 @@ import 'package:warelake/data/purchase.order/purchase.order.service.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
-import 'package:warelake/view/common.widgets/currency.amount.text.dart';
+import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
@@ -48,8 +49,16 @@ class PageContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popupMenuItems = po.orderStatus == PurchaseOrderStatus.issued
-        ? [
+    final popupMenuItems = po.status.fold(
+        () => [
+              const PopupMenuItem(
+                value: PurchaseOrderAction.delete,
+                child: Text('Delete'),
+              ),
+            ], (status) {
+      switch (status) {
+        case PurchaseOrderStatus.issued:
+          return [
             const PopupMenuItem(
               value: PurchaseOrderAction.delivered,
               child: Text('Convert to Received'),
@@ -58,13 +67,16 @@ class PageContents extends ConsumerWidget {
               value: PurchaseOrderAction.delete,
               child: Text('Delete'),
             ),
-          ]
-        : [
+          ];
+        case PurchaseOrderStatus.received:
+          return [
             const PopupMenuItem(
               value: PurchaseOrderAction.delete,
               child: Text('Delete'),
             ),
           ];
+      }
+    });
 
     return Scaffold(
         appBar: AppBar(
@@ -107,25 +119,32 @@ class PageContents extends ConsumerWidget {
           ],
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 12, right: 16),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Total Amount"),
-                      CurrencyAmountText(amount: po.totalInDouble, currencyCode:  po.currencyCodeEnum),
-                    ],
-                  ),
+                  DateText(po.date, enableTime: true),
                   const Spacer(),
-                  PurchaseOrderStausWidget(po.orderStatus),
+                  PurchaseOrderStausWidget(po.status), gapW4
                 ],
               ),
             ),
             gapH20,
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                'Order Details',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            gapH12,
             ReadOnlyLineItemListView(lineItems: po.lineItems),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: NoteText(po.notes),
+            )
           ],
         ));
   }

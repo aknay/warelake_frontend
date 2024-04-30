@@ -6,6 +6,7 @@ import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
 import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
@@ -25,6 +26,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   Option<BillAccount> _billAccountOrNone = const None();
   Option<String> _saleOrderNumberOrNone = const None();
+  Option<String> _notes = const None();
   var _dateTime = DateTime.now();
 
   @override
@@ -92,6 +94,10 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
         _dateTime = value;
       }),
       gapH8,
+      NoteTextFormField(onChanged: (value){
+        _notes = Some(value);
+      }),
+      gapH8,
       Row(
         children: [
           const Spacer(),
@@ -154,7 +160,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
           subTotal: subTotal,
           total: subTotal,
           accountId: billAccount.id!,
-          purchaseOrderNumber: _saleOrderNumberOrNone.toIterable().first);
+          purchaseOrderNumber: _saleOrderNumberOrNone.toIterable().first, notes: _notes);
 
       final success = await ref.read(purchaseOrderListControllerProvider.notifier).createPurchaseOrder(saleOrder);
 

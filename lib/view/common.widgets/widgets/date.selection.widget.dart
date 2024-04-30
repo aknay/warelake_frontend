@@ -29,7 +29,7 @@ class DateSelectionWidget extends ConsumerWidget {
         enabled: false, // Make it non-editable
         decoration: InputDecoration(
           prefixIcon: const Padding(
-            padding: EdgeInsets.only(left: 12, top: 8),
+            padding: EdgeInsets.only(left: 12, top: 12),
             child: FaIcon(FontAwesomeIcons.calendar, color: Colors.white),
           ),
           labelText: currencyText,

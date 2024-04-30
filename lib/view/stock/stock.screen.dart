@@ -1,8 +1,11 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
+import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
@@ -22,6 +25,8 @@ class StockScreen extends ConsumerStatefulWidget {
 class _StockInScreenState extends ConsumerState<StockScreen> {
   final _formKey = GlobalKey<FormState>();
   var _dateTime = DateTime.now();
+  Option<String> _note = const None();
+
   @override
   Widget build(BuildContext context) {
     final stockTransactionListAsync = ref.watch(stockTransactionListControllerProvider);
@@ -86,6 +91,13 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
           _dateTime = value;
         }),
       ),
+      Padding(
+        padding: const EdgeInsets.only(left: 8.0, right: 8),
+        child: NoteTextFormField(onChanged: (value) {
+          _note = Some(value);
+        }),
+      ),
+      gapH12,
       Expanded(child: StockLineItemListView(
         onValueChanged: (stockLinItemList) {
           ref.read(_stockLineItemProvider.notifier).state = stockLinItemList;
@@ -102,12 +114,8 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
             context: context, title: "Empty", content: "Line item cannot be empty.", defaultActionText: "OK");
         return;
       }
-
       final rawTx = StockTransaction.create(
-        date: _dateTime,
-        lineItems: stockLineItemList,
-        stockMovement: widget.stockMovement,
-      );
+          date: _dateTime, lineItems: stockLineItemList, stockMovement: widget.stockMovement, notes: _note);
 
       final success = await ref.read(stockTransactionListControllerProvider.notifier).create(rawTx);
 

@@ -6,6 +6,7 @@ import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/currency.amount.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
@@ -47,8 +48,16 @@ class PageContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.issued
-        ? [
+    final popupMenuItems = so.status.fold(
+        () => [
+              const PopupMenuItem(
+                value: SaleOrderAction.delete,
+                child: Text('Delete'),
+              ),
+            ], (status) {
+      switch (status) {
+        case SaleOrderStatus.issued:
+          return [
             const PopupMenuItem(
               value: SaleOrderAction.delivered,
               child: Text('Convert to Delivered'),
@@ -57,13 +66,16 @@ class PageContents extends ConsumerWidget {
               value: SaleOrderAction.delete,
               child: Text('Delete'),
             ),
-          ]
-        : [
+          ];
+        case SaleOrderStatus.delivered:
+          return [
             const PopupMenuItem(
               value: SaleOrderAction.delete,
               child: Text('Delete'),
             ),
           ];
+      }
+    });
 
     return Scaffold(
         appBar: AppBar(
@@ -116,12 +128,16 @@ class PageContents extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  SaleOrderStausWidget(status: so.saleOrderStatus),
+                  SaleOrderStausWidget(statusOrNone: so.status),
                 ],
               ),
             ),
             gapH20,
             ReadOnlyLineItemListView(lineItems: so.lineItems),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: NoteText(so.notes),
+            )
           ],
         ));
   }

@@ -9,6 +9,8 @@ class ApiEndPoint {
       return 'http://0.0.0.0:9888/api';
     }
     if (kDebugMode) {
+      //use 'http://<local ip address>:9888/api'; local ip addres could be 192.168.1.4
+      // return 'http://192.168.1.4:9888/api';
       return 'http://10.0.2.2:9888/api';
     }
     return dotenv.env['API_ENDPOINT'] ?? "www.example.com/api";

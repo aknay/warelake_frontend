@@ -12,6 +12,7 @@ import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/monthly.summary/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -93,7 +94,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, PurchaseOrderStatus.issued);
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
@@ -358,7 +359,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'issued');
+    expect(createdSo.status.toIterable().first, SaleOrderStatus.issued);
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet

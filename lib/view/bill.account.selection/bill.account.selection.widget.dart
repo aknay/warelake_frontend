@@ -35,7 +35,7 @@ class BillAccountSelectionWidget extends ConsumerWidget {
         decoration: InputDecoration(
           prefixIcon: const Padding(
             padding: EdgeInsets.only(left: 12, top: 8),
-            child: FaIcon(FontAwesomeIcons.fileInvoiceDollar, color: Colors.white),
+            child: FaIcon(FontAwesomeIcons.moneyBillTransfer, color: Colors.white),
           ),
           labelText: currencyText,
           labelStyle: Theme.of(context).textTheme.bodyLarge,

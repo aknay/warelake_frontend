@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 
@@ -12,7 +13,7 @@ class SaleOrder {
   DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
-  String? status; // received, cancelled, partially_received
+  Option<SaleOrderStatus> status;
   int? vendorId;
   String? vendorName;
   int? contactPersons;
@@ -24,7 +25,7 @@ class SaleOrder {
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
-  String? notes;
+  Option<String> notes;
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
@@ -36,7 +37,7 @@ class SaleOrder {
     required this.date,
     this.expectedDeliveryDate,
     this.referenceNumber,
-    this.status,
+    this.status = const None(),
     this.vendorId,
     this.vendorName,
     this.contactPersons,
@@ -48,14 +49,12 @@ class SaleOrder {
     this.taxes,
     this.pricePrecision,
     this.billingAddress,
-    this.notes,
+    this.notes = const None(),
     required this.accountId,
     this.createdTime,
     this.modifiedAt,
     this.deliveredAt,
   });
-
-  SaleOrderStatus get saleOrderStatus => SaleOrderStatus.values.byName(status!);
 
   factory SaleOrder.create(
       {required DateTime date,
@@ -64,7 +63,8 @@ class SaleOrder {
       required int subTotal,
       required int total,
       required String accountId,
-      required String saleOrderNumber}) {
+      required String saleOrderNumber,
+      Option<String> notes = const None()}) {
     return SaleOrder(
         accountId: accountId,
         date: date,
@@ -72,7 +72,8 @@ class SaleOrder {
         lineItems: lineItems,
         subTotal: subTotal,
         total: total,
-        saleOrderNumber: saleOrderNumber);
+        saleOrderNumber: saleOrderNumber,
+        notes: notes);
   }
 
   double get totalInDouble => (total / 1000).toDouble();
@@ -85,12 +86,12 @@ class SaleOrder {
       'sale_order_number': saleOrderNumber,
       'date': date.toUtc().toIso8601String(),
       'expectedDeliveryDate': expectedDeliveryDate,
-      'status': status,
+      // 'status': status,
       'currency_code': currencyCode,
       'line_items': lineItems.map((item) => item.toJson()).toList(),
       'sub_total': subTotal,
       'total': total,
-      'notes': notes,
+      'notes': notes.fold(() => null, (a) => a),
       'account_id': accountId,
     };
   }
@@ -100,12 +101,12 @@ class SaleOrder {
         id: json['id'],
         saleOrderNumber: json['sale_order_number'],
         date: DateTime.parse(json['date']).toLocal(),
-        status: json['status'],
+        status: json['status'] == null ? const None() : Some(SaleOrderStatus.values.byName(json['status'])),
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
         subTotal: json['sub_total'],
         total: json['total'],
-        notes: json['notes'],
+        notes: optionOf(json['notes']),
         accountId: json['account_id'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
         modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,

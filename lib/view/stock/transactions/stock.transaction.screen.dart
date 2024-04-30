@@ -6,6 +6,7 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
@@ -88,14 +89,7 @@ class PageContents extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Date'),
-                  gapW8,
-                  DateText(stockTransaction.date),
-                ],
-              ),
+              child: DateText(stockTransaction.date, enableTime: true),
             ),
             gapH16,
             Row(
@@ -105,7 +99,12 @@ class PageContents extends ConsumerWidget {
               ],
             ),
             gapH16,
-            Expanded(child: _toLineItemList(stockTransaction, context))
+            _toLineItemList(stockTransaction, context),
+            gapH12,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: NoteText(stockTransaction.notes),
+            )
           ],
         ));
   }
