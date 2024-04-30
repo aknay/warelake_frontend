@@ -359,7 +359,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'issued');
+    expect(createdSo.status.toIterable().first, SaleOrderStatus.issued);
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet

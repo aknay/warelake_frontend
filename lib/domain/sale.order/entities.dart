@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 
@@ -12,7 +13,7 @@ class SaleOrder {
   DateTime date;
   String? expectedDeliveryDate;
   String? referenceNumber;
-  String? status; // received, cancelled, partially_received
+  Option<SaleOrderStatus> status;
   int? vendorId;
   String? vendorName;
   int? contactPersons;
@@ -36,7 +37,7 @@ class SaleOrder {
     required this.date,
     this.expectedDeliveryDate,
     this.referenceNumber,
-    this.status,
+    this.status = const None(),
     this.vendorId,
     this.vendorName,
     this.contactPersons,
@@ -54,8 +55,6 @@ class SaleOrder {
     this.modifiedAt,
     this.deliveredAt,
   });
-
-  SaleOrderStatus get saleOrderStatus => SaleOrderStatus.values.byName(status!);
 
   factory SaleOrder.create(
       {required DateTime date,
@@ -85,7 +84,7 @@ class SaleOrder {
       'sale_order_number': saleOrderNumber,
       'date': date.toUtc().toIso8601String(),
       'expectedDeliveryDate': expectedDeliveryDate,
-      'status': status,
+      // 'status': status,
       'currency_code': currencyCode,
       'line_items': lineItems.map((item) => item.toJson()).toList(),
       'sub_total': subTotal,
@@ -100,7 +99,7 @@ class SaleOrder {
         id: json['id'],
         saleOrderNumber: json['sale_order_number'],
         date: DateTime.parse(json['date']).toLocal(),
-        status: json['status'],
+        status: json['status'] == null ? const None() : Some(SaleOrderStatus.values.byName(json['status'])),
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
         subTotal: json['sub_total'],

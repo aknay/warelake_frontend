@@ -91,7 +91,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, SaleOrderStatus.issued);
 
     final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
 
@@ -254,7 +254,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
-    expect(createdSo.status, 'issued');
+    expect(createdSo.status.toIterable().first, SaleOrderStatus.issued);
 
     // testing receiving items
 

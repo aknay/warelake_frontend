@@ -47,8 +47,16 @@ class PageContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popupMenuItems = so.saleOrderStatus == SaleOrderStatus.issued
-        ? [
+    final popupMenuItems = so.status.fold(
+        () => [
+              const PopupMenuItem(
+                value: SaleOrderAction.delete,
+                child: Text('Delete'),
+              ),
+            ], (status) {
+      switch (status) {
+        case SaleOrderStatus.issued:
+          return [
             const PopupMenuItem(
               value: SaleOrderAction.delivered,
               child: Text('Convert to Delivered'),
@@ -57,13 +65,16 @@ class PageContents extends ConsumerWidget {
               value: SaleOrderAction.delete,
               child: Text('Delete'),
             ),
-          ]
-        : [
+          ];
+        case SaleOrderStatus.delivered:
+          return [
             const PopupMenuItem(
               value: SaleOrderAction.delete,
               child: Text('Delete'),
             ),
           ];
+      }
+    });
 
     return Scaffold(
         appBar: AppBar(
@@ -116,7 +127,7 @@ class PageContents extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  SaleOrderStausWidget(status: so.saleOrderStatus),
+                  SaleOrderStausWidget(statusOrNone: so.status),
                 ],
               ),
             ),
