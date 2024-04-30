@@ -159,7 +159,7 @@ void main() async {
     expect(stCreatedOrError.isRight(), true);
 
     final stx = stCreatedOrError.toIterable().first;
-    expect(stx.createdTime, DateTime(2024, 1, 3, 9, 8, 7));
+    expect(stx.date, DateTime(2024, 1, 3, 9, 8, 7));
   });
 
   test('you can get back the created stock transaction', () async {

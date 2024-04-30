@@ -12,6 +12,7 @@ import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/purchase.order/valueobject.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -87,7 +88,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, PurchaseOrderStatus.issued);
     expect(createdPo.purchaseOrderNumber, "PO-0001");
   });
 
@@ -132,7 +133,7 @@ void main() async {
       final poOrError =
           await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
       expect(poOrError.isRight(), true);
-      expect(poOrError.toIterable().first.status, 'issued');
+      expect(poOrError.toIterable().first.status.toIterable().first, PurchaseOrderStatus.issued);
     }
   });
 
@@ -269,7 +270,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, PurchaseOrderStatus.issued);
 
     {
       final deletedOrError = await purchaseOrderApi.delete(
@@ -329,7 +330,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, PurchaseOrderStatus.issued);
     final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
         purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
@@ -370,7 +371,7 @@ void main() async {
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
-    expect(createdPo.status, 'issued');
+    expect(createdPo.status.toIterable().first, PurchaseOrderStatus.issued);
     final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
         purchaseOrderId: createdPo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);

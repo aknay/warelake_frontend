@@ -97,7 +97,7 @@ class PurchaseOrder {
       // 'taxes': taxes?.map((tax) => tax.toJson()).toList(),
       // 'pricePrecision': pricePrecision,
       // 'billingAddress': billingAddress?.map((address) => address.toJson()).toList(),
-      'notes': notes,
+      'notes': notes.fold(() => null, (a) => a),
       'account_id': accountId,
       // 'createdTime': createdTime?.toIso8601String(),
       // 'modifiedAt': modifiedAt?.toIso8601String(),

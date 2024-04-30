@@ -65,8 +65,12 @@ class StockTransaction {
   });
 
   factory StockTransaction.create(
-      {required DateTime date, required List<StockLineItem> lineItems, required StockMovement stockMovement, Option<String> notes  = const None()}) {
-    return StockTransaction(date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date, notes: notes);
+      {required DateTime date,
+      required List<StockLineItem> lineItems,
+      required StockMovement stockMovement,
+      Option<String> notes = const None()}) {
+    return StockTransaction(
+        date: date, lineItems: lineItems, stockMovement: stockMovement, createdTime: date, notes: notes);
   }
 
   Map<String, dynamic> toMap() {
@@ -75,19 +79,20 @@ class StockTransaction {
       'date': date.toUtc().toIso8601String(),
       'stock_movement': stockMovement.toFormattedString(),
       'line_items': lineItems.map((item) => item.toJson()).toList(),
-      'notes': notes,
+      'notes': notes.fold(() => null, (a) => a),
       'created_at': createdTime?.toUtc().toIso8601String()
     };
   }
 
   static StockTransaction fromMap(Map<String, dynamic> json) {
+    
     return StockTransaction(
         id: json['id'],
         date: DateTime.parse(json['date']).toLocal(),
         stockMovement: StockMovementExtension.fromFormattedString(json['stock_movement']),
         lineItems: List<StockLineItem>.from(json['line_items'].map((v) => StockLineItem.fromJson(v))),
         updatedBy: json['updated_by'],
-        notes: json['notes'],
+        notes: json['notes'] == null ? const None() : Some(json['notes']),
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']).toLocal() : null,
         modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null);
   }

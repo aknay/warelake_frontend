@@ -22,11 +22,12 @@ class StockTransactionRepository extends StockTransactionApi {
     try {
       final response = await HttpHelper.post(
           url: ApiEndPoint.getStockTransacitonEndPoint(), body: stockTransaction.toMap(), token: token, teamId: teamId);
-      log("stock transaction create response code ${response.statusCode}");
-      log("stock transaction  create response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 201) {
         return Right(StockTransaction.fromMap(jsonDecode(response.body)));
       }
+      log("stock transaction create response code ${response.statusCode}");
+      log("stock transaction  create response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
