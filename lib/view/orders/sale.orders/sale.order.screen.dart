@@ -6,6 +6,7 @@ import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/currency.amount.text.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/common.widgets/widgets/note.text.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/read.only.line.item.list.view.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
@@ -133,6 +134,10 @@ class PageContents extends ConsumerWidget {
             ),
             gapH20,
             ReadOnlyLineItemListView(lineItems: so.lineItems),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: NoteText(so.notes),
+            )
           ],
         ));
   }

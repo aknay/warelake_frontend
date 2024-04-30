@@ -86,7 +86,7 @@ void main() async {
         lineItems: lineItems,
         subTotal: 10,
         total: 20,
-        saleOrderNumber: "S0-00001");
+        saleOrderNumber: "S0-00001", notes: const Some('Hello'));
     final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
@@ -101,6 +101,7 @@ void main() async {
     expect(poWhiteshirtLineItem.quantity, whiteshirtLineItem.quantity);
     expect(poWhiteshirtLineItem.rateInDouble, whiteshirtLineItem.rateInDouble);
     expect(createdPo.saleOrderNumber, "S0-00001");
+    expect(createdPo.notes, const Some('Hello'));
   });
 
   test('you can get back so', () async {

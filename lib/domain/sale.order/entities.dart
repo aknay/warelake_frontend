@@ -25,7 +25,7 @@ class SaleOrder {
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
-  String? notes;
+  Option<String> notes;
   String accountId;
   DateTime? createdTime;
   DateTime? modifiedAt;
@@ -49,7 +49,7 @@ class SaleOrder {
     this.taxes,
     this.pricePrecision,
     this.billingAddress,
-    this.notes,
+    this.notes = const None(),
     required this.accountId,
     this.createdTime,
     this.modifiedAt,
@@ -63,7 +63,8 @@ class SaleOrder {
       required int subTotal,
       required int total,
       required String accountId,
-      required String saleOrderNumber}) {
+      required String saleOrderNumber,
+      Option<String> notes = const None()}) {
     return SaleOrder(
         accountId: accountId,
         date: date,
@@ -71,7 +72,8 @@ class SaleOrder {
         lineItems: lineItems,
         subTotal: subTotal,
         total: total,
-        saleOrderNumber: saleOrderNumber);
+        saleOrderNumber: saleOrderNumber,
+        notes: notes);
   }
 
   double get totalInDouble => (total / 1000).toDouble();
@@ -89,7 +91,7 @@ class SaleOrder {
       'line_items': lineItems.map((item) => item.toJson()).toList(),
       'sub_total': subTotal,
       'total': total,
-      'notes': notes,
+      'notes': notes.fold(() => null, (a) => a),
       'account_id': accountId,
     };
   }
@@ -104,7 +106,7 @@ class SaleOrder {
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
         subTotal: json['sub_total'],
         total: json['total'],
-        notes: json['notes'],
+        notes: optionOf(json['notes']),
         accountId: json['account_id'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
         modifiedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
