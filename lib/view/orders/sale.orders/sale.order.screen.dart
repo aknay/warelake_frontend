@@ -128,7 +128,7 @@ class PageContents extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  SaleOrderStausWidget(statusOrNone: so.status),
+                  SaleOrderStausWidget(so.status),
                 ],
               ),
             ),

@@ -73,12 +73,13 @@ class SaleOrderRepository extends SaleOrderApi {
         teamId: teamId,
         additionalQuery: searchField?.toMap(),
       );
-      log("list sale order response code ${response.statusCode}");
-      log("list sale order response ${jsonDecode(response.body)}");
+
       if (response.statusCode == 200) {
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), SaleOrder.fromJson);
         return Right(listResponse);
       }
+      log("list sale order response code ${response.statusCode}");
+      log("list sale order response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");

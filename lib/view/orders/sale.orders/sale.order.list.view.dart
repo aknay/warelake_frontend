@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
-import 'package:warelake/view/common.widgets/currency.amount.text.dart';
+import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/common.widgets/date.text.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 import 'package:warelake/view/orders/sale.orders/widgets/sale.order.status.widget.dart';
@@ -94,15 +94,11 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
 
   ListTile _getListTitle(SaleOrder so, BuildContext context) {
     return ListTile(
-      isThreeLine: true,
       title: Text(so.saleOrderNumber!),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DateText(so.date),
-          // Text(so.date),
-          SaleOrderStausWidget(statusOrNone: so.status),
-          // Text(so.status!.toUpperCase()),
         ],
       ),
       onTap: () {
@@ -111,10 +107,18 @@ class _SaleOrderListViewState extends ConsumerState<SaleOrderListView> {
           pathParameters: {'id': so.id!},
         );
       },
-      trailing: CurrencyAmountText(
-        amount: so.totalInDouble,
-        currencyCode: so.currencyCodeEnum,
-        style: Theme.of(context).textTheme.titleMedium,
+      trailing: FittedBox(
+        fit: BoxFit.fill,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            AmountText(
+              so.totalInDouble,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            SaleOrderStausWidget(so.status),
+          ],
+        ),
       ),
     );
   }
