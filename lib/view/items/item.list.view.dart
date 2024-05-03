@@ -140,14 +140,29 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
               AppRoute.selectItemForStockIn.name,
               pathParameters: {'id': item.id!},
             );
-          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockOut.name)) {
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockOutFromDashboard.name)) {
             context.goNamed(
               AppRoute.selectItemForStockOut.name,
               pathParameters: {'id': item.id!},
             );
-          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockAdjust.name)) {
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockAdjustFromDashboard.name)) {
             context.goNamed(
               AppRoute.selectItemForStockAdjust.name,
+              pathParameters: {'id': item.id!},
+            );
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockInFromTransactionList.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockInFromTransactionList.name,
+              pathParameters: {'id': item.id!},
+            );
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockOutFromTransactionList.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockOutFromTransactionList.name,
+              pathParameters: {'id': item.id!},
+            );
+          } else if (path == router.namedLocation(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name)) {
+            context.goNamed(
+              AppRoute.selectItemForStockAdjustFromTransactionList.name,
               pathParameters: {'id': item.id!},
             );
           }

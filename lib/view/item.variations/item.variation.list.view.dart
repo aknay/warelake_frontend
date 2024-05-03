@@ -8,8 +8,8 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
-import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
+import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {
@@ -58,23 +58,42 @@ class ItemVariationListView extends ConsumerWidget {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));
-                      context.goNamed(
-                        AppRoute.stockIn.name,
-                      );
+
+                      if (uri.path.contains(
+                          router.namedLocation(AppRoute.selectStockLineItemForStockInFromTransactionList.name))) {
+                        context.goNamed(AppRoute.stockInFromTransactionList.name);
+                      } else {
+                        context.goNamed(
+                          AppRoute.stockInFromDashboard.name,
+                        );
+                      }
+                      //  GoRouter.of(context).pop();
                     } else if (uri.path.contains('stock_out')) {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));
-                      context.goNamed(
-                        AppRoute.stockOut.name,
-                      );
+
+                      if (uri.path.contains(
+                          router.namedLocation(AppRoute.selectStockLineItemForStockOutFromTransactionList.name))) {
+                        context.goNamed(AppRoute.stockOutFromTransactionList.name);
+                      } else {
+                        context.goNamed(
+                          AppRoute.stockOutFromDashboard.name,
+                        );
+                      }
                     } else if (uri.path.contains('stock_adjust')) {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));
-                      context.goNamed(
-                        AppRoute.stockAdjust.name,
-                      );
+
+                      if (uri.path.contains(
+                          router.namedLocation(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name))) {
+                        context.goNamed(AppRoute.stockAdjustFromTransactionList.name);
+                      } else {
+                        context.goNamed(
+                          AppRoute.stockAdjustFromDashboard.name,
+                        );
+                      }
                     } else if (uri.path.contains('purchase_order')) {
                       context.goNamed(
                         AppRoute.addLineItemForPurchaseOrder.name,

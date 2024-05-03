@@ -13,6 +13,7 @@ class StockTransactionService {
   final AuthRepository _authRepo;
   final TeamIdSharedRefereceRepository _teamIdSharedRefRepository;
   final StockTransactionRepository _stockTransactionRepo;
+
   StockTransactionService(
       {required AuthRepository authRepo,
       required TeamIdSharedRefereceRepository teamIdSharedRefRepository,
@@ -65,15 +66,6 @@ class StockTransactionService {
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
-
-  //   Future<Either<String, Unit>> converteToDelivered({required String saleOrderId}) async {
-  //   final teamIdOrNone = _teamIdSharedRefRepository.getTemId;
-  //   return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
-  //     final token = await _authRepo.shouldGetToken();
-  //     final items = await _saleOrderRepo.deliveredItems(saleOrderId: saleOrderId, date: DateTime.now(), teamId: teamId, token: token);
-  //     return items.fold((l) => Left(l.message), (r) => Right(r));
-  //   });
-  // }
 }
 
 @Riverpod(keepAlive: true)

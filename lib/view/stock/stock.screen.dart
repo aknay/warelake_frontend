@@ -49,13 +49,29 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            final router = GoRouter.of(context);
+            final path = router.routeInformationProvider.value.uri.path;
+
             switch (widget.stockMovement) {
               case StockMovement.stockIn:
-                context.goNamed(AppRoute.selectStockLineItemForStockIn.name);
+                if (path == router.namedLocation(AppRoute.stockInFromTransactionList.name)) {
+                  context.goNamed(AppRoute.selectStockLineItemForStockInFromTransactionList.name);
+                } else {
+                  context.goNamed(AppRoute.selectStockLineItemForStockIn.name);
+                }
+
               case StockMovement.stockOut:
-                context.goNamed(AppRoute.selectStockLineItemForStockOut.name);
+                if (path == router.namedLocation(AppRoute.stockOutFromTransactionList.name)) {
+                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromTransactionList.name);
+                } else {
+                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromDashboard.name);
+                }
               case StockMovement.stockAdjust:
-                context.goNamed(AppRoute.selectStockLineItemForStockAdjust.name);
+                if (path == router.namedLocation(AppRoute.stockAdjustFromTransactionList.name)) {
+                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name);
+                } else {
+                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromDashboard.name);
+                }
             }
           },
           child: const Icon(Icons.add),

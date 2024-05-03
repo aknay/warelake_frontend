@@ -26,7 +26,7 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock In'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockIn.name);
+                context.goNamed(AppRoute.stockInFromDashboard.name);
               },
             ),
             ListTile(
@@ -34,7 +34,7 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock Out'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockOut.name);
+                context.goNamed(AppRoute.stockOutFromDashboard.name);
               },
             ),
             ListTile(
@@ -42,7 +42,7 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock Adjust'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockAdjust.name);
+                context.goNamed(AppRoute.stockAdjustFromDashboard.name);
               },
             )
           ],

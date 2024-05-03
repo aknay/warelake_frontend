@@ -15,7 +15,10 @@ class ItemsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text("Item Groups")),
       body: const Column(
         children: [
-          ItemSearchWidget(),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: ItemSearchWidget(),
+          ),
           Expanded(child: ItemListView(isToSelectItemVariation: false)),
         ],
       ),
