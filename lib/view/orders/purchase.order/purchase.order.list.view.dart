@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:warelake/view/orders/purchase.order/purchase.order.list.controll
 import 'package:warelake/view/orders/purchase.order/widgets/purchase.order.status.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/async_value_ui.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
 class PurchaseOrderListView extends ConsumerStatefulWidget {
   const PurchaseOrderListView({super.key});
@@ -22,7 +24,8 @@ class PurchaseOrderListView extends ConsumerStatefulWidget {
 }
 
 class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
-  final PagingController<int, PurchaseOrder> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, MapEntry<DateTime, List<PurchaseOrder>>> _pagingController =
+      PagingController(firstPageKey: 0);
 
   final _lastStockTransactionIdProvider = StateProvider<Option<String>>(
     (ref) => const None(),
@@ -36,10 +39,11 @@ class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
 
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: PagedListView<int, PurchaseOrder>(
+      child: PagedListView<int, MapEntry<DateTime, List<PurchaseOrder>>>(
         pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<PurchaseOrder>(itemBuilder: (context, item, index) {
-          return _getListTitle(item, context);
+        builderDelegate:
+            PagedChildBuilderDelegate<MapEntry<DateTime, List<PurchaseOrder>>>(itemBuilder: (context, item, index) {
+          return _getListTitlesWithDateTime(item, context);
         }),
       ),
     );
@@ -80,23 +84,43 @@ class _PurchaseOrderListViewState extends ConsumerState<PurchaseOrderListView> {
       log("po list is empty");
     }
 
+    final f = groupBy(poList, (p0) => p0.date.removeTime());
+
     if (poListListResponse.hasMore) {
       final nextPageKey = pageKey + poList.length;
-      _pagingController.appendPage(poList, nextPageKey);
+      _pagingController.appendPage(f.entries.toList(), nextPageKey);
     } else {
-      _pagingController.appendLastPage(poList);
+      _pagingController.appendLastPage(f.entries.toList());
     }
   }
 
+    List<Widget> _combine(Widget w1, List<Widget> w2) {
+    //due to text + TransactionItem list, we need to change to widget and combine them
+    const divider = Padding(padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16, bottom: 16), child: Divider());
+    return [w1] + w2 + [divider];
+  }
+
+   Widget _getListTitlesWithDateTime(MapEntry<DateTime, List<PurchaseOrder>> stx, BuildContext context) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: _combine(
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: DateText(
+                stx.key,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).hintColor),
+              ),
+            ),
+            stx.value.map((e) => _getListTitle(e, context)).toList()));
+  }
+
   ListTile _getListTitle(PurchaseOrder po, BuildContext context) {
+    final subtitle = "${po.lineItems.length} Items | ${po.lineItems.map((e) => e.quantity).sum} Quantity";
+
+
     return ListTile(
       title: Text(po.purchaseOrderNumber!),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DateText(po.date),
-        ],
-      ),
+      subtitle: Text(subtitle),
       onTap: () {
         context.goNamed(
           AppRoute.purchaseOrder.name,
