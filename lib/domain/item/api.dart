@@ -82,6 +82,13 @@ abstract class ItemApi {
     required String token,
   });
 
+    Future<Either<ErrorResponse, ItemVariation>> getItemVariation({
+    required String itemId,
+    required String itemVariationId,
+    required String teamId,
+    required String token,
+  });
+
   Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
     required String teamId,
     required String token,

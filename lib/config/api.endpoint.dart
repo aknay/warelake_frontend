@@ -60,6 +60,9 @@ class ApiEndPoint {
         : "${getApiBaseUrl()}/v1/items/$itemId/images/$imageId";
   }
 
+
+
+
   static String getItemVariationImageEndPoint({required String itemId, required String itemVariationId}) {
     return "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId/images";
   }
