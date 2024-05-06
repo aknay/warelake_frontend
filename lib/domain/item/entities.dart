@@ -39,17 +39,18 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     //we will receive a map and we need tot convert to a list
-    var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
-    var itemVariations = itemVariationsJson.map(
-      (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
-    );
+    // var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
+    // var itemVariations = itemVariationsJson.map(
+    //   (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
+    // );
 
     return Item(
         id: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
-        variations: itemVariations.values.toList(),
+        // variations: itemVariations.values.toList(),
+        variations: [],
         productType: json['product_type'],
         unit: json['unit'],
         imageUrl: json['image_url']);
@@ -60,7 +61,7 @@ class Item {
       'name': name,
       'description': description,
       'abbreviation': abbreviation,
-      'item_variations': variationsMapJson,
+      // 'item_variations': variationsMapJson,
       'product_type': productType,
       'unit': unit
     };
@@ -85,6 +86,7 @@ class ItemVariation {
   int? itemCount;
   String? barcode;
   String? imageUrl;
+  int minimumStock;
 
   ItemVariation(
       {this.type,
@@ -100,7 +102,8 @@ class ItemVariation {
       required this.purchasePriceMoney,
       this.itemCount,
       this.barcode,
-      this.imageUrl});
+      this.imageUrl,
+      this.minimumStock = 0});
 
   factory ItemVariation.create(
       {required String name,
@@ -109,7 +112,8 @@ class ItemVariation {
       required PriceMoney salePriceMoney,
       required PriceMoney purchasePriceMoney,
       int? itemCount,
-      String? barcode}) {
+      String? barcode,
+      int minimumStock = 0}) {
     var uuid = const Uuid();
     String newUuid = uuid.v4();
 
@@ -121,7 +125,8 @@ class ItemVariation {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
         itemCount: itemCount,
-        barcode: barcode);
+        barcode: barcode,
+        minimumStock: minimumStock);
   }
 
   ItemVariation copyWith(
@@ -158,7 +163,8 @@ class ItemVariation {
         purchasePriceMoney: PriceMoney.fromJson(json['purchase_price']),
         itemCount: json['item_count'],
         barcode: json['barcode'],
-        imageUrl: json['image_url']);
+        imageUrl: json['image_url'],
+        minimumStock: json['minimum_stock']);
   }
 
   Map<String, dynamic> toJson() {
@@ -173,7 +179,8 @@ class ItemVariation {
       'sku': sku,
       'sale_price': salePriceMoney.toJson(),
       'purchase_price': purchasePriceMoney.toJson(),
-      'barcode': barcode
+      'barcode': barcode,
+      'minimum_stock': minimumStock
     };
   }
 }

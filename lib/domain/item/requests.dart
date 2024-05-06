@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:warelake/domain/item/entities.dart';
+
 class ItemImageRequest {
   String itemId;
   String teamId;
@@ -46,6 +48,23 @@ class ItemVariationImageRequest {
       'item_id': itemId,
       'item_variation_id': itemVariationId,
       'image_name': imageName,
+    };
+  }
+}
+
+class CreateItemRequest {
+  Item item;
+  List<ItemVariation> itemVariations;
+
+  CreateItemRequest({
+    required this.item,
+    required this.itemVariations,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'item': item.toJson(),
+      'item_variations': itemVariations.map((e) => e.toJson()).toList(),
     };
   }
 }

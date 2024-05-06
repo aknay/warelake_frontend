@@ -13,6 +13,7 @@ import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -69,7 +70,10 @@ void main() async {
     final shirt = getShirt();
     final jean = getJean();
 
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: shirt.variations);
+
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);

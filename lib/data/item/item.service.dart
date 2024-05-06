@@ -7,6 +7,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
 
@@ -23,6 +24,15 @@ class ItemService {
       : _itemRepo = itemRepo,
         _teamIdSharedRefRepository = teamIdSharedRefRepository,
         _authRepo = authRepo;
+
+  Future<Either<String, Unit>> createItemRequest(CreateItemRequest item) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _itemRepo.createItemRequest(request: item, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
+    });
+  }
 
   Future<Either<String, Unit>> createItem(Item item) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
@@ -52,7 +62,8 @@ class ItemService {
     });
   }
 
-    Future<Either<String, ListResponse<ItemVariation>>> listItemVaration({ItemVariationSearchField? itemSearchField}) async {
+  Future<Either<String, ListResponse<ItemVariation>>> listItemVaration(
+      {ItemVariationSearchField? itemSearchField}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
