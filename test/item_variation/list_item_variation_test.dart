@@ -178,7 +178,7 @@ void main() async {
 
   test('you can still search item variation by barcode after barcode is altered', () async {
     {
-      final pixel8 = phoneItem.variations.where((element) => element.name == 'Pixel 8').first;
+      final pixel8 = phoneItemVariations.where((element) => element.name == 'Pixel 8').first;
 
       final payload = ItemVariationPayload(barcode: '0007');
       final updatedOrError = await itemRepo.updateItemVariation(
