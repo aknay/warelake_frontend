@@ -118,16 +118,13 @@ List<LineItem> getLineItemIndividual({required List<Tuple2<int, ItemVariation>> 
       .toList();
 }
 
-List<StockLineItem> getStocklLineItemWithRandomCount({required List<Item> createdItemList}) {
-  return createdItemList
-      .map((e) => e.variations.map((e) => StockLineItem.create(itemVariation: e, quantity: Random().nextInt(5) + 5)))
-      .flattened
-      .toList();
+List<StockLineItem> getStocklLineItemWithRandomCount({required List<ItemVariation> createdItemList}) {
+  return createdItemList.map((e) => StockLineItem.create(itemVariation: e, quantity: Random().nextInt(5) + 5)).toList();
 }
 
-List<StockLineItem> getStockLineItem({required List<Tuple2<int, Item>> items}) {
+List<StockLineItem> getStockLineItem({required List<Tuple2<int, List<ItemVariation>>> items}) {
   return items
-      .map((e) => e.value2.variations.map((f) => StockLineItem.create(itemVariation: f, quantity: e.value1)))
+      .map((e) => e.value2.map((f) => StockLineItem.create(itemVariation: f, quantity: e.value1)))
       .flattened
       .toList();
 }

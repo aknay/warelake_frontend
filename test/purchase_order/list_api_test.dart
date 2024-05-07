@@ -25,7 +25,7 @@ void main() async {
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
-      late Item shirtItem;
+  late Item shirtItem;
   late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
   late List<ItemVariation> jeanItemVariations;
