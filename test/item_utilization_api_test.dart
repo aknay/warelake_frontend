@@ -21,13 +21,15 @@ import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
-  final itemRepo = ItemRepository();
+  final itemApi = ItemRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   final stockTransactionRepo = StockTransactionRepository();
   late String firstUserAccessToken;
   late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
   late Team team;
   late String teamId;
@@ -68,14 +70,20 @@ void main() async {
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    // final shirt = getShirt();
-    // final jean = getJean();
-
-    final shirtCreatedOrError = await itemRepo.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemRepo.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('you can create stock in, delete po with received state and check totalQuantityOfAllItemVariation', () async {
@@ -83,10 +91,10 @@ void main() async {
       final rawTx = StockTransaction.create(
         date: DateTime.now(),
         lineItems: getStockLineItemWithIndividual(items: [
-          Tuple2(1, shirtItem.variations[0]),
-          Tuple2(2, shirtItem.variations[1]),
-          Tuple2(3, jeanItem.variations[0]),
-          Tuple2(4, jeanItem.variations[1]),
+          Tuple2(1, shirtItemVariations[0]),
+          Tuple2(2, shirtItemVariations[1]),
+          Tuple2(3, jeanItemVariations[0]),
+          Tuple2(4, jeanItemVariations[1]),
         ]),
         stockMovement: StockMovement.stockIn,
       );
@@ -98,7 +106,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10);
     }
@@ -107,10 +115,10 @@ void main() async {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       final lineItems = getLineItemIndividual(items: [
-        Tuple2(2, shirtItem.variations[0]),
-        Tuple2(3, shirtItem.variations[1]),
-        Tuple2(4, jeanItem.variations[0]),
-        Tuple2(5, jeanItem.variations[1]),
+        Tuple2(2, shirtItemVariations[0]),
+        Tuple2(3, shirtItemVariations[1]),
+        Tuple2(4, jeanItemVariations[0]),
+        Tuple2(5, jeanItemVariations[1]),
       ]);
       final po = PurchaseOrder.create(
           purchaseOrderNumber: "PO-0001",
@@ -132,7 +140,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 2));
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 24);
     }
@@ -148,7 +156,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10);
     }
@@ -158,7 +166,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalItemVariationsCount, 4);
     }
@@ -173,7 +181,7 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
 
-    final updatedOrError = await itemRepo.updateItem(
+    final updatedOrError = await itemApi.updateItem(
         payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
         itemId: shirtItem.id!,
         teamId: teamId,
@@ -184,7 +192,7 @@ void main() async {
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalItemVariationsCount, 5);
     }
