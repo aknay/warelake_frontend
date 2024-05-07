@@ -26,26 +26,26 @@ class ItemVariationImageController extends _$ItemVariationImageController {
         return;
       }
 
-      final uploadOrError = await ref
-          .read(imageUploadServiceProvider)
-          .upsertItemVariationImage(file: resizedImageOrError.toIterable().first, itemId: itemId, itemVariationId: itemVariationId);
+      final uploadOrError = await ref.read(imageUploadServiceProvider).upsertItemVariationImage(
+          file: resizedImageOrError.toIterable().first, itemId: itemId, itemVariationId: itemVariationId);
       uploadOrError.fold((l) {
         state = AsyncValue.error('Faile to upload an image', StackTrace.current);
       }, (r) async {
-        state = AsyncValue.data(await _getItemVariationImageUrlOrNone(itemId: itemId, itemVariationId: itemVariationId));
+        state =
+            AsyncValue.data(await _getItemVariationImageUrlOrNone(itemId: itemId, itemVariationId: itemVariationId));
       });
     }
   }
 
-  Future<Option<String>> _getItemVariationImageUrlOrNone({required String itemId, required String itemVariationId}) async {
+  Future<Option<String>> _getItemVariationImageUrlOrNone(
+      {required String itemId, required String itemVariationId}) async {
     if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 1));
     }
-    final itemOrError = await ref.read(itemServiceProvider).getItem(itemId: itemId);
-    return itemOrError.fold((l) => throw Exception('unable to get item'), (r) {
-      final itemVariations = r.variations.where((element) => element.id == itemVariationId);
-      if (itemVariations.isEmpty) throw Exception('item variation is empty');
-      return optionOf(itemVariations.first.imageUrl);
+    final itemVariationOrError =
+        await ref.read(itemServiceProvider).getItemVariation(itemId: itemId, itemVariationId: itemVariationId);
+    return itemVariationOrError.fold((l) => throw Exception('unable to get item'), (r) {
+      return optionOf(r.imageUrl);
     });
   }
 

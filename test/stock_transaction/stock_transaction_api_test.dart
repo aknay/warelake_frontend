@@ -8,6 +8,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -52,13 +53,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
 
     final lineItems = getStocklLineItemWithRandomCount(createdItemList: [shirtCreated, jeanCreated]);
@@ -99,36 +99,30 @@ void main() async {
     }
   });
 
-    test('creating stx with stock in and you can get back the note', () async {
+  test('creating stx with stock in and you can get back the note', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
 
     final lineItems = getStocklLineItemWithRandomCount(createdItemList: [shirtCreated, jeanCreated]);
 
     final rawTx = StockTransaction.create(
-      date: DateTime.now(),
-      lineItems: lineItems,
-      stockMovement: StockMovement.stockIn,
-      notes: optionOf('hello')
-    );
+        date: DateTime.now(), lineItems: lineItems, stockMovement: StockMovement.stockIn, notes: optionOf('hello'));
     final stCreatedOrError =
         await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
 
     expect(stCreatedOrError.isRight(), true);
     final st = stCreatedOrError.toIterable().first;
     expect(st.notes, const Some('hello'));
-
   });
 
   test('creating stx with different date', () async {
@@ -137,13 +131,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
 
     final lineItems = getStocklLineItemWithRandomCount(createdItemList: [shirtCreated, jeanCreated]);
@@ -185,8 +178,10 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'kg');
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt, blackShirt]);
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final retrievedShirts = itemCreated.toIterable().first.variations;
@@ -230,13 +225,15 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
+    // final shirt = getShirt();
+    // final jean = getJean();
 
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
 
     final stockInLineItems = getStocklLineItemWithRandomCount(createdItemList: [shirtCreated, jeanCreated]);
@@ -299,13 +296,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
 
     final stockInLineItems = getStockLineItem(items: [Tuple2(10, shirtCreated), Tuple2(20, jeanCreated)]);
@@ -417,8 +413,10 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     final tShirtItem = itemCreated.toIterable().first;
 
@@ -510,13 +508,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
     StockTransaction stockInTransaction;
     {
@@ -553,13 +550,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
     StockTransaction stockInTransaction;
     {
@@ -611,13 +607,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
     {
       //stock in
@@ -668,13 +663,12 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final shirtCreated = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     final jeanCreated = jeansCreatedOrError.toIterable().first;
     {
       //stock in
@@ -750,7 +744,10 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     final tShirtItem = itemCreated.toIterable().first;
 

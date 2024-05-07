@@ -136,7 +136,10 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
   Widget _barcodeTextFormField(WidgetRef ref) {
     String? initialValue = widget.itemVariation?.barcode;
-    ref.watch(barcodeScannerValueControllerProvider).fold(() => (), (x) => {initialValue = x});
+    Option<String> f = ref.watch(barcodeScannerValueControllerProvider);
+    f.fold(() => null, (a) => {initialValue = a});
+
+    // ref.watch(barcodeScannerValueControllerProvider).fold(() => (), (x) => {initialValue = x});
     return Row(
       children: [
         Expanded(

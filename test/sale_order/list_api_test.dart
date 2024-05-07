@@ -24,9 +24,11 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
-  late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -58,19 +60,25 @@ void main() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    team = createdOrError.toIterable().first;
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('you can list so with empty search field', () async {
@@ -78,26 +86,26 @@ void main() async {
       accountId: billAccount.id!,
       date: DateTime.now(),
       currencyCode: CurrencyCode.AUD,
-      lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+      lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
       subTotal: 10,
       total: 20,
       saleOrderNumber: "SO-0001",
     );
-    final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
 
     {
       final searchField = SaleOrderSearchField();
       final poOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(poOrError.isRight(), true);
       expect(poOrError.toIterable().first.data.isNotEmpty, true);
     }
   });
 
   test('you can sort po by date', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     {
       final po = SaleOrder.create(
         accountId: billAccount.id!,
@@ -108,7 +116,7 @@ void main() async {
         total: 20,
         saleOrderNumber: "SO-0001",
       );
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
 
       expect(soCreatedOrError.isRight(), true);
     }
@@ -123,7 +131,7 @@ void main() async {
         total: 20,
         saleOrderNumber: "SO-0002",
       );
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
       expect(soCreatedOrError.isRight(), true);
     }
@@ -138,13 +146,13 @@ void main() async {
         total: 20,
         saleOrderNumber: "SO-0003",
       );
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
       expect(soCreatedOrError.isRight(), true);
     }
 
     {
-      final soOrError = await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken);
       expect(soOrError.isRight(), true);
       expect(soOrError.toIterable().first.data.length, 3);
       expect(soOrError.toIterable().first.data[0].date, DateTime(2024, 3, 1));
@@ -154,7 +162,7 @@ void main() async {
   });
 
   test('you can list po with last created item', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     SaleOrder firstPo;
     {
       final so = SaleOrder.create(
@@ -165,7 +173,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
       firstPo = soCreatedOrError.toIterable().first;
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -179,14 +187,14 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00002");
-      final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final poCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
       secondPo = poCreatedOrError.toIterable().first;
       await Future.delayed(const Duration(seconds: 1));
     }
 
     {
       // final searchField = PurchaseOrderSearchField();
-      final soListOrError = await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken);
+      final soListOrError = await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken);
       expect(soListOrError.isRight(), true);
       final soList = soListOrError.toIterable().first;
       expect(soList.data.length, 2);
@@ -196,7 +204,7 @@ void main() async {
       // we will not see first PO after second PO
       final searchField = SaleOrderSearchField(startingAfterSaleOrderId: secondPo.id!);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       final soList = soListOrError.toIterable().first;
       expect(soList.data.length, 1);
@@ -207,7 +215,7 @@ void main() async {
       // we will not see any po after first PO
       final searchField = SaleOrderSearchField(startingAfterSaleOrderId: firstPo.id!);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       final soList = soListOrError.toIterable().first;
       expect(soList.data.isEmpty, true);
@@ -219,12 +227,12 @@ void main() async {
       accountId: billAccount.id!,
       date: DateTime.now(),
       currencyCode: CurrencyCode.AUD,
-      lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+      lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
       subTotal: 10,
       total: 20,
       saleOrderNumber: "SO-0001",
     );
-    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
@@ -232,7 +240,7 @@ void main() async {
       // for issued, we have a list with one po
       final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       expect(soListOrError.toIterable().first.data.length, 1);
     }
@@ -240,7 +248,7 @@ void main() async {
       // for received, we have a empty list
       final searchField = SaleOrderSearchField(status: SaleOrderStatus.delivered);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       expect(soListOrError.toIterable().first.data.isEmpty, true);
     }
@@ -251,7 +259,7 @@ void main() async {
       await saleOrderApi.setToDelivered(
           date: now,
           saleOrderId: soCreatedOrError.toIterable().first.id!,
-          teamId: team.id!,
+          teamId: teamId,
           token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
@@ -260,7 +268,7 @@ void main() async {
       // for issued, we have a empty list
       final searchField = SaleOrderSearchField(status: SaleOrderStatus.issued);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       expect(soListOrError.toIterable().first.data.isEmpty, true);
     }
@@ -268,7 +276,7 @@ void main() async {
       // for received, we have a list with one po
       final searchField = SaleOrderSearchField(status: SaleOrderStatus.delivered);
       final soListOrError =
-          await saleOrderApi.list(teamId: team.id!, token: firstUserAccessToken, searchField: searchField);
+          await saleOrderApi.list(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
       expect(soListOrError.isRight(), true);
       expect(soListOrError.toIterable().first.data.length, 1);
     }

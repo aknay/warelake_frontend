@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 
@@ -26,6 +27,15 @@ Item getShirt() {
   final whiteShirt = getWhiteShirt();
   final blackShirt = getBlackShirt();
   return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+}
+
+CreateItemRequest getShirtItemRequest() {
+  final whiteShirt = getWhiteShirt();
+  final blackShirt = getBlackShirt();
+  // return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+  return CreateItemRequest(
+      item: Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs'),
+      itemVariations: [whiteShirt, blackShirt]);
 }
 
 ItemVariation getWhiteShirt() {
@@ -56,6 +66,14 @@ Item getJean() {
   return Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs');
 }
 
+CreateItemRequest getJeanItemRequest() {
+  final whiteJean = getWhiteJean();
+  final blackJean = getBlackJean();
+  return CreateItemRequest(
+      item: Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs'),
+      itemVariations: [whiteJean, blackJean]);
+}
+
 ItemVariation getWhiteJean() {
   final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
   final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
@@ -78,18 +96,17 @@ ItemVariation getBlackJean() {
       purchasePriceMoney: purchasePriceMoney);
 }
 
-List<LineItem> getLineItemsWithRandomCount({required List<Item> items}) {
+List<LineItem> getLineItemsWithRandomCount({required List<ItemVariation> items}) {
   return items
-      .map((e) => e.variations.map((e) => LineItem.create(
-          itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: Random().nextInt(5) + 5, unit: 'pcs')))
-      .flattened
+      .map((e) => LineItem.create(
+          itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: Random().nextInt(5) + 5, unit: 'pcs'))
       .toList();
 }
 
-List<LineItem> getLineItems({required List<Tuple2<int, Item>> items}) {
+List<LineItem> getLineItems({required List<Tuple2<int, List<ItemVariation>>> items}) {
   return items
-      .map((f) => f.value2.variations.map((e) => LineItem.create(
-          itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: f.value1, unit: 'pcs')))
+      .map((f) => f.value2.map((e) => LineItem.create(
+          itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: f.value1, unit: 'unit')))
       .flattened
       .toList();
 }

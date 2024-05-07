@@ -7,6 +7,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/stock.transaction/search.field.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -63,7 +64,10 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     final tShirtItem = itemCreated.toIterable().first;
 
@@ -117,7 +121,10 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
@@ -210,7 +217,10 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+
+    final itemCreated =
+        await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     final tShirtItem = itemCreated.toIterable().first;
 
@@ -343,7 +353,9 @@ void main() async {
 
     final shirt = Item.create(name: "shirt", variations: [whiteShrt, blackShirt], unit: 'kg');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt, blackShirt]);
+
+    final itemCreated = await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final retrievedWhiteShirt =

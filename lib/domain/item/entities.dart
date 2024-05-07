@@ -26,31 +26,31 @@ class Item {
 
   factory Item.create(
       {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
-    return Item(name: name, description: description, variations: variations, unit: unit);
+    return Item(name: name, variations: variations, description: description, unit: unit);
   }
   //we w convert to a map before sending to the server
-  Map<String, dynamic> get variationsMapJson {
-    return variations.fold({}, (Map<String, dynamic> map, ItemVariation variation) {
-      final tempId = const Uuid().v4();
-      map[tempId] = variation.toJson();
-      return map;
-    });
-  }
+  // Map<String, dynamic> get variationsMapJson {
+  //   return variations.fold({}, (Map<String, dynamic> map, ItemVariation variation) {
+  //     final tempId = const Uuid().v4();
+  //     map[tempId] = variation.toJson();
+  //     return map;
+  //   });
+  // }
 
   factory Item.fromJson(Map<String, dynamic> json) {
     //we will receive a map and we need tot convert to a list
-    // var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
-    // var itemVariations = itemVariationsJson.map(
-    //   (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
-    // );
+    var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
+    var itemVariations = itemVariationsJson.map(
+      (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
+    );
 
     return Item(
         id: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
+        variations: itemVariations.values.toList(),
         // variations: itemVariations.values.toList(),
-        variations: [],
         productType: json['product_type'],
         unit: json['unit'],
         imageUrl: json['image_url']);

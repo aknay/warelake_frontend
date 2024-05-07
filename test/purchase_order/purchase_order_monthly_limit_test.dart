@@ -22,10 +22,12 @@ void main() async {
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
-  late Item shirtItem;
+      late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
-  late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -57,48 +59,58 @@ void main() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    team = createdOrError.toIterable().first;
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+        final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
-  test('creating po should be successful up to 50 orders but will fail on next order', () async {
-    for (int i = 0; i < 50; i++) {
-      final po = PurchaseOrder.create(
-          accountId: billAccount.id!,
-          date: DateTime.now(),
-          currencyCode: CurrencyCode.AUD,
-          lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
-          subTotal: 10,
-          purchaseOrderNumber: "PO-0001",
-          total: 20);
-      final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-      await Future.delayed(const Duration(seconds: 1));
-      expect(poCreatedOrError.isRight(), true);
-    }
-    {
-      final po = PurchaseOrder.create(
-          accountId: billAccount.id!,
-          date: DateTime.now(),
-          currencyCode: CurrencyCode.AUD,
-          lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
-          subTotal: 10,
-          purchaseOrderNumber: "PO-0001",
-          total: 20);
-      final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-      expect(poCreatedOrError.isRight(), false);
-    }
-  }, timeout: const Timeout(Duration(minutes: 20)),);
+  test(
+    'creating po should be successful up to 50 orders but will fail on next order',
+    () async {
+      for (int i = 0; i < 50; i++) {
+        final po = PurchaseOrder.create(
+            accountId: billAccount.id!,
+            date: DateTime.now(),
+            currencyCode: CurrencyCode.AUD,
+            lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
+            subTotal: 10,
+            purchaseOrderNumber: "PO-0001",
+            total: 20);
+        final poCreatedOrError =
+            await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+        await Future.delayed(const Duration(seconds: 1));
+        expect(poCreatedOrError.isRight(), true);
+      }
+      {
+        final po = PurchaseOrder.create(
+            accountId: billAccount.id!,
+            date: DateTime.now(),
+            currencyCode: CurrencyCode.AUD,
+            lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
+            subTotal: 10,
+            purchaseOrderNumber: "PO-0001",
+            total: 20);
+        final poCreatedOrError =
+            await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
+        expect(poCreatedOrError.isRight(), false);
+      }
+    },
+    timeout: const Timeout(Duration(minutes: 20)),
+  );
 }

@@ -111,7 +111,7 @@ void main() async {
     return double.parse((value).toStringAsFixed(2)); // Round to 2 decimal places
   }
 
-  Item getElectronics() {
+  CreateItemRequest getElectronicsItemRequest() {
     final smartphone = ItemVariation.create(
         name: "Smartphone",
         stockable: true,
@@ -146,8 +146,11 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: PriceMoney.from(amount: 1541, currencyCode: CurrencyCode.AUD),
         purchasePriceMoney: PriceMoney.from(amount: 1480, currencyCode: CurrencyCode.AUD));
-
-    return Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs');
+    return CreateItemRequest(
+        item:
+            Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs'),
+        itemVariations: [smartphone, laptop, tablet, smartwatch, camera]);
+    // return Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs');
   }
 
   test('tiny populate data', () async {
@@ -158,8 +161,9 @@ void main() async {
 
     {
       //add electronics items
-      final electronics = getElectronics();
-      final itemOrError = await itemApi.createItem(item: electronics, teamId: team.id!, token: firstUserAccessToken);
+
+      final itemOrError = await itemApi.createItemRequest(
+          request: getElectronicsItemRequest(), teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
 
       {
@@ -238,9 +242,9 @@ void main() async {
         itemVariationList.add(whiteShrt);
       }
       final itemToBeCreated = Item.create(name: fruit, variations: itemVariationList, unit: 'kg');
-
+      final request = CreateItemRequest(item: itemToBeCreated, itemVariations: itemVariationList);
       final itemOrError =
-          await itemApi.createItem(item: itemToBeCreated, teamId: team.id!, token: firstUserAccessToken);
+          await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
 
       {

@@ -34,20 +34,29 @@ class ItemService {
     });
   }
 
-  Future<Either<String, Unit>> createItem(Item item) async {
-    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
-    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
-      final token = await _authRepo.shouldGetToken();
-      final createdOrError = await _itemRepo.createItem(item: item, teamId: teamId, token: token);
-      return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
-    });
-  }
+  // Future<Either<String, Unit>> createItem(Item item) async {
+  //   final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+  //   return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+  //     final token = await _authRepo.shouldGetToken();
+  //     final createdOrError = await _itemRepo.createItem(item: item, teamId: teamId, token: token);
+  //     return createdOrError.fold((l) => Left(l.message), (r) => const Right(unit));
+  //   });
+  // }
 
   Future<Either<String, Item>> getItem({required String itemId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final createdOrError = await _itemRepo.getItem(itemId: itemId, teamId: teamId, token: token);
+      return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
+
+    Future<Either<String, ItemVariation>> getItemVariation({required String itemId, required String itemVariationId}) async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final createdOrError = await _itemRepo.getItemVariation(itemId: itemId, itemVariationId: itemVariationId, teamId: teamId, token: token);
       return createdOrError.fold((l) => Left(l.message), (r) => Right(r));
     });
   }

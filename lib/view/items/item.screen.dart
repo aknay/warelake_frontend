@@ -101,15 +101,16 @@ class PageContents extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text('Unit: ${item.unit}'),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text('Item Count: ${item.variations.length}'),
-            ),
-            Expanded(
-                child: ItemVariationListView(
-              itemVariationList: item.variations,
-              isToSelectItemVariation: isToSelectItemVariation,
-            )),
+            //TODO
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 16, bottom: 8),
+            //   child: Text('Item Count: ${item.variations.length}'),
+            // ),
+            // Expanded(
+            //     child: ItemVariationListView(
+            //   itemVariationList: item.variations,
+            //   isToSelectItemVariation: isToSelectItemVariation,
+            // )),
           ],
         ));
   }

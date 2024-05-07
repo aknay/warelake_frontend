@@ -133,9 +133,11 @@ class _StockTransactionListViewState extends ConsumerState<StockTransactionListV
       case StockMovement.stockIn:
         icon = const FaIcon(FontAwesomeIcons.arrowRightToBracket, color: rallyGreen, size: iconSize);
         stockMovementText = "Stock In";
+        break;
       case StockMovement.stockOut:
         icon = const FaIcon(FontAwesomeIcons.arrowRightFromBracket, color: Colors.deepOrangeAccent, size: iconSize);
         stockMovementText = "Stock Out";
+        break;
       case StockMovement.stockAdjust:
         icon = const FaIcon(FontAwesomeIcons.rightLeft, color: rallyYellow, size: iconSize);
         stockMovementText = "Stock Adjust";

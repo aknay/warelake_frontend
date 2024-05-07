@@ -68,13 +68,13 @@ void main() async {
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
+    // final shirt = getShirt();
+    // final jean = getJean();
 
-    final shirtCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError = await itemRepo.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemRepo.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final jeansCreatedOrError = await itemRepo.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
   });
 

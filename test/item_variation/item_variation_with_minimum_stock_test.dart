@@ -8,6 +8,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -78,7 +79,9 @@ void main() async {
     itemVariations.add(whiteShrt);
     // }
     final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+  final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     await Future.delayed(const Duration(seconds: 1));
     expect(itemCreated.toIterable().first.variations.first.minimumStock, 0);
@@ -104,7 +107,9 @@ void main() async {
     itemVariations.add(whiteShrt);
     // }
     final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     await Future.delayed(const Duration(seconds: 1));
     expect(itemCreated.toIterable().first.variations.first.minimumStock, 5);
@@ -124,7 +129,9 @@ void main() async {
     itemVariations.add(whiteShrt);
     // }
     final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     await Future.delayed(const Duration(seconds: 1));
     // expect(itemCreated.toIterable().first.variations.first.minimumStock, const Some(5));
@@ -149,7 +156,9 @@ void main() async {
     itemVariations.add(whiteShrt);
     // }
     final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     await Future.delayed(const Duration(seconds: 1));
     expect(itemCreated.toIterable().first.variations.first.minimumStock, 5);
@@ -174,7 +183,9 @@ void main() async {
     itemVariations.add(whiteShrt);
     // }
     final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
     await Future.delayed(const Duration(seconds: 1));
 

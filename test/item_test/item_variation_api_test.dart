@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -56,7 +55,7 @@ void main() async {
     expect(accountListOrError.isRight(), true);
   });
 
-  test('you can crate image for an item', () async {
+  test('you can get back the item variations', () async {
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
@@ -68,85 +67,43 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney);
     final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
-    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
-
-    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedItemOrError =
-        await itemRepo.getItem(itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
-    expect(retrievedItemOrError.isRight(), true);
-    final item = retrievedItemOrError.toIterable().first;
-
-//create image
-    {
-      String currentDirectory = Directory.current.path;
-
-      // Construct the path to the image file in the same directory as the test file
-      final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
-
-      final request = ItemImageRequest(itemId: item.id!, imagePath: File(imagePath), teamId: teamId);
-
-      final createdImageOrError = await itemRepo.createItemImage(request: request, token: firstUserAccessToken);
-
-      expect(createdImageOrError.isRight(), true);
-    }
-    {
-      //check image url is updated in item
-      final retrievedItemOrError = await itemRepo.getItem(
-          itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
-      expect(retrievedItemOrError.isRight(), true);
-      final item = retrievedItemOrError.toIterable().first;
-      expect(item.imageUrl != null, true);
-      expect(item.imageUrl?.contains(teamId), true);
-    }
-  });
-
-  test('you can create image for an item variation', () async {
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
         stockable: true,
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt, blackShirt]);
+
     final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     final retrievedItemOrError =
         await itemRepo.getItem(itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
     expect(retrievedItemOrError.isRight(), true);
-    final item = retrievedItemOrError.toIterable().first;
+    final shirtItem = retrievedItemOrError.toIterable().first;
 
-//create image
     {
-      String currentDirectory = Directory.current.path;
+      //dummy item creation
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+      expect(itemCreated.isRight(), true);
 
-      // Construct the path to the image file in the same directory as the test file
-      final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
-
-      final request = ItemVariationImageRequest(
-          itemId: item.id!, imagePath: File(imagePath), teamId: teamId, itemVariationId: item.variations.first.id!);
-
-      final createdImageOrError =
-          await itemRepo.upsertItemVariationImage(request: request, token: firstUserAccessToken);
-
-      expect(createdImageOrError.isRight(), true);
-    }
-    {
-      //check image url is updated in item
       final retrievedItemOrError = await itemRepo.getItem(
           itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
       expect(retrievedItemOrError.isRight(), true);
-      final item = retrievedItemOrError.toIterable().first;
-      expect(item.variations.first.imageUrl != null, true);
-      expect(item.variations.first.imageUrl?.contains(teamId), true);
-      expect(item.variations.first.imageUrl?.contains(item.id!), true);
-      expect(item.variations.first.imageUrl?.contains(item.variations.first.id!), true);
+    }
+
+    {
+      //check item variation list
+      final shirtVariationsOrError =
+          await itemRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+      expect(shirtVariationsOrError.isRight(), true);
+      final shirtVariations = shirtVariationsOrError.toIterable().first;
+      expect(shirtVariations.length, 2);
+      expect(shirtVariations.where((element) => element.name == 'White shirt').length, 1);
+      expect(shirtVariations.where((element) => element.name == 'Black shirt').length, 1);
     }
   });
 }

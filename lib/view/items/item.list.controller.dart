@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
 
@@ -19,9 +20,9 @@ class ItemListController extends _$ItemListController {
     return itemsOrError.toIterable().first.data;
   }
 
-  Future<bool> createItem(Item item) async {
+  Future<bool> createItemRequest(CreateItemRequest request) async {
     state = const AsyncLoading();
-    final createdOrError = await ref.read(itemServiceProvider).createItem(item);
+    final createdOrError = await ref.read(itemServiceProvider).createItemRequest(request);
     return await createdOrError.fold((l) {
       state = AsyncError(l, StackTrace.current);
       return false;
@@ -34,7 +35,6 @@ class ItemListController extends _$ItemListController {
       return true;
     });
   }
-
 
   Future<Either<String, ListResponse<Item>>> _list({ItemSearchField? searchField}) async {
     if (kDebugMode) {

@@ -38,25 +38,25 @@ class ItemRepository extends ItemApi {
 //   }
 // }
 
-  @override
-  Future<Either<ErrorResponse, Item>> createItem(
-      {required Item item, required String teamId, required String token}) async {
-    throw Exception('should not be called');
-    try {
-      final response =
-          await HttpHelper.post(url: ApiEndPoint.getItemEndPoint(), body: item.toJson(), token: token, teamId: teamId);
+  // @override
+  // Future<Either<ErrorResponse, Item>> createItem(
+  //     {required Item item, required String teamId, required String token}) async {
+  //   throw Exception('should not be called');
+  //   try {
+  //     final response =
+  //         await HttpHelper.post(url: ApiEndPoint.getItemEndPoint(), body: item.toJson(), token: token, teamId: teamId);
 
-      if (response.statusCode == 201) {
-        return Right(Item.fromJson(jsonDecode(response.body)));
-      }
-      log("error while creating an item: response code ${response.statusCode}");
-      log("error while creating an item: response ${jsonDecode(response.body)}");
-      return Left(ErrorResponse.fromJson(json: jsonDecode(response.body), statusCode: response.statusCode));
-    } catch (e) {
-      log("the error is $e");
-      return Left(ErrorResponse.withOtherError(message: e.toString()));
-    }
-  }
+  //     if (response.statusCode == 201) {
+  //       return Right(Item.fromJson(jsonDecode(response.body)));
+  //     }
+  //     log("error while creating an item: response code ${response.statusCode}");
+  //     log("error while creating an item: response ${jsonDecode(response.body)}");
+  //     return Left(ErrorResponse.fromJson(json: jsonDecode(response.body), statusCode: response.statusCode));
+  //   } catch (e) {
+  //     log("the error is $e");
+  //     return Left(ErrorResponse.withOtherError(message: e.toString()));
+  //   }
+  // }
 
   @override
   Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({
@@ -319,7 +319,7 @@ class ItemRepository extends ItemApi {
     try {
       final response = await HttpHelper.post(
           url: ApiEndPoint.getItemEndPoint(), body: request.toJson(), token: token, teamId: teamId);
-
+      log("here while creating an item: response ${jsonDecode(response.body)}");
       if (response.statusCode == 201) {
         return Right(Item.fromJson(jsonDecode(response.body)));
       }
@@ -361,16 +361,46 @@ class ItemRepository extends ItemApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
-  
+
   @override
-  Future<Either<ErrorResponse, ItemVariation>> getItemVariation({required String itemId, required String itemVariationId, required String teamId, required String token}) async {
+  Future<Either<ErrorResponse, ItemVariation>> getItemVariation(
+      {required String itemId, required String itemVariationId, required String teamId, required String token}) async {
     try {
-      final response =
-          await HttpHelper.get(url: ApiEndPoint.getItemVariationEndPoint(itemId: itemId, itemVariationId: itemVariationId), token: token, teamId: teamId);
+      final response = await HttpHelper.get(
+          url: ApiEndPoint.getItemVariationEndPoint(itemId: itemId, itemVariationId: itemVariationId),
+          token: token,
+          teamId: teamId);
 
       if (response.statusCode == 200) {
         return Right(ItemVariation.fromJson(jsonDecode(response.body)));
       }
+      log("get item response code ${response.statusCode}");
+      log("get item response ${jsonDecode(response.body)}");
+      return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      log("the error is $e");
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ErrorResponse, List<ItemVariation>>> getItemVariations(
+      {required String itemId, required String teamId, required String token}) async {
+    try {
+      final response =
+          await HttpHelper.get(url: ApiEndPoint.getItemVariationEndPoint(itemId: itemId), token: token, teamId: teamId);
+
+      if (response.statusCode == 200) {
+        //   List<ItemVariation> data = [];
+        //   response.body.forEach((v) {
+        //     data.add(ItemVariation.fromJson(v));
+        //   });
+        //   return Right(data);
+        final listResponse = ListResponse.fromJson(jsonDecode(response.body), ItemVariation.fromJson);
+
+        return Right(listResponse.data);
+      }
+
       log("get item response code ${response.statusCode}");
       log("get item response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
 import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
@@ -57,7 +58,9 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
       final item =
           Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: itemUnit.toIterable().first);
 
-      final isCreated = await ref.read(itemListControllerProvider.notifier).createItem(item);
+      final request = CreateItemRequest(item: item, itemVariations: itemVariations);
+
+      final isCreated = await ref.read(itemListControllerProvider.notifier).createItemRequest(request);
 
       if (isCreated && mounted) {
         context.pop();
@@ -122,8 +125,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                 onSaved: (value) => itemUnit = optionOf(value),
               ),
               Expanded(
-                child:
-                    ItemVariationListView(itemVariationList: itemVariationList.toList(), isToSelectItemVariation: false),
+                child: ItemVariationListView(
+                    itemVariationList: itemVariationList.toList(), isToSelectItemVariation: false),
               )
             ],
           ),
