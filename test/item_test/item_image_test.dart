@@ -122,6 +122,11 @@ void main() async {
     expect(retrievedItemOrError.isRight(), true);
     final item = retrievedItemOrError.toIterable().first;
 
+    final shirtVariationsOrError =
+        await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    expect(shirtVariationsOrError.isRight(), true);
+    final shirtVariations = shirtVariationsOrError.toIterable().first;
+
 //create image
     {
       String currentDirectory = Directory.current.path;
@@ -130,23 +135,25 @@ void main() async {
       final String imagePath = '$currentDirectory/test/gc.png'; // Adjust the image file name
 
       final request = ItemVariationImageRequest(
-          itemId: item.id!, imagePath: File(imagePath), teamId: teamId, itemVariationId: item.variations.first.id!);
+          itemId: item.id!, imagePath: File(imagePath), teamId: teamId, itemVariationId: shirtVariations.first.id!);
 
       final createdImageOrError =
           await itemRepo.upsertItemVariationImage(request: request, token: firstUserAccessToken);
 
       expect(createdImageOrError.isRight(), true);
+      await Future.delayed(const Duration(seconds: 1));
     }
     {
       //check image url is updated in item
-      final retrievedItemOrError = await itemRepo.getItem(
-          itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
-      expect(retrievedItemOrError.isRight(), true);
-      final item = retrievedItemOrError.toIterable().first;
-      expect(item.variations.first.imageUrl != null, true);
-      expect(item.variations.first.imageUrl?.contains(teamId), true);
-      expect(item.variations.first.imageUrl?.contains(item.id!), true);
-      expect(item.variations.first.imageUrl?.contains(item.variations.first.id!), true);
+      final shirtVariationsOrError =
+          await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      expect(shirtVariationsOrError.isRight(), true);
+      final shirtVariations = shirtVariationsOrError.toIterable().first;
+      final shirtVariation = shirtVariations.first;
+      expect(shirtVariation.imageUrl != null, true);
+      expect(shirtVariation.imageUrl?.contains(teamId), true);
+      expect(shirtVariation.imageUrl?.contains(item.id!), true);
+      expect(shirtVariation.imageUrl?.contains(shirtVariation.id!), true);
     }
   });
 }
