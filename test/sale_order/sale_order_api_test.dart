@@ -260,7 +260,7 @@ void main() async {
         token: firstUserAccessToken,
       );
       final so = soOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(so.deliveredAt!), DateFormat('yyyy-MM-dd').format(date));
+      expect(DateFormat('yyyy-MM-dd').format(so.date), DateFormat('yyyy-MM-dd').format(date));
     }
 
     {

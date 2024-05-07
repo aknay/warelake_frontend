@@ -177,7 +177,7 @@ void main() async {
       final poOrError =
           await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
       final po = poOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
+      expect(DateFormat('yyyy-MM-dd').format(po.date), DateFormat('yyyy-MM-dd').format(now));
     }
 
     //sleep a while to update correctly
