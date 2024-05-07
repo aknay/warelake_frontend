@@ -186,13 +186,25 @@ void main() async {
     {
       final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
       final blackshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Shirt').first;
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: whiteshirtLineItem.itemVariation.itemId!, teamId: team.id!, token: firstUserAccessToken);
-      final whiteShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'White Shirt').first;
+
+      final whiteShirtItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: whiteshirtLineItem.itemVariation.itemId!,
+          itemVariationId: whiteshirtLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final whiteShirtItemVariation = whiteShirtItemVaraitionOrError.toIterable().first;
+
       expect(whiteShirtItemVariation.itemCount, whiteshirtLineItem.quantity);
-      final blackShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'Black Shirt').first;
+
+      final blackShirtItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: blackshirtLineItem.itemVariation.itemId!,
+          itemVariationId: blackshirtLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final blackShirtItemVariation = blackShirtItemVaraitionOrError.toIterable().first;
+
       expect(blackShirtItemVariation.itemCount, blackshirtLineItem.quantity);
     }
 
@@ -200,14 +212,24 @@ void main() async {
       //check jean item count
       final whiteJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'White Jean').first;
       final blackJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Jean').first;
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: whiteJeanLineItem.itemVariation.itemId!, teamId: team.id!, token: firstUserAccessToken);
-      final whiteShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'White Jean').first;
-      expect(whiteShirtItemVariation.itemCount, whiteJeanLineItem.quantity);
-      final blackShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'Black Jean').first;
-      expect(blackShirtItemVariation.itemCount, blackJeanLineItem.quantity);
+
+      final whiteJeanItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: whiteJeanLineItem.itemVariation.itemId!,
+          itemVariationId: whiteJeanLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+      final whiteJeanItemVariation = whiteJeanItemVaraitionOrError.toIterable().first;
+
+      final blackJeanItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: blackJeanLineItem.itemVariation.itemId!,
+          itemVariationId: blackJeanLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final blackJeanItemVariation = blackJeanItemVaraitionOrError.toIterable().first;
+
+      expect(whiteJeanItemVariation.itemCount, whiteJeanLineItem.quantity);
+      expect(blackJeanItemVariation.itemCount, blackJeanLineItem.quantity);
     }
 
     {
@@ -293,7 +315,7 @@ void main() async {
   });
 
   test('you can delete po with issued state and check totalQuantityOfAllItemVariation', () async {
-       final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
