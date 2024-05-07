@@ -9,7 +9,6 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
-import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -28,7 +27,6 @@ void main() async {
   late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
   late List<ItemVariation> jeanItemVariations;
-  late BillAccount billAccount;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -63,7 +61,6 @@ void main() async {
     teamId = createdOrError.toIterable().first.id!;
     final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
-    billAccount = accountListOrError.toIterable().first.data.first;
 
     final shirtCreatedOrError =
         await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
