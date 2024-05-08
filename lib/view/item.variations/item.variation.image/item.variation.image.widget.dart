@@ -6,11 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.controller.dart';
 
 class ItemVariationImageWidget extends ConsumerWidget {
+  final Option<String> imageUrlOrNone;
   final String? itemId;
   final String itemVariationId;
   final bool isForTheList;
   const ItemVariationImageWidget(
-      {super.key, required this.itemId, required this.itemVariationId, required this.isForTheList});
+      {super.key,
+      required this.itemId,
+      required this.itemVariationId,
+      required this.isForTheList,
+      this.imageUrlOrNone = const None()});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,6 +26,13 @@ class ItemVariationImageWidget extends ConsumerWidget {
       return _getPlaceHolder(imageSize);
     }
 
+    if (imageUrlOrNone.isSome()) {
+      //if will help to reduce the api call for itemVariationImageControllerProvider
+      final url = imageUrlOrNone.toIterable().first;
+      final imageUrl = kDebugMode ? replaceIpAddress(url, '10.0.2.2') : url;
+      return _getImageWidget(imageUrl, imageSize);
+    }
+
     final imageUrl = ref.watch(itemVariationImageControllerProvider(itemId: itemId!, itemVariationId: itemVariationId));
 
     final f = imageUrl.when(data: (data) {
@@ -29,21 +41,7 @@ class ItemVariationImageWidget extends ConsumerWidget {
       }, (a) {
         final imageUrl = kDebugMode ? replaceIpAddress(a, '10.0.2.2') : a;
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            imageBuilder: (context, imageProvider) => Container(
-              width: imageSize,
-              height: imageSize,
-              decoration: BoxDecoration(
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-            placeholder: (context, url) => _getPlaceHolder(imageSize),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
-        );
+        return _getImageWidget(imageUrl, imageSize);
       });
     }, error: (object, error) {
       return const Text('error');
@@ -56,6 +54,24 @@ class ItemVariationImageWidget extends ConsumerWidget {
             .read(itemVariationImageControllerProvider(itemId: itemId!, itemVariationId: itemVariationId).notifier)
             .pickImage;
     return GestureDetector(onTap: onClick, child: f);
+  }
+
+  Widget _getImageWidget(String imageUrl, double imageSize) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        imageBuilder: (context, imageProvider) => Container(
+          width: imageSize,
+          height: imageSize,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+          ),
+        ),
+        placeholder: (context, url) => _getPlaceHolder(imageSize),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+      ),
+    );
   }
 
   String replaceIpAddress(String originalUrl, String newIpAddress) {

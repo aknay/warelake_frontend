@@ -31,7 +31,12 @@ class AsyncItemVariationByItemIdListView extends ConsumerWidget {
           return ListView(
             children: itemVariationList
                 .map((e) => ListTile(
-                      leading: ItemVariationImageWidget(itemId: e.itemId, itemVariationId: e.id!, isForTheList: true),
+                      leading: ItemVariationImageWidget(
+                        itemId: e.itemId,
+                        itemVariationId: e.id!,
+                        isForTheList: true,
+                        imageUrlOrNone: optionOf(e.imageUrl),
+                      ),
                       title: Text(e.name),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +138,5 @@ class AsyncItemVariationByItemIdListView extends ConsumerWidget {
         },
         error: (object, error) => Text("$error"),
         loading: () => const Center(child: CircularProgressIndicator()));
-
- 
   }
 }
