@@ -5,10 +5,10 @@ import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/item.variations/async.item.variation.by.item.id.list.view.dart';
 import 'package:warelake/view/items/edit.item.group.screen.dart';
 import 'package:warelake/view/items/item.controller.dart';
 import 'package:warelake/view/items/item.image/item.image.widget.dart';
-import 'package:warelake/view/items/item.list.controller.dart';
 
 enum ItemAction { delete }
 
@@ -21,7 +21,6 @@ class ItemScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final jobAsync = ref.watch(itemControllerProvider(itemId: itemId));
-    ref.watch(itemListControllerProvider);
     return ScaffoldAsyncValueWidget<Item>(
       value: jobAsync,
       data: (job) => PageContents(item: job, isToSelectItemVariation: isToSelectItemVariation),
@@ -110,6 +109,12 @@ class PageContents extends ConsumerWidget {
             //   itemVariationList: item.variations,
             //   isToSelectItemVariation: isToSelectItemVariation,
             // )),
+
+            Expanded(
+                child: AsyncItemVariationByItemIdListView(
+              itemId: item.id!,
+              isToSelectItemVariation: isToSelectItemVariation,
+            )),
           ],
         ));
   }
