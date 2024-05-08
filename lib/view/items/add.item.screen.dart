@@ -56,7 +56,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
       }
 
       final item =
-          Item.create(name: itemName.toIterable().first, variations: itemVariations, unit: itemUnit.toIterable().first);
+          Item.create(name: itemName.toIterable().first, unit: itemUnit.toIterable().first);
 
       final request = CreateItemRequest(item: item, itemVariations: itemVariations);
 

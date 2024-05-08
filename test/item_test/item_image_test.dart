@@ -66,7 +66,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
 
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
 
@@ -112,7 +112,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
     final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);

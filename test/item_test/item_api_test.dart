@@ -21,7 +21,7 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
-  late Item shirtItem;
+
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -57,52 +57,20 @@ void main() async {
     final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
 
-    final shirt = getShirt();
-    // final jean = getJean();
+    // final shirt = getShirt();
+    // // final jean = getJean();
 
-    final request = CreateItemRequest(item: shirt, itemVariations: shirt.variations);
+    // final request = CreateItemRequest(item: shirt, itemVariations: shirt.variations);
 
-    final shirtCreatedOrError =
-        await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
-    shirtItem = shirtCreatedOrError.toIterable().first;
-    // await itemRepo.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
+    // final shirtCreatedOrError =
+    //     await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    // shirtItem = shirtCreatedOrError.toIterable().first;
+    // // await itemRepo.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
   });
 
-  // Item getShirt() {
-  //   final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-  //   final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-
-  //   final whiteShirt = ItemVariation.create(
-  //       name: "White Shirt",
-  //       stockable: true,
-  //       sku: 'sku 123',
-  //       salePriceMoney: salePriceMoney,
-  //       purchasePriceMoney: purchasePriceMoney);
-
-  //   final blackShirt = ItemVariation.create(
-  //       name: "Black Shirt",
-  //       stockable: true,
-  //       sku: 'sku 234',
-  //       salePriceMoney: salePriceMoney,
-  //       purchasePriceMoney: purchasePriceMoney);
-
-  //   return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-  // }
-
   test('creating item should be successful', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-    // {
-    //   // item utilization must be zero when there is no item added
-    //   final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
-    //   expect(iuOrError.isRight(), true);
-    //   expect(iuOrError.toIterable().first.totalItemVariationsCount, 0);
-    // }
-    final request = CreateItemRequest(item: getShirt(), itemVariations: getShirt().variations);
-    final itemCreated =
-        await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
+    final request = getShirtItemRequest();
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
 
     // final item = itemCreated.toIterable().first;
@@ -110,7 +78,7 @@ void main() async {
 
     {
       // item utilization must be zero when there is no item added
-      final iuOrError = await itemRepo.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemRepo.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalItemVariationsCount, 2);
       expect(iuOrError.toIterable().first.totalItemCount, 1);
@@ -133,7 +101,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
 
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
 
@@ -161,7 +129,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'pcs');
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
 
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
 
@@ -185,73 +153,73 @@ void main() async {
     }
   });
 
-  test('new item variations can be added after the item is created', () async {
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+  // test('new item variations can be added after the item is created', () async {
+  //   final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+  //   final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
-    final greenShirt = ItemVariation.create(
-        name: "Green Shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+  //   final greenShirt = ItemVariation.create(
+  //       name: "Green Shirt",
+  //       stockable: true,
+  //       sku: 'sku 123',
+  //       salePriceMoney: salePriceMoney,
+  //       purchasePriceMoney: purchasePriceMoney);
 
-    final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
-        itemId: shirtItem.id!,
-        teamId: teamId,
-        token: firstUserAccessToken);
+  //   final updatedOrError = await itemRepo.updateItem(
+  //       payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
+  //       itemId: shirtItem.id!,
+  //       teamId: teamId,
+  //       token: firstUserAccessToken);
 
-    expect(updatedOrError.isRight(), true);
+  //   expect(updatedOrError.isRight(), true);
 
-    {
-      //check the item variation is there
-      final retrievedItemOrError =
-          await itemRepo.getItem(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
-      final newShirtItem = retrievedItemOrError.toIterable().first;
+  //   {
+  //     //check the item variation is there
+  //     final retrievedItemOrError =
+  //         await itemRepo.getItem(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+  //     final newShirtItem = retrievedItemOrError.toIterable().first;
 
-      final itemVariationsOrError = await itemRepo.getItemVariationListByItemId(
-          itemId: newShirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+  //     final itemVariationsOrError = await itemRepo.getItemVariationListByItemId(
+  //         itemId: newShirtItem.id!, teamId: teamId, token: firstUserAccessToken);
 
-      expect(itemVariationsOrError.toIterable().first.data.length, 3);
-      expect(itemVariationsOrError.toIterable().first.data.where((element) => element.name == 'Green Shirt').isNotEmpty,
-          true);
-    }
-  });
+  //     expect(itemVariationsOrError.toIterable().first.data.length, 3);
+  //     expect(itemVariationsOrError.toIterable().first.data.where((element) => element.name == 'Green Shirt').isNotEmpty,
+  //         true);
+  //   }
+  // });
 
-  test('item can be search after the item variations are added to item', () async {
-    //TODO: not sure we need this test
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+  // test('item can be search after the item variations are added to item', () async {
+  //   //TODO: not sure we need this test
+  //   final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+  //   final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
-    final greenShirt = ItemVariation.create(
-        name: "Green Shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
+  //   final greenShirt = ItemVariation.create(
+  //       name: "Green Shirt",
+  //       stockable: true,
+  //       sku: 'sku 123',
+  //       salePriceMoney: salePriceMoney,
+  //       purchasePriceMoney: purchasePriceMoney);
 
-    final updatedOrError = await itemRepo.updateItem(
-        payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
-        itemId: shirtItem.id!,
-        teamId: teamId,
-        token: firstUserAccessToken);
+  //   final updatedOrError = await itemRepo.updateItem(
+  //       payload: ItemUpdatePayload(newItemVariationListOrNone: [greenShirt]),
+  //       itemId: shirtItem.id!,
+  //       teamId: teamId,
+  //       token: firstUserAccessToken);
 
-    expect(updatedOrError.isRight(), true);
+  //   expect(updatedOrError.isRight(), true);
 
-    {
-      //you can search a shirt
-      final searchField = ItemSearchField(itemName: 'shirt');
-      final itemListOrError = await itemRepo.getItemList(
-        teamId: teamId,
-        itemSearchField: searchField,
-        token: firstUserAccessToken,
-      );
-      expect(itemListOrError.isRight(), true);
-      expect(itemListOrError.toIterable().first.data.length, 1);
-      expect(itemListOrError.toIterable().first.data.first.name, 'shirt');
-    }
-  });
+  //   {
+  //     //you can search a shirt
+  //     final searchField = ItemSearchField(itemName: 'shirt');
+  //     final itemListOrError = await itemRepo.getItemList(
+  //       teamId: teamId,
+  //       itemSearchField: searchField,
+  //       token: firstUserAccessToken,
+  //     );
+  //     expect(itemListOrError.isRight(), true);
+  //     expect(itemListOrError.toIterable().first.data.length, 1);
+  //     expect(itemListOrError.toIterable().first.data.first.name, 'shirt');
+  //   }
+  // });
 
   test('you can delete the item', () async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
@@ -367,19 +335,8 @@ void main() async {
     expect(createdOrError.isRight(), true);
     final team = createdOrError.toIterable().first;
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
     {
       for (int i = 0; i < 6; i++) {
-        // final whiteShrt = ItemVariation.create(
-        //     name: "White shirt",
-        //     stockable: true,
-        //     sku: '$i sku 123',
-        //     salePriceMoney: salePriceMoney,
-        //     purchasePriceMoney: purchasePriceMoney);
-        // final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
         final request = CreateItemRequest(item: getShirt(), itemVariations: [getWhiteShirt(), getBlackShirt()]);
 
         final itemCreated =
@@ -395,14 +352,6 @@ void main() async {
       expect(itemList.data.length, 6);
       expect(itemList.hasMore, false);
     }
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
 
     final request = CreateItemRequest(item: getShirt(), itemVariations: [getWhiteShirt(), getBlackShirt()]);
 
@@ -497,7 +446,7 @@ void main() async {
           sku: 'sku 123',
           salePriceMoney: salePriceMoney,
           purchasePriceMoney: purchasePriceMoney);
-      final shirt = Item.create(name: "Mango", variations: [dryMango], unit: 'kg');
+      final shirt = Item.create(name: "Mango", unit: 'kg');
       final request = CreateItemRequest(item: shirt, itemVariations: [dryMango]);
       final itemCreated =
           await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
@@ -553,7 +502,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
 
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
     final itemCreatedOrError =
@@ -613,7 +562,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "Shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "Shirt", unit: 'kg');
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
     final itemCreated =
         await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);

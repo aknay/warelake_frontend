@@ -70,7 +70,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+    final shirt = Item.create(name: "shirt",  unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -103,7 +103,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+    final shirt = Item.create(name: "shirt",  unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -135,7 +135,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+    final shirt = Item.create(name: "shirt",unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -175,7 +175,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);

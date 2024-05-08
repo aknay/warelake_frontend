@@ -425,15 +425,26 @@ void main() async {
 
     {
       // check all item count reset back to zero
-      final itemIds = lineItems.map((e) => e.itemVariation.itemId!).toSet();
-      for (var itemId in itemIds) {
-        final retrievedItemsOrError =
-            await itemApi.getItem(itemId: itemId, teamId: team.id!, token: firstUserAccessToken);
-        final itemVariations = retrievedItemsOrError.toIterable().first.variations;
-        for (var iv in itemVariations) {
-          expect(iv.itemCount, 0);
-        }
+
+      for (var v in lineItems) {
+        final itemVariationOrError = await itemApi.getItemVariation(
+            itemId: v.itemVariation.itemId!,
+            itemVariationId: v.itemVariation.id!,
+            teamId: teamId,
+            token: firstUserAccessToken);
+        final itemVariation = itemVariationOrError.toIterable().first;
+        expect(itemVariation.itemCount, 0);
       }
+
+      // final itemIds = lineItems.map((e) => e.itemVariation.itemId!).toSet();
+      // for (var itemId in itemIds) {
+      //   final retrievedItemsOrError =
+      //       await itemApi.getItem(itemId: itemId, teamId: team.id!, token: firstUserAccessToken);
+      //   final itemVariations = retrievedItemsOrError.toIterable().first.variations;
+      //   for (var iv in itemVariations) {
+      //     expect(iv.itemCount, 0);
+      //   }
+      // }
     }
 
     {

@@ -9,7 +9,6 @@ class Item {
   String? abbreviation;
   String? updatedAt;
   String? createdAt;
-  List<ItemVariation> variations;
   String? productType;
   String unit;
   String? imageUrl;
@@ -18,39 +17,21 @@ class Item {
       {required this.name,
       this.description,
       this.abbreviation,
-      required this.variations,
       this.productType,
       required this.unit,
       this.id,
       this.imageUrl});
 
-  factory Item.create(
-      {required String name, String? description, required List<ItemVariation> variations, required String unit}) {
-    return Item(name: name, variations: variations, description: description, unit: unit);
+  factory Item.create({required String name, String? description, required String unit}) {
+    return Item(name: name, description: description, unit: unit);
   }
-  //we w convert to a map before sending to the server
-  // Map<String, dynamic> get variationsMapJson {
-  //   return variations.fold({}, (Map<String, dynamic> map, ItemVariation variation) {
-  //     final tempId = const Uuid().v4();
-  //     map[tempId] = variation.toJson();
-  //     return map;
-  //   });
-  // }
 
   factory Item.fromJson(Map<String, dynamic> json) {
-    //we will receive a map and we need tot convert to a list
-    var itemVariationsJson = json['item_variations'] as Map<String, dynamic>? ?? {};
-    var itemVariations = itemVariationsJson.map(
-      (key, value) => MapEntry(key, ItemVariation.fromJson(value as Map<String, dynamic>)),
-    );
-
     return Item(
         id: json['item_id'],
         name: json['name'],
         description: json['description'],
         abbreviation: json['abbreviation'],
-        variations: itemVariations.values.toList(),
-        // variations: itemVariations.values.toList(),
         productType: json['product_type'],
         unit: json['unit'],
         imageUrl: json['image_url']);
@@ -61,7 +42,6 @@ class Item {
       'name': name,
       'description': description,
       'abbreviation': abbreviation,
-      // 'item_variations': variationsMapJson,
       'product_type': productType,
       'unit': unit
     };

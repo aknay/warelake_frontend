@@ -123,11 +123,11 @@ class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
             ),
             gapH16,
             Text('Existing Items', style: Theme.of(context).textTheme.titleLarge),
-            Expanded(
-                child: ItemVariationListView(
-              itemVariationList: widget.item.variations,
-              isToSelectItemVariation: false,
-            )),
+            // Expanded(
+            //     child: ItemVariationListView(
+            //   itemVariationList: widget.item.variations,
+            //   isToSelectItemVariation: false,
+            // )),
           ],
         ),
       ),

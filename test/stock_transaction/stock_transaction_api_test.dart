@@ -80,7 +80,7 @@ void main() async {
 
   test('creating stx wiht stock in should be successful', () async {
     final lineItems = getStocklLineItemWithRandomCount(createdItemList: shirtItemVariations + jeanItemVariations);
-    log('line items ${lineItems}');
+    log('line items $lineItems');
     final rawTx = StockTransaction.create(
       date: DateTime.now(),
       lineItems: lineItems,

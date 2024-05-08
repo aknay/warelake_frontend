@@ -147,10 +147,8 @@ void main() async {
         salePriceMoney: PriceMoney.from(amount: 1541, currencyCode: CurrencyCode.AUD),
         purchasePriceMoney: PriceMoney.from(amount: 1480, currencyCode: CurrencyCode.AUD));
     return CreateItemRequest(
-        item:
-            Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs'),
+        item: Item.create(name: "Electronics", unit: 'pcs'),
         itemVariations: [smartphone, laptop, tablet, smartwatch, camera]);
-    // return Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs');
   }
 
   test('tiny populate data', () async {
@@ -180,7 +178,12 @@ void main() async {
         }
       }
       List<StockLineItem> lineItemList = [];
-      for (var variation in item.variations) {
+
+      final itemVariationsOrError =
+          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+      final itemVariations = itemVariationsOrError.toIterable().first;
+
+      for (var variation in itemVariations) {
         String currentDirectory = Directory.current.path;
         // Construct the path to the image file in the same directory as the test file
         final imageFileName = '${variation.name.toLowerCase()}.png';
@@ -241,7 +244,7 @@ void main() async {
             purchasePriceMoney: purchasePriceMoney);
         itemVariationList.add(whiteShrt);
       }
-      final itemToBeCreated = Item.create(name: fruit, variations: itemVariationList, unit: 'kg');
+      final itemToBeCreated = Item.create(name: fruit, unit: 'kg');
       final request = CreateItemRequest(item: itemToBeCreated, itemVariations: itemVariationList);
       final itemOrError =
           await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
@@ -262,7 +265,10 @@ void main() async {
         }
       }
 
-      retrievedItemVariationList.addAll(item.variations);
+      final itemVariationsOrError =
+          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+      final itemVariations = itemVariationsOrError.toIterable().first;
+      retrievedItemVariationList.addAll(itemVariations);
 
       await Future.delayed(const Duration(milliseconds: 1000));
     }

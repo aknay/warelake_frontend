@@ -24,18 +24,13 @@ String generateRandomEmail() {
 }
 
 Item getShirt() {
-  final whiteShirt = getWhiteShirt();
-  final blackShirt = getBlackShirt();
-  return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+  return Item.create(name: "shirt", unit: 'pcs');
 }
 
 CreateItemRequest getShirtItemRequest() {
   final whiteShirt = getWhiteShirt();
   final blackShirt = getBlackShirt();
-  // return Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-  return CreateItemRequest(
-      item: Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs'),
-      itemVariations: [whiteShirt, blackShirt]);
+  return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
 ItemVariation getWhiteShirt() {
@@ -61,16 +56,14 @@ ItemVariation getBlackShirt() {
 }
 
 Item getJean() {
-  final whiteJean = getWhiteJean();
-  final blackJean = getBlackJean();
-  return Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs');
+  return Item.create(name: "jeans", unit: 'pcs');
 }
 
 CreateItemRequest getJeanItemRequest() {
   final whiteJean = getWhiteJean();
   final blackJean = getBlackJean();
   return CreateItemRequest(
-      item: Item.create(name: "jeans", variations: [whiteJean, blackJean], unit: 'pcs'),
+      item: Item.create(name: "jeans", unit: 'pcs'),
       itemVariations: [whiteJean, blackJean]);
 }
 

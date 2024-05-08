@@ -80,7 +80,7 @@ void main() async {
       barcode: '0002',
     );
 
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
+    final shirt = Item.create(name: "shirt",  unit: 'pcs');
 
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt, blackShirt]);
 
@@ -105,7 +105,7 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney,
         barcode: '0004');
     {
-      final phones = Item.create(name: "phones", variations: [pixel8, iPhone15], unit: 'pcs');
+      final phones = Item.create(name: "phones",  unit: 'pcs');
       final request = CreateItemRequest(item: phones, itemVariations: [pixel8, iPhone15]);
 
       final itemCreated =
@@ -137,7 +137,7 @@ void main() async {
           purchasePriceMoney: purchasePriceMoney,
           barcode: '0006');
       {
-        final item = Item.create(name: "books", variations: [textbook, novels], unit: 'pcs');
+        final item = Item.create(name: "books",  unit: 'pcs');
         final request = CreateItemRequest(item: item, itemVariations: [textbook, novels]);
 
         final itemCreated =

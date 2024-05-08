@@ -81,7 +81,7 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
         barcode: barcodeData);
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt]);
     final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
@@ -110,7 +110,7 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
         barcode: '1234');
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
     final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
     final itemCreatedOrError =
         await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);

@@ -65,7 +65,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
 
     final blackShirt = ItemVariation.create(
         name: "Black shirt",

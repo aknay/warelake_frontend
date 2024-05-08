@@ -76,7 +76,7 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
       final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
       final itemCreated =
@@ -113,7 +113,7 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
       final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
       final itemCreated =
@@ -132,7 +132,7 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
       final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
       final itemCreated =
