@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:developer' as dev;
-
+import 'dart:math';
 
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +11,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -81,20 +81,25 @@ void main() async {
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
         barcode: barcodeData);
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt], unit: 'kg');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    final shirt = Item.create(name: "shirt", unit: 'kg');
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt]);
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreated.isRight(), true);
+    // final item = itemCreated.toIterable().first;
+    final itemVarationListOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
+    final itemVariationList = itemVarationListOrError.toIterable().first.data;
 
-    final item = itemCreated.toIterable().first;
-    expect(item.variations.first.barcode, barcodeData);
+    final itemVariationOrError = await itemRepo.getItemVariation(
+        itemId: itemVariationList.first.itemId!,
+        itemVariationId: itemVariationList.first.id!,
+        teamId: teamId,
+        token: firstUserAccessToken);
+
+    final itemVariation = itemVariationOrError.toIterable().first;
+    expect(itemVariation.barcode, barcodeData);
   });
 
   test('you can update the barcode of the item variation', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
     final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
 
@@ -103,29 +108,46 @@ void main() async {
         stockable: true,
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney, barcode: '1234');
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+        purchasePriceMoney: purchasePriceMoney,
+        barcode: '1234');
+    final shirt = Item.create(name: "shirt", unit: 'kg');
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShrt]);
+    final itemCreatedOrError =
+        await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreatedOrError.isRight(), true);
     final payload = ItemVariationPayload(barcode: '67890');
     final item = itemCreatedOrError.toIterable().first;
+
+    final itemVarationListOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
+    final itemVariationList = itemVarationListOrError.toIterable().first.data;
+
+    final itemVariationOrError = await itemRepo.getItemVariation(
+        itemId: itemVariationList.first.itemId!,
+        itemVariationId: itemVariationList.first.id!,
+        teamId: teamId,
+        token: firstUserAccessToken);
+
+    final itemVariation = itemVariationOrError.toIterable().first;
+
     final updatedOrError = await itemRepo.updateItemVariation(
         payload: payload,
         itemId: item.id!,
-        itemVariationId: item.variations.first.id!,
-        teamId: team.id!,
+        itemVariationId: itemVariation.id!,
+        teamId: teamId,
         token: firstUserAccessToken);
 
     expect(updatedOrError.isRight(), true);
 
     {
       //get back the updated item
-      final itemOrError = await itemRepo.getItem(itemId: item.id!, teamId: team.id!, token: firstUserAccessToken);
-      final updatedItem = itemOrError.toIterable().first;
-      final updatedItemVariation = updatedItem.variations.first;
-      expect(updatedItemVariation.barcode, "67890");
- 
+      final itemVariationOrError = await itemRepo.getItemVariation(
+          itemId: itemVariationList.first.itemId!,
+          itemVariationId: itemVariationList.first.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final itemVariation = itemVariationOrError.toIterable().first;
+      expect(itemVariation.barcode, "67890");
     }
   });
 }

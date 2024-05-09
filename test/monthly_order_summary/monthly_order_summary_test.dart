@@ -29,8 +29,11 @@ void main() async {
 
   late String teamId;
   late String billAccountId;
-  late Item shirtItem;
+      late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
+    
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -68,14 +71,21 @@ void main() async {
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
     billAccountId = account.id!;
-    final shirt = getShirt();
-    final jean = getJean();
 
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('monthly order summary can be retrieved even it has not be created yet', () async {
@@ -88,7 +98,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -112,7 +122,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -151,7 +161,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -199,7 +209,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         saleOrderNumber: "SO-0001",
         total: 20);
@@ -220,7 +230,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         saleOrderNumber: "SO-0001",
         total: 20);
@@ -258,7 +268,7 @@ void main() async {
         accountId: billAccountId,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         saleOrderNumber: "PO-0001",
         total: 20);

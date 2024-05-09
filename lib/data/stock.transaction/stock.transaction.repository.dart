@@ -22,7 +22,6 @@ class StockTransactionRepository extends StockTransactionApi {
     try {
       final response = await HttpHelper.post(
           url: ApiEndPoint.getStockTransacitonEndPoint(), body: stockTransaction.toMap(), token: token, teamId: teamId);
-
       if (response.statusCode == 201) {
         return Right(StockTransaction.fromMap(jsonDecode(response.body)));
       }
@@ -31,6 +30,7 @@ class StockTransactionRepository extends StockTransactionApi {
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
       log("the error is $e");
+
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }

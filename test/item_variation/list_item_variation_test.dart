@@ -9,6 +9,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -22,6 +23,7 @@ void main() async {
   late String firstUserAccessToken;
   late String teamId;
   late Item phoneItem;
+  late List<ItemVariation> phoneItemVariations;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -78,9 +80,12 @@ void main() async {
       barcode: '0002',
     );
 
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-    final itemCreated = await itemRepo.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
-     itemCreated.toIterable().first;
+    final shirt = Item.create(name: "shirt",  unit: 'pcs');
+
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt, blackShirt]);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    itemCreated.toIterable().first;
 
     await Future.delayed(const Duration(seconds: 1));
 
@@ -100,9 +105,17 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney,
         barcode: '0004');
     {
-      final phones = Item.create(name: "phones", variations: [pixel8, iPhone15], unit: 'pcs');
-      final itemCreated = await itemRepo.createItem(item: phones, teamId: teamId, token: firstUserAccessToken);
+      final phones = Item.create(name: "phones",  unit: 'pcs');
+      final request = CreateItemRequest(item: phones, itemVariations: [pixel8, iPhone15]);
+
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
       phoneItem = itemCreated.toIterable().first;
+
+      final phoneItemVariationsOrError =
+          await itemRepo.getItemVariations(itemId: phoneItem.id!, teamId: teamId, token: firstUserAccessToken);
+      phoneItemVariations = phoneItemVariationsOrError.toIterable().first;
+      
     }
 
     {
@@ -124,8 +137,12 @@ void main() async {
           purchasePriceMoney: purchasePriceMoney,
           barcode: '0006');
       {
-        final item = Item.create(name: "books", variations: [textbook, novels], unit: 'pcs');
-        final itemCreated = await itemRepo.createItem(item: item, teamId: teamId, token: firstUserAccessToken);
+        final item = Item.create(name: "books",  unit: 'pcs');
+        final request = CreateItemRequest(item: item, itemVariations: [textbook, novels]);
+
+        final itemCreated =
+            await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+
         itemCreated.toIterable().first;
       }
     }
@@ -143,7 +160,7 @@ void main() async {
   });
 
   test('you can list item variation with pagination', () async {
-    final searchField = ItemVariationSearchField(startingAfterId: phoneItem.variations.first.id);
+    final searchField = ItemVariationSearchField(startingAfterId: phoneItemVariations.first.id);
     final itemListOrError =
         await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
@@ -161,7 +178,7 @@ void main() async {
 
   test('you can still search item variation by barcode after barcode is altered', () async {
     {
-      final pixel8 = phoneItem.variations.where((element) => element.name == 'Pixel 8').first;
+      final pixel8 = phoneItemVariations.where((element) => element.name == 'Pixel 8').first;
 
       final payload = ItemVariationPayload(barcode: '0007');
       final updatedOrError = await itemRepo.updateItemVariation(

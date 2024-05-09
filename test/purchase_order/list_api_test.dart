@@ -26,7 +26,9 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
   late Team team;
 
@@ -65,18 +67,24 @@ void main() async {
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+        final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('you can list po', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
       accountId: billAccount.id!,
@@ -100,7 +108,7 @@ void main() async {
   });
 
   test('you can sort po by date', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     {
       final po = PurchaseOrder.create(
         accountId: billAccount.id!,
@@ -160,7 +168,7 @@ void main() async {
   });
 
   test('you can list po with empty search field', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
       accountId: billAccount.id!,
@@ -186,7 +194,7 @@ void main() async {
   });
 
   test('you can list po with last created item', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     PurchaseOrder firstPo;
     {
       final po = PurchaseOrder.create(
@@ -251,7 +259,7 @@ void main() async {
   });
 
   test('you can list po with search', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
       accountId: billAccount.id!,
@@ -298,7 +306,7 @@ void main() async {
       final poOrError = await purchaseOrderApi.get(
           purchaseOrderId: poCreatedOrError.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
       final po = poOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
+      expect(DateFormat('yyyy-MM-dd').format(po.date), DateFormat('yyyy-MM-dd').format(now));
     }
     {
       // for issued, we have a empty list

@@ -8,10 +8,9 @@ class UserInfoWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
-    return switch (currentUser) {
-      AsyncError(:final error) => Text('Error: $error'),
-      AsyncData(:final value) => Text(value.email),
-      _ => const CircularProgressIndicator(),
-    };
+    return currentUser.when(
+        data: (data) => Text(data.email),
+        error: (object, error) => Text('Error: $error'),
+        loading: () => const CircularProgressIndicator());
   }
 }

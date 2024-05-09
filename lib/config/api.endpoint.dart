@@ -38,6 +38,8 @@ class ApiEndPoint {
 
   static String get getItemVariationsEndPoint => "${getApiBaseUrl()}/v1/item_variations";
 
+  static String get getLowLevelItemVariationsEndPoint => "${getApiBaseUrl()}/v1/item_variations/low_stock";
+
   static String get itemUtilizationEndPoint => "${getApiBaseUrl()}/v1/item_utilization";
 
   static String get itemSerchEndPoint => "${getApiBaseUrl()}/v1/items/search";
@@ -48,11 +50,18 @@ class ApiEndPoint {
         : "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId";
   }
 
+  static String getItemVariationByItemIdEndPoint({required String itemId}) {
+    return "${getApiBaseUrl()}/v1/items/$itemId/item_variations";
+  }
+
   static String getItemImageEndPoint({required String itemId, String? imageId}) {
     return imageId == null
         ? "${getApiBaseUrl()}/v1/items/$itemId/images"
         : "${getApiBaseUrl()}/v1/items/$itemId/images/$imageId";
   }
+
+
+
 
   static String getItemVariationImageEndPoint({required String itemId, required String itemVariationId}) {
     return "${getApiBaseUrl()}/v1/items/$itemId/item_variations/$itemVariationId/images";

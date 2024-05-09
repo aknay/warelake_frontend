@@ -21,10 +21,12 @@ void main() async {
   final saleOrderApi = SaleOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
-  late Item shirtItem;
+      late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
-  late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -56,23 +58,38 @@ void main() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    team = createdOrError.toIterable().first;
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
+     shirtItem = getShirt();
+     jeanItem = getJean();
 
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+         final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
+
+    // final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: teamId, token: firstUserAccessToken);
+    // shirtItem = shirtCreatedOrError.toIterable().first;
+
+    // final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: teamId, token: firstUserAccessToken);
+    // jeanItem = jeansCreatedOrError.toIterable().first;
   });
 
   test('creating so should be successful up to 50 orders but will fail on next order', () async {
-    final lineItems = getLineItemsWithRandomCount(items: [shirtItem, jeanItem]);
+    final lineItems = getLineItemsWithRandomCount(items: shirtItemVariations +  jeanItemVariations);
     for (int i = 0; i < 50; i++) {
       final po = SaleOrder.create(
           accountId: billAccount.id!,
@@ -82,7 +99,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
       expect(poCreatedOrError.isRight(), true);
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -96,7 +113,7 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
 
       expect(poCreatedOrError.isRight(), false);
     }

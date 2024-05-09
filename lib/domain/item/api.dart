@@ -19,11 +19,29 @@ abstract class ItemApi {
     ItemVariationSearchField? searchField,
   });
 
-  Future<Either<ErrorResponse, Item>> createItem({
-    required Item item,
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationListByItemId({
+    required String teamId,
+    required String itemId,
+    required String token,
+  });
+
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getLowLevelItemVariationList({
+    required String teamId,
+    required String token,
+    Option<String> startingAfterId = const None(),
+  });
+
+  Future<Either<ErrorResponse, Item>> createItemRequest({
+    required CreateItemRequest request,
     required String teamId,
     required String token,
   });
+
+  // Future<Either<ErrorResponse, Item>> createItem({
+  //   required Item item,
+  //   required String teamId,
+  //   required String token,
+  // });
   Future<Either<ErrorResponse, Item>> getItem({
     required String itemId,
     required String teamId,
@@ -60,6 +78,19 @@ abstract class ItemApi {
   Future<Either<ErrorResponse, Unit>> deleteItemVariation({
     required String itemId,
     required String itemVariationId,
+    required String teamId,
+    required String token,
+  });
+
+  Future<Either<ErrorResponse, ItemVariation>> getItemVariation({
+    required String itemId,
+    required String itemVariationId,
+    required String teamId,
+    required String token,
+  });
+
+  Future<Either<ErrorResponse, List<ItemVariation>>> getItemVariations({
+    required String itemId,
     required String teamId,
     required String token,
   });

@@ -111,7 +111,7 @@ void main() async {
     return double.parse((value).toStringAsFixed(2)); // Round to 2 decimal places
   }
 
-  Item getElectronics() {
+  CreateItemRequest getElectronicsItemRequest() {
     final smartphone = ItemVariation.create(
         name: "Smartphone",
         stockable: true,
@@ -146,8 +146,9 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: PriceMoney.from(amount: 1541, currencyCode: CurrencyCode.AUD),
         purchasePriceMoney: PriceMoney.from(amount: 1480, currencyCode: CurrencyCode.AUD));
-
-    return Item.create(name: "Electronics", variations: [smartphone, laptop, tablet, smartwatch, camera], unit: 'pcs');
+    return CreateItemRequest(
+        item: Item.create(name: "Electronics", unit: 'pcs'),
+        itemVariations: [smartphone, laptop, tablet, smartwatch, camera]);
   }
 
   test('tiny populate data', () async {
@@ -158,8 +159,9 @@ void main() async {
 
     {
       //add electronics items
-      final electronics = getElectronics();
-      final itemOrError = await itemApi.createItem(item: electronics, teamId: team.id!, token: firstUserAccessToken);
+
+      final itemOrError = await itemApi.createItemRequest(
+          request: getElectronicsItemRequest(), teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
 
       {
@@ -176,7 +178,12 @@ void main() async {
         }
       }
       List<StockLineItem> lineItemList = [];
-      for (var variation in item.variations) {
+
+      final itemVariationsOrError =
+          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+      final itemVariations = itemVariationsOrError.toIterable().first;
+
+      for (var variation in itemVariations) {
         String currentDirectory = Directory.current.path;
         // Construct the path to the image file in the same directory as the test file
         final imageFileName = '${variation.name.toLowerCase()}.png';
@@ -237,10 +244,10 @@ void main() async {
             purchasePriceMoney: purchasePriceMoney);
         itemVariationList.add(whiteShrt);
       }
-      final itemToBeCreated = Item.create(name: fruit, variations: itemVariationList, unit: 'kg');
-
+      final itemToBeCreated = Item.create(name: fruit, unit: 'kg');
+      final request = CreateItemRequest(item: itemToBeCreated, itemVariations: itemVariationList);
       final itemOrError =
-          await itemApi.createItem(item: itemToBeCreated, teamId: team.id!, token: firstUserAccessToken);
+          await itemApi.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
       final item = itemOrError.toIterable().first;
 
       {
@@ -258,7 +265,10 @@ void main() async {
         }
       }
 
-      retrievedItemVariationList.addAll(item.variations);
+      final itemVariationsOrError =
+          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+      final itemVariations = itemVariationsOrError.toIterable().first;
+      retrievedItemVariationList.addAll(itemVariations);
 
       await Future.delayed(const Duration(milliseconds: 1000));
     }

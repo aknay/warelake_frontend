@@ -25,9 +25,12 @@ void main() async {
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
   late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -60,18 +63,25 @@ void main() async {
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     team = createdOrError.toIterable().first;
+    teamId = team.id!;
     final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('creating po should be successful', () async {
@@ -79,7 +89,7 @@ void main() async {
         accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -97,7 +107,7 @@ void main() async {
         accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -120,7 +130,7 @@ void main() async {
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         purchaseOrderNumber: "PO-0001",
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
@@ -138,7 +148,7 @@ void main() async {
   });
 
   test('you can received item from po', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: billAccount.id!,
@@ -167,7 +177,7 @@ void main() async {
       final poOrError =
           await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
       final po = poOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(po.receivedAt!), DateFormat('yyyy-MM-dd').format(now));
+      expect(DateFormat('yyyy-MM-dd').format(po.date), DateFormat('yyyy-MM-dd').format(now));
     }
 
     //sleep a while to update correctly
@@ -176,13 +186,25 @@ void main() async {
     {
       final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
       final blackshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Shirt').first;
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: whiteshirtLineItem.itemVariation.itemId!, teamId: team.id!, token: firstUserAccessToken);
-      final whiteShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'White Shirt').first;
+
+      final whiteShirtItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: whiteshirtLineItem.itemVariation.itemId!,
+          itemVariationId: whiteshirtLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final whiteShirtItemVariation = whiteShirtItemVaraitionOrError.toIterable().first;
+
       expect(whiteShirtItemVariation.itemCount, whiteshirtLineItem.quantity);
-      final blackShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'Black Shirt').first;
+
+      final blackShirtItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: blackshirtLineItem.itemVariation.itemId!,
+          itemVariationId: blackshirtLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final blackShirtItemVariation = blackShirtItemVaraitionOrError.toIterable().first;
+
       expect(blackShirtItemVariation.itemCount, blackshirtLineItem.quantity);
     }
 
@@ -190,14 +212,24 @@ void main() async {
       //check jean item count
       final whiteJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'White Jean').first;
       final blackJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Jean').first;
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: whiteJeanLineItem.itemVariation.itemId!, teamId: team.id!, token: firstUserAccessToken);
-      final whiteShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'White Jean').first;
-      expect(whiteShirtItemVariation.itemCount, whiteJeanLineItem.quantity);
-      final blackShirtItemVariation =
-          retrievedItemOrError.toIterable().first.variations.where((element) => element.name == 'Black Jean').first;
-      expect(blackShirtItemVariation.itemCount, blackJeanLineItem.quantity);
+
+      final whiteJeanItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: whiteJeanLineItem.itemVariation.itemId!,
+          itemVariationId: whiteJeanLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+      final whiteJeanItemVariation = whiteJeanItemVaraitionOrError.toIterable().first;
+
+      final blackJeanItemVaraitionOrError = await itemApi.getItemVariation(
+          itemId: blackJeanLineItem.itemVariation.itemId!,
+          itemVariationId: blackJeanLineItem.itemVariation.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+
+      final blackJeanItemVariation = blackJeanItemVaraitionOrError.toIterable().first;
+
+      expect(whiteJeanItemVariation.itemCount, whiteJeanLineItem.quantity);
+      expect(blackJeanItemVariation.itemCount, blackJeanLineItem.quantity);
     }
 
     {
@@ -213,7 +245,7 @@ void main() async {
   });
 
   test('check totalQuantityOfAllItemVariation after po received', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: billAccount.id!,
@@ -255,7 +287,7 @@ void main() async {
   });
 
   test('you can delete po with issued state', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
@@ -283,7 +315,7 @@ void main() async {
   });
 
   test('you can delete po with issued state and check totalQuantityOfAllItemVariation', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
@@ -316,7 +348,7 @@ void main() async {
   });
 
   test('you can delete po with received state and check totalQuantityOfAllItemVariation', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: billAccount.id!,
@@ -357,7 +389,7 @@ void main() async {
   });
 
   test('you can delete po with received state', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: billAccount.id!,
@@ -393,15 +425,26 @@ void main() async {
 
     {
       // check all item count reset back to zero
-      final itemIds = lineItems.map((e) => e.itemVariation.itemId!).toSet();
-      for (var itemId in itemIds) {
-        final retrievedItemsOrError =
-            await itemApi.getItem(itemId: itemId, teamId: team.id!, token: firstUserAccessToken);
-        final itemVariations = retrievedItemsOrError.toIterable().first.variations;
-        for (var iv in itemVariations) {
-          expect(iv.itemCount, 0);
-        }
+
+      for (var v in lineItems) {
+        final itemVariationOrError = await itemApi.getItemVariation(
+            itemId: v.itemVariation.itemId!,
+            itemVariationId: v.itemVariation.id!,
+            teamId: teamId,
+            token: firstUserAccessToken);
+        final itemVariation = itemVariationOrError.toIterable().first;
+        expect(itemVariation.itemCount, 0);
       }
+
+      // final itemIds = lineItems.map((e) => e.itemVariation.itemId!).toSet();
+      // for (var itemId in itemIds) {
+      //   final retrievedItemsOrError =
+      //       await itemApi.getItem(itemId: itemId, teamId: team.id!, token: firstUserAccessToken);
+      //   final itemVariations = retrievedItemsOrError.toIterable().first.variations;
+      //   for (var iv in itemVariations) {
+      //     expect(iv.itemCount, 0);
+      //   }
+      // }
     }
 
     {

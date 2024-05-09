@@ -8,6 +8,7 @@ import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/errors/response.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../helpers/sign.in.response.dart';
@@ -75,8 +76,11 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-      final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
+      final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
       expect(itemCreated.isRight(), true);
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -109,8 +113,11 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-      final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
+      final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
       expect(itemCreated.isRight(), true);
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -125,8 +132,11 @@ void main() async {
 
         itemVariations.add(whiteShrt);
       }
-      final shirt = Item.create(name: "shirt", variations: itemVariations, unit: 'pcs');
-      final itemCreated = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+      final shirt = Item.create(name: "shirt", unit: 'pcs');
+      final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: team.id!, token: firstUserAccessToken);
       expect(itemCreated.isLeft(), true);
       itemCreated.fold((l) {
         expect(l.code, ErrorCode.itemVarationForPersonalPlanLimitExecced);

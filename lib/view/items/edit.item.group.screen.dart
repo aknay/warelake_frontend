@@ -5,9 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/item.variations/async.item.variation.list.by.item.id.controller.dart';
+import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/items/item.image/item.image.widget.dart';
 import 'package:warelake/view/items/item.list.controller.dart';
-import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 
 import '../item.variations/item.variation.list.view.dart';
@@ -57,6 +58,9 @@ class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(itemListControllerProvider);
+
+    final asyncItemVariations = ref.watch(asyncItemVariationListByItemIdControllerProvider(itemId: widget.item.id!));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Item Group"),
@@ -123,11 +127,17 @@ class _EditItemGroupScreenState extends ConsumerState<EditItemGroupScreen> {
             ),
             gapH16,
             Text('Existing Items', style: Theme.of(context).textTheme.titleLarge),
-            Expanded(
-                child: ItemVariationListView(
-              itemVariationList: widget.item.variations,
-              isToSelectItemVariation: false,
-            )),
+            asyncItemVariations.when(
+                data: (data) {
+                  return Expanded(
+                    child: ItemVariationListView(
+                      itemVariationList: data,
+                      isToSelectItemVariation: false,
+                    ),
+                  );
+                },
+                error: (object, error) => Text("$error"),
+                loading: () => const Center(child: CircularProgressIndicator()))
           ],
         ),
       ),

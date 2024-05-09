@@ -40,8 +40,10 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
     switch (widget.stockMovement) {
       case StockMovement.stockIn:
         title = "New Stock In";
+        break;
       case StockMovement.stockOut:
         title = "New Stock Out";
+        break;
       case StockMovement.stockAdjust:
         title = "New Stock Adjust";
     }
@@ -59,6 +61,7 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
                 } else {
                   context.goNamed(AppRoute.selectStockLineItemForStockIn.name);
                 }
+                break;
 
               case StockMovement.stockOut:
                 if (path == router.namedLocation(AppRoute.stockOutFromTransactionList.name)) {
@@ -66,6 +69,7 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
                 } else {
                   context.goNamed(AppRoute.selectStockLineItemForStockOutFromDashboard.name);
                 }
+                break;
               case StockMovement.stockAdjust:
                 if (path == router.namedLocation(AppRoute.stockAdjustFromTransactionList.name)) {
                   context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name);

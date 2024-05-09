@@ -27,9 +27,11 @@ void main() async {
   final purchaseOrderApi = PurchaseOrderRepository();
   late String firstUserAccessToken;
   late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
   late Item jeanItem;
+  late List<ItemVariation> jeanItemVariations;
   late BillAccount billAccount;
-  late Team team;
+  late String teamId;
 
   setUpAll(() async {
     final email = generateRandomEmail();
@@ -61,23 +63,29 @@ void main() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    team = createdOrError.toIterable().first;
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     billAccount = accountListOrError.toIterable().first.data.first;
 
-    final shirt = getShirt();
-    final jean = getJean();
-
-    final shirtCreatedOrError = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final jeansCreatedOrError = await itemApi.createItem(item: jean, teamId: team.id!, token: firstUserAccessToken);
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+
+    final jeansCreatedOrError =
+        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
+    final jeanVariationsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+    jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
   test('creating so should be successful', () async {
-    final lineItems = getLineItemsWithRandomCount(items: [shirtItem, jeanItem]);
+    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
 
     final po = SaleOrder.create(
         accountId: billAccount.id!,
@@ -86,8 +94,9 @@ void main() async {
         lineItems: lineItems,
         subTotal: 10,
         total: 20,
-        saleOrderNumber: "S0-00001", notes: const Some('Hello'));
-    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        saleOrderNumber: "S0-00001",
+        notes: const Some('Hello'));
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
@@ -105,9 +114,9 @@ void main() async {
   });
 
   test('you can get back so', () async {
-    final lineItems = getLineItemsWithRandomCount(items: [shirtItem, jeanItem]);
+    final lineItems = getLineItemsWithRandomCount(items: shirtItemVariations + jeanItemVariations);
 
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     expect(accountListOrError.toIterable().first.data.length == 1, true);
     final account = accountListOrError.toIterable().first.data.first;
@@ -120,15 +129,14 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
     {
       final createdSo = soCreatedOrError.toIterable().first;
 
-      final soOrError =
-          await saleOrderApi.get(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderApi.get(saleOrderId: createdSo.id!, teamId: teamId, token: firstUserAccessToken);
       expect(soOrError.isRight(), true);
     }
   });
@@ -142,25 +150,25 @@ void main() async {
           accountId: billAccount.id!,
           date: DateTime.now(),
           currencyCode: CurrencyCode.AUD,
-          lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+          lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
           subTotal: 10,
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
       await purchaseOrderApi.setToReceived(
-          purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
+          purchaseOrderId: createdPo.id!, date: now, teamId: teamId, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
-      await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+      await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
     }
     {
       //deliver so
-      final lineItems = getLineItems(items: [Tuple2(4, shirtItem), Tuple2(8, jeanItem)]);
+      final lineItems = getLineItems(items: [Tuple2(4, shirtItemVariations), Tuple2(8, jeanItemVariations)]);
       final po = SaleOrder.create(
           accountId: billAccount.id!,
           date: date,
@@ -169,13 +177,13 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
       expect(soCreatedOrError.isRight(), true);
 
       final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
           saleOrderId: soCreatedOrError.toIterable().first.id!,
           date: date,
-          teamId: team.id!,
+          teamId: teamId,
           token: firstUserAccessToken);
       expect(poItemsReceivedOrError.isRight(), true);
       //sleep a while to update correctly
@@ -183,7 +191,7 @@ void main() async {
     }
 
     {
-      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 6);
     }
@@ -196,11 +204,11 @@ void main() async {
         accountId: billAccount.id!,
         date: date,
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
     final createdSo = soCreatedOrError.toIterable().first;
@@ -208,35 +216,14 @@ void main() async {
     // testing receiving items
     {
       final soItemDeliveredOrError = await saleOrderApi.setToDelivered(
-          saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
+          saleOrderId: createdSo.id!, date: date, teamId: teamId, token: firstUserAccessToken);
       expect(soItemDeliveredOrError.isRight(), true);
     }
   });
 
   test('you can change to delivered for so with more params', () async {
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShirt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-
-    final blackShirt = ItemVariation.create(
-        name: "Black shirt",
-        stockable: true,
-        sku: 'sku 234',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShirt, blackShirt], unit: 'pcs');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final shirt1 = itemCreated.toIterable().first.variations[0];
-    final shirt2 = itemCreated.toIterable().first.variations[1];
+    final shirt1 = shirtItemVariations.first;
+    final shirt2 = shirtItemVariations[1];
 
     final lineItem1 = LineItem.create(itemVariation: shirt1, rate: 3.5, quantity: 5, unit: 'cm');
     final lineItem2 = LineItem.create(itemVariation: shirt2, rate: 2.7, quantity: 4, unit: 'cm');
@@ -251,7 +238,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderApi.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
@@ -260,7 +247,7 @@ void main() async {
     // testing receiving items
 
     final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
-        saleOrderId: createdSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
+        saleOrderId: createdSo.id!, date: date, teamId: teamId, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
@@ -269,25 +256,29 @@ void main() async {
       //test delivered date
       final soOrError = await saleOrderApi.get(
         saleOrderId: createdSo.id!,
-        teamId: team.id!,
+        teamId: teamId,
         token: firstUserAccessToken,
       );
       final so = soOrError.toIterable().first;
-      expect(DateFormat('yyyy-MM-dd').format(so.deliveredAt!), DateFormat('yyyy-MM-dd').format(date));
+      expect(DateFormat('yyyy-MM-dd').format(so.date), DateFormat('yyyy-MM-dd').format(date));
     }
 
     {
       //test item increased after received
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
-      final item = retrievedItemOrError.toIterable().first;
-      expect(item.variations[0].itemCount, -5);
-      expect(item.variations[1].itemCount, -4);
+      final shirt1VariationOrError = await itemApi.getItemVariation(
+          itemId: shirtItem.id!, itemVariationId: shirt1.id!, teamId: teamId, token: firstUserAccessToken);
+      final item1 = shirt1VariationOrError.toIterable().first;
+      expect(item1.itemCount, -5);
+
+      final shirt2VariationOrError = await itemApi.getItemVariation(
+          itemId: shirtItem.id!, itemVariationId: shirt2.id!, teamId: teamId, token: firstUserAccessToken);
+      final item2 = shirt2VariationOrError.toIterable().first;
+      expect(item2.itemCount, -4);
     }
 
     {
       //check primary account is increased
-      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
       final account = accountListOrError.toIterable().first.data.first;
@@ -296,25 +287,10 @@ void main() async {
   });
 
   test('you can delete the so with processig status', () async {
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final shirt1Invertation = shirtItemVariations.first;
+    final lineItem = LineItem.create(itemVariation: shirt1Invertation, rate: 2, quantity: 5, unit: 'cm');
 
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
-
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     expect(accountListOrError.toIterable().first.data.length == 1, true);
     final account = accountListOrError.toIterable().first.data.first;
@@ -327,7 +303,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
@@ -335,15 +311,14 @@ void main() async {
       final createdSo = soCreatedOrError.toIterable().first;
 
       final deletedOrError =
-          await saleOrderApi.delete(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+          await saleOrderApi.delete(saleOrderId: createdSo.id!, teamId: teamId, token: firstUserAccessToken);
       expect(deletedOrError.isRight(), true);
     }
 
     {
       final createdSo = soCreatedOrError.toIterable().first;
 
-      final soOrError =
-          await saleOrderApi.get(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderApi.get(saleOrderId: createdSo.id!, teamId: teamId, token: firstUserAccessToken);
       expect(soOrError.isRight(), false);
     }
   });
@@ -357,26 +332,26 @@ void main() async {
           accountId: billAccount.id!,
           date: DateTime.now(),
           currencyCode: CurrencyCode.AUD,
-          lineItems: getLineItems(items: [Tuple2(5, shirtItem), Tuple2(10, jeanItem)]),
+          lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
           subTotal: 10,
           purchaseOrderNumber: "PO-0001",
           total: 20);
       final poCreatedOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
 
       final createdPo = poCreatedOrError.toIterable().first;
       final now = DateTime.now();
 
       await purchaseOrderApi.setToReceived(
-          purchaseOrderId: createdPo.id!, date: now, teamId: team.id!, token: firstUserAccessToken);
+          purchaseOrderId: createdPo.id!, date: now, teamId: teamId, token: firstUserAccessToken);
 
       await Future.delayed(const Duration(seconds: 1));
-      await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+      await purchaseOrderApi.get(purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
     }
     SaleOrder retrievedSo;
     {
       //deliver so
-      final lineItems = getLineItems(items: [Tuple2(4, shirtItem), Tuple2(8, jeanItem)]);
+      final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
       final so = SaleOrder.create(
           accountId: billAccount.id!,
           date: date,
@@ -385,11 +360,11 @@ void main() async {
           subTotal: 10,
           total: 20,
           saleOrderNumber: "S0-00001");
-      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+      final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
       retrievedSo = soCreatedOrError.toIterable().first;
 
       final soItemsReceivedOrError = await saleOrderApi.setToDelivered(
-          saleOrderId: retrievedSo.id!, date: date, teamId: team.id!, token: firstUserAccessToken);
+          saleOrderId: retrievedSo.id!, date: date, teamId: teamId, token: firstUserAccessToken);
 
       expect(soItemsReceivedOrError.isRight(), true);
       //sleep a while to update correctly
@@ -397,36 +372,22 @@ void main() async {
     }
     {
       final deletedOrError =
-          await saleOrderApi.delete(saleOrderId: retrievedSo.id!, teamId: team.id!, token: firstUserAccessToken);
+          await saleOrderApi.delete(saleOrderId: retrievedSo.id!, teamId: teamId, token: firstUserAccessToken);
       expect(deletedOrError.isRight(), true);
     }
     {
-      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      final iuOrError = await itemApi.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 30);
     }
   });
 
   test('you can delete the so with delivered status', () async {
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final shirt1Varation = shirtItemVariations.first;
 
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final lineItem = LineItem.create(itemVariation: shirt1Varation, rate: 2, quantity: 5, unit: 'cm');
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
-
-    final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2, quantity: 5, unit: 'cm');
-
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     expect(accountListOrError.toIterable().first.data.length == 1, true);
     final account = accountListOrError.toIterable().first.data.first;
@@ -439,28 +400,31 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderApi.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(soCreatedOrError.isRight(), true);
 
     final createdSo = soCreatedOrError.toIterable().first;
     final poItemsReceivedOrError = await saleOrderApi.setToDelivered(
-        saleOrderId: createdSo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+        saleOrderId: createdSo.id!, date: DateTime.now(), teamId: teamId, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 
     {
       //test item increased after received
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
+      final retrievedItemOrError = await itemApi.getItemVariation(
+          itemVariationId: shirt1Varation.id!,
+          itemId: shirt1Varation.itemId!,
+          teamId: teamId,
+          token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
-      expect(item.variations.first.itemCount, -5);
+      expect(item.itemCount, -5);
     }
 
     {
       //check primary account is increased
-      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
       final account = accountListOrError.toIterable().first.data.first;
@@ -469,21 +433,24 @@ void main() async {
 
     {
       final deletedOrError =
-          await saleOrderApi.delete(saleOrderId: createdSo.id!, teamId: team.id!, token: firstUserAccessToken);
+          await saleOrderApi.delete(saleOrderId: createdSo.id!, teamId: teamId, token: firstUserAccessToken);
       expect(deletedOrError.isRight(), true);
     }
 
     {
       //test item count is back to zero
-      final retrievedItemOrError = await itemApi.getItem(
-          itemId: itemCreated.toIterable().first.id!, teamId: team.id!, token: firstUserAccessToken);
+      final retrievedItemOrError = await itemApi.getItemVariation(
+          itemVariationId: shirt1Varation.id!,
+          itemId: shirt1Varation.itemId!,
+          teamId: teamId,
+          token: firstUserAccessToken);
       final item = retrievedItemOrError.toIterable().first;
-      expect(item.variations.first.itemCount, 0);
+      expect(item.itemCount, 0);
     }
 
     {
       //check primary account balance is back to zero
-      final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+      final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);
       final account = accountListOrError.toIterable().first.data.first;

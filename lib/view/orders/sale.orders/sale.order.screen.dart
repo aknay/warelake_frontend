@@ -89,6 +89,7 @@ class PageContents extends ConsumerWidget {
                       if (isSuccess) {
                         ref.invalidate(saleOrderProvider(so.id!));
                       }
+                      break;
                     case SaleOrderAction.delete:
                       if (context.mounted) {
                         final toDeleteOrNull = await showDialog<bool?>(

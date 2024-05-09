@@ -17,6 +17,7 @@ import 'package:warelake/domain/sale.order/entities.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import 'helpers/sign.in.response.dart';
+import 'helpers/test.helper.dart';
 
 void main() async {
   final teamApi = TeamRepository();
@@ -26,6 +27,9 @@ void main() async {
   final monthlySummaryRepository = MonthlySummaryRepository();
   final saleOrderRepo = SaleOrderRepository();
   late String firstUserAccessToken;
+  late Item shirtItem;
+  late List<ItemVariation> shirtItemVariations;
+  late String teamId;
 
   setUpAll(() async {
     const email = "abc@someemail.com";
@@ -53,31 +57,29 @@ void main() async {
     firstUserAccessToken = signInResponse.idToken!;
   });
 
-  test('you can get monthly summary for po', () async {
+  setUp(() async {
     final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
     final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
+    teamId = createdOrError.toIterable().first.id!;
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
+    expect(accountListOrError.isRight(), true);
 
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    final shirtCreatedOrError =
+        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: teamId, token: firstUserAccessToken);
+    shirtItem = shirtCreatedOrError.toIterable().first;
 
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
+    final shirtVaraitionsOrError =
+        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+    shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
+  });
 
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+  test('you can get monthly summary for po', () async {
+    final retrievedWhiteShirt = shirtItemVariations.first;
 
     final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
 
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
     final now = DateTime.now();
@@ -90,7 +92,7 @@ void main() async {
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
-        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdPo = poCreatedOrError.toIterable().first;
@@ -98,23 +100,23 @@ void main() async {
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isEmpty, true);
     }
 
     // // testing receiving items
     final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
-        date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+        date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 1));
 
     {
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isNotEmpty, true);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -137,17 +139,17 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
       final createdPo = poOrError.toIterable().first;
       await purchaseOrderApi.setToReceived(
-          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
     }
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 2));
       // check outgoing amount is accumulated
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -168,10 +170,10 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
       final createdPo = poOrError.toIterable().first;
       await purchaseOrderApi.setToReceived(
-          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: DateTime.now(), purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
 
       DateTime previousMonth = DateTime(now.year, now.month - 1, now.day);
 
@@ -181,7 +183,7 @@ void main() async {
       }
 
       await purchaseOrderApi.setToReceived(
-          date: previousMonth, purchaseOrderId: createdPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: previousMonth, purchaseOrderId: createdPo.id!, teamId: teamId, token: firstUserAccessToken);
 
       final monthYear = MonthYear(year: previousMonth.year, month: previousMonth.month);
 
@@ -189,8 +191,8 @@ void main() async {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       // check outgoing amount is accumulated
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 2);
       final monthlySummaryList = monthlySummaryListOrError.toIterable().first;
@@ -203,30 +205,11 @@ void main() async {
   });
 
   test('you can get updated monthly summary after deleting a  po', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final retrievedWhiteShirt = shirtItemVariations.first;
 
     final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
 
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
     final now = DateTime.now();
@@ -239,27 +222,27 @@ void main() async {
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
-        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
     final firstPo = poCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isEmpty, true);
     }
 
     // // testing receiving items
     final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
-        date: DateTime.now(), purchaseOrderId: firstPo.id!, teamId: team.id!, token: firstUserAccessToken);
+        date: DateTime.now(), purchaseOrderId: firstPo.id!, teamId: teamId, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 1));
 
     {
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isNotEmpty, true);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -284,17 +267,17 @@ void main() async {
           total: 20);
 
       final poOrError =
-          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: teamId, token: firstUserAccessToken);
       secondPo = poOrError.toIterable().first;
       await purchaseOrderApi.setToReceived(
-          date: DateTime.now(), purchaseOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: DateTime.now(), purchaseOrderId: secondPo.id!, teamId: teamId, token: firstUserAccessToken);
     }
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 2));
       // check outgoing amount is accumulated
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -304,12 +287,12 @@ void main() async {
 
     {
       //delete first po
-      await purchaseOrderApi.delete(purchaseOrderId: firstPo.id!, teamId: team.id!, token: firstUserAccessToken);
+      await purchaseOrderApi.delete(purchaseOrderId: firstPo.id!, teamId: teamId, token: firstUserAccessToken);
       await Future.delayed(const Duration(seconds: 1));
 
       // check outgoing amount is reduced
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -319,30 +302,11 @@ void main() async {
   });
 
   test('you can get monthly summary for so', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final retrievedWhiteShirt = shirtItemVariations.first;
 
     final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.7, quantity: 5, unit: 'cm');
 
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     expect(accountListOrError.toIterable().first.data.length == 1, true);
     final account = accountListOrError.toIterable().first.data.first;
@@ -355,7 +319,7 @@ void main() async {
         subTotal: 10,
         total: 20,
         saleOrderNumber: "S0-00001");
-    final poCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final poCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
 
     expect(poCreatedOrError.isRight(), true);
     final createdSo = poCreatedOrError.toIterable().first;
@@ -363,8 +327,8 @@ void main() async {
 
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isEmpty, true);
     }
@@ -372,15 +336,15 @@ void main() async {
     // // testing receiving items
 
     final soReceivedOrError = await saleOrderRepo.setToDelivered(
-        saleOrderId: createdSo.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+        saleOrderId: createdSo.id!, date: DateTime.now(), teamId: teamId, token: firstUserAccessToken);
     expect(soReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 2));
 
     {
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isNotEmpty, true);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -398,12 +362,12 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00002");
 
-      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: teamId, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
         date: DateTime.now(),
-        teamId: team.id!,
+        teamId: teamId,
         token: firstUserAccessToken,
       );
     }
@@ -412,8 +376,8 @@ void main() async {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 2));
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -440,12 +404,12 @@ void main() async {
           total: 20,
           saleOrderNumber: "S0-00003");
 
-      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: rawSo, teamId: teamId, token: firstUserAccessToken);
       final so = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
         saleOrderId: so.id!,
         date: DateTime.now(),
-        teamId: team.id!,
+        teamId: teamId,
         token: firstUserAccessToken,
       );
 
@@ -455,8 +419,8 @@ void main() async {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 2);
       final monthlySummary =
@@ -467,30 +431,11 @@ void main() async {
   });
 
   test('you can get updated monthly summary after deleting a so', () async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
-    expect(createdOrError.isRight(), true);
-    final team = createdOrError.toIterable().first;
-
-    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
-    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
-
-    final whiteShrt = ItemVariation.create(
-        name: "White shirt",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney);
-    final shirt = Item.create(name: "shirt", variations: [whiteShrt], unit: 'kg');
-
-    final itemCreated = await itemApi.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
-    expect(itemCreated.isRight(), true);
-
-    final retrievedWhiteShirt = itemCreated.toIterable().first.variations.first;
+    final retrievedWhiteShirt = shirtItemVariations.first;
 
     final lineItem = LineItem.create(itemVariation: retrievedWhiteShirt, rate: 2.5, quantity: 5, unit: 'cm');
 
-    final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
     final account = accountListOrError.toIterable().first.data.first;
     final now = DateTime.now();
@@ -502,28 +447,28 @@ void main() async {
         lineItems: [lineItem],
         subTotal: 10,
         total: 20);
-    final soCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
+    final soCreatedOrError = await saleOrderRepo.create(saleOrder: so, teamId: teamId, token: firstUserAccessToken);
     await Future.delayed(const Duration(seconds: 1));
     final firstSo = soCreatedOrError.toIterable().first;
     {
       // test monthly inventory// it should be emtpy as we havent receive the order yet
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isEmpty, true);
     }
 
     // // testing receiving items
     final poItemsReceivedOrError = await saleOrderRepo.setToDelivered(
-        date: DateTime.now(), saleOrderId: firstSo.id!, teamId: team.id!, token: firstUserAccessToken);
+        date: DateTime.now(), saleOrderId: firstSo.id!, teamId: teamId, token: firstUserAccessToken);
     expect(poItemsReceivedOrError.isRight(), true);
     //sleep a while to update correctly
     await Future.delayed(const Duration(seconds: 1));
 
     {
       // test monthly inventory// we should get first monthly summary
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.isNotEmpty, true);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -549,17 +494,17 @@ void main() async {
           subTotal: 10,
           total: 20);
 
-      final soOrError = await saleOrderRepo.create(saleOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      final soOrError = await saleOrderRepo.create(saleOrder: po, teamId: teamId, token: firstUserAccessToken);
       secondPo = soOrError.toIterable().first;
       await saleOrderRepo.setToDelivered(
-          date: DateTime.now(), saleOrderId: secondPo.id!, teamId: team.id!, token: firstUserAccessToken);
+          date: DateTime.now(), saleOrderId: secondPo.id!, teamId: teamId, token: firstUserAccessToken);
     }
     {
       //sleep a while to update correctly
       await Future.delayed(const Duration(seconds: 1));
       // check outgoing amount is accumulated
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
@@ -569,12 +514,12 @@ void main() async {
 
     {
       //delete first po
-      await saleOrderRepo.delete(saleOrderId: firstSo.id!, teamId: team.id!, token: firstUserAccessToken);
+      await saleOrderRepo.delete(saleOrderId: firstSo.id!, teamId: teamId, token: firstUserAccessToken);
       await Future.delayed(const Duration(seconds: 1));
 
       // check outgoing amount is reduced
-      final monthlySummaryListOrError = await monthlySummaryRepository.list(
-          teamId: team.id!, billAccountId: account.id!, token: firstUserAccessToken);
+      final monthlySummaryListOrError =
+          await monthlySummaryRepository.list(teamId: teamId, billAccountId: account.id!, token: firstUserAccessToken);
       expect(monthlySummaryListOrError.isRight(), true);
       expect(monthlySummaryListOrError.toIterable().first.length, 1);
       final monthlySummary = monthlySummaryListOrError.toIterable().first.first;
