@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:dartz/dartz.dart';
 import 'package:uuid/uuid.dart';
 import 'package:warelake/domain/item/entities.dart';
 
@@ -32,15 +35,20 @@ class ItemVariationPayload {
   double? pruchasePrice;
   double? salePrice;
   String? barcode;
+  Option<int> minimumStockOrNone;
 
-  ItemVariationPayload({this.name, this.pruchasePrice, this.salePrice, this.barcode});
+  ItemVariationPayload(
+      {this.name, this.pruchasePrice, this.salePrice, this.barcode, this.minimumStockOrNone = const None()});
 
   Map<String, dynamic> toMap() {
+    log("payload ${minimumStockOrNone}");
+
     return {
       'name': name,
       'purchase_price': pruchasePrice == null ? pruchasePrice : (pruchasePrice! * 1000).toInt(),
       'sale_price': salePrice == null ? salePrice : (salePrice! * 1000).toInt(),
-      'barcode' : barcode
+      'barcode': barcode,
+      'minimum_stock_count': minimumStockOrNone.fold(() => null, (a) => a)
     };
   }
 }

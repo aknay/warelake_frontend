@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -50,17 +52,17 @@ class ItemController extends _$ItemController {
     required ItemVariation oldItemVariation,
   }) async {
     state = const AsyncLoading();
-
+    log("what is here {}");
     final payload = ItemVariationPayload(
-      name: oldItemVariation.name == newItemVariation.name ? null : newItemVariation.name,
-      pruchasePrice: oldItemVariation.purchasePriceMoney.amount == newItemVariation.purchasePriceMoney.amount
-          ? null
-          : newItemVariation.purchasePriceMoney.amountInDouble,
-      salePrice: oldItemVariation.salePriceMoney.amount == newItemVariation.salePriceMoney.amount
-          ? null
-          : newItemVariation.salePriceMoney.amountInDouble,
-      barcode: oldItemVariation.barcode == newItemVariation.barcode ? null : newItemVariation.barcode,
-    );
+        name: oldItemVariation.name == newItemVariation.name ? null : newItemVariation.name,
+        pruchasePrice: oldItemVariation.purchasePriceMoney.amount == newItemVariation.purchasePriceMoney.amount
+            ? null
+            : newItemVariation.purchasePriceMoney.amountInDouble,
+        salePrice: oldItemVariation.salePriceMoney.amount == newItemVariation.salePriceMoney.amount
+            ? null
+            : newItemVariation.salePriceMoney.amountInDouble,
+        barcode: oldItemVariation.barcode == newItemVariation.barcode ? null : newItemVariation.barcode,
+        minimumStockOrNone: newItemVariation.minimumStockCountOrNone);
 
     final updatedOrError = await ref
         .read(itemServiceProvider)
