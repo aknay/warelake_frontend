@@ -26,7 +26,7 @@ class AsyncItemVariationByItemIdListView extends ConsumerWidget {
     return asyncItemVariations.when(
         data: (itemVariationList) {
           if (itemVariationList.isEmpty) {
-            return const Center(child: Text("Please add at least one item"));
+            return const Center(child: Text("No item available"));
           }
           return ListView(
             children: itemVariationList
