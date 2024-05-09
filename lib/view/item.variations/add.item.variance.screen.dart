@@ -108,7 +108,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.itemVariation.isNone() ? 'New Item' : 'Edit HOOOO Item'),
+        title: Text(widget.itemVariation.isNone() ? 'New Item' : 'Edit Item'),
         actions: [
           IconButton(
               onPressed: () async {

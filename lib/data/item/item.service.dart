@@ -43,7 +43,7 @@ class ItemService {
     });
   }
 
-    Future<Either<String, List<ItemVariation>>> getItemVariations({required String itemId}) async {
+  Future<Either<String, List<ItemVariation>>> getItemVariations({required String itemId}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
@@ -79,6 +79,15 @@ class ItemService {
     return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _itemRepo.getItemVariationList(teamId: teamId, token: token, searchField: itemSearchField);
+      return items.fold((l) => Left(l.message), (r) => Right(r));
+    });
+  }
+
+  Future<Either<String, ListResponse<ItemVariation>>> getLowStockItemVarations() async {
+    final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
+    return teamIdOrNone.fold(() => const Left("Team Id is empty"), (teamId) async {
+      final token = await _authRepo.shouldGetToken();
+      final items = await _itemRepo.getLowLevelItemVariationList(teamId: teamId, token: token);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }
