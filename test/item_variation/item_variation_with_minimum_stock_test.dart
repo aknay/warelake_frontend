@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
@@ -7,6 +8,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
 
@@ -70,7 +72,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt",  unit: 'pcs');
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -84,7 +86,7 @@ void main() async {
           await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      expect(whiteShirt.minimumStock, 0);
+      expect(whiteShirt.minimumStockCountOrNone, const None());
     }
   });
 
@@ -99,11 +101,11 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
-        minimumStock: 5);
+        minimumStock: const Some(5));
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt",  unit: 'pcs');
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -117,7 +119,125 @@ void main() async {
           await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      expect(whiteShirt.minimumStock, 5);
+      expect(whiteShirt.minimumStockCountOrNone, const Some(5));
+    }
+  });
+
+  test('you can update item with minimum stock', () async {
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    List<ItemVariation> itemVariations = [];
+
+    final whiteShrt = ItemVariation.create(
+        name: "White Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney,
+        minimumStock: const Some(5));
+
+    itemVariations.add(whiteShrt);
+
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
+    final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      //test variation without minimum stock
+      final shirt = itemCreated.toIterable().first;
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+      expect(whiteShirt.minimumStockCountOrNone, const Some(5));
+    }
+
+    {
+      //test you can update the minimum stock
+      final shirt = itemCreated.toIterable().first;
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+      final updatedOrError = await itemApi.updateItemVariation(
+          payload: ItemVariationPayload(minimumStockOrNone: const Some(3)),
+          itemId: shirt.id!,
+          teamId: teamId,
+          token: firstUserAccessToken,
+          itemVariationId: whiteShirt.id!);
+      expect(updatedOrError.isRight(), true);
+    }
+    {
+      final shirt = itemCreated.toIterable().first;
+      // check after the update
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+
+      expect(whiteShirt.minimumStockCountOrNone, const Some(3));
+    }
+  });
+
+  test('you can update item without minimum stock', () async {
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+    List<ItemVariation> itemVariations = [];
+
+    final whiteShrt = ItemVariation.create(
+        name: "White Shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney,
+        minimumStock: const Some(5));
+
+    itemVariations.add(whiteShrt);
+
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
+    final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
+
+    final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+    await Future.delayed(const Duration(seconds: 1));
+
+    {
+      //test variation without minimum stock
+      final shirt = itemCreated.toIterable().first;
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+      expect(whiteShirt.minimumStockCountOrNone, const Some(5));
+    }
+
+    {
+      //test you can update the minimum stock
+      final shirt = itemCreated.toIterable().first;
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+      final updatedOrError = await itemApi.updateItemVariation(
+          payload: ItemVariationPayload(minimumStockOrNone: const Some(0)),
+          itemId: shirt.id!,
+          teamId: teamId,
+          token: firstUserAccessToken,
+          itemVariationId: whiteShirt.id!);
+      expect(updatedOrError.isRight(), true);
+    }
+    {
+      final shirt = itemCreated.toIterable().first;
+      // check after the update
+      final shirtVaraiationsOrError =
+          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariations = shirtVaraiationsOrError.toIterable().first;
+      final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
+
+      expect(whiteShirt.minimumStockCountOrNone, const None());
     }
   });
 
@@ -135,7 +255,7 @@ void main() async {
 
     itemVariations.add(whiteShrt);
 
-    final shirt = Item.create(name: "shirt",unit: 'pcs');
+    final shirt = Item.create(name: "shirt", unit: 'pcs');
     final request = CreateItemRequest(item: shirt, itemVariations: itemVariations);
 
     final itemCreated = await itemApi.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
@@ -149,7 +269,7 @@ void main() async {
           await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      expect(whiteShirt.minimumStock, 0);
+      expect(whiteShirt.minimumStockCountOrNone, const None());
     }
     {
       final lowStockItemVariationListOrError =
@@ -171,7 +291,7 @@ void main() async {
         sku: 'sku 123',
         salePriceMoney: salePriceMoney,
         purchasePriceMoney: purchasePriceMoney,
-        minimumStock: 5);
+        minimumStock: const Some(5));
 
     itemVariations.add(whiteShrt);
 
@@ -189,7 +309,7 @@ void main() async {
           await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      expect(whiteShirt.minimumStock, 5);
+      expect(whiteShirt.minimumStockCountOrNone, const Some(5));
     }
     {
       final lowStockItemVariationListOrError =

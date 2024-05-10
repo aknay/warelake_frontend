@@ -118,7 +118,7 @@ class AsyncItemVariationByItemIdListView extends ConsumerWidget {
                             final ItemVariation? itemVariation = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddItemVariationScreen(itemVariation: e),
+                                builder: (context) => AddItemVariationScreen(itemVariation: Some(e)),
                               ),
                             );
                             if (itemVariation != null) {

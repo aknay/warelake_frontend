@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:uuid/uuid.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/domain/valueobject.dart';
@@ -66,7 +67,7 @@ class ItemVariation {
   int? itemCount;
   String? barcode;
   String? imageUrl;
-  int minimumStock;
+  Option<int> minimumStockCountOrNone;
 
   ItemVariation(
       {this.type,
@@ -83,7 +84,7 @@ class ItemVariation {
       this.itemCount,
       this.barcode,
       this.imageUrl,
-      this.minimumStock = 0});
+      this.minimumStockCountOrNone = const None()});
 
   factory ItemVariation.create(
       {required String name,
@@ -93,7 +94,7 @@ class ItemVariation {
       required PriceMoney purchasePriceMoney,
       int? itemCount,
       String? barcode,
-      int minimumStock = 0}) {
+      Option<int> minimumStock = const None()}) {
     var uuid = const Uuid();
     String newUuid = uuid.v4();
 
@@ -106,7 +107,7 @@ class ItemVariation {
         purchasePriceMoney: purchasePriceMoney,
         itemCount: itemCount,
         barcode: barcode,
-        minimumStock: minimumStock);
+        minimumStockCountOrNone: minimumStock);
   }
 
   ItemVariation copyWith(
@@ -116,7 +117,8 @@ class ItemVariation {
       PriceMoney? salePriceMoney,
       PriceMoney? purchasePriceMoney,
       int? itemCount,
-      String? barcode}) {
+      String? barcode,
+      Option<int> minimumStockCountOrNone = const None()}) {
     return ItemVariation(
         id: id,
         stockable: stockable ?? this.stockable,
@@ -125,7 +127,8 @@ class ItemVariation {
         salePriceMoney: salePriceMoney ?? this.salePriceMoney,
         purchasePriceMoney: purchasePriceMoney ?? this.purchasePriceMoney,
         itemCount: itemCount ?? this.itemCount,
-        barcode: barcode ?? this.barcode);
+        barcode: barcode ?? this.barcode,
+        minimumStockCountOrNone: minimumStockCountOrNone);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
@@ -144,7 +147,7 @@ class ItemVariation {
         itemCount: json['item_count'],
         barcode: json['barcode'],
         imageUrl: json['image_url'],
-        minimumStock: json['minimum_stock']);
+        minimumStockCountOrNone: json['minimum_stock_count'] == 0 ? const None() : Some(json['minimum_stock_count']));
   }
 
   Map<String, dynamic> toJson() {
@@ -160,7 +163,7 @@ class ItemVariation {
       'sale_price': salePriceMoney.toJson(),
       'purchase_price': purchasePriceMoney.toJson(),
       'barcode': barcode,
-      'minimum_stock': minimumStock
+      'minimum_stock_count': minimumStockCountOrNone.fold(() => null, (a) => a)
     };
   }
 }

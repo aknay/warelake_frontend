@@ -18,6 +18,7 @@ import 'package:warelake/view/items/add.item.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
 import 'package:warelake/view/items/items.screen.dart';
 import 'package:warelake/view/main/dashboard.screen.dart';
+import 'package:warelake/view/main/low.stock.item.variation/low.stock.item.variations.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.error.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.screen.dart';
@@ -93,6 +94,7 @@ enum AppRoute {
   selectItemForStockAdjustFromTransactionList,
   itemVariations,
   itemVariationDetail,
+  lowStockIteamVariations,
 }
 
 @riverpod
@@ -154,6 +156,14 @@ GoRouter goRouter(GoRouterRef ref) {
             return const DashboardScreen();
           },
           routes: [
+            GoRoute(
+              name: AppRoute.lowStockIteamVariations.name,
+              path: 'low_stock_item_variations',
+              pageBuilder: (context, state) => const MaterialPage(
+                fullscreenDialog: true,
+                child: LowStockItemVariationsScreen(),
+              ),
+            ),
             GoRoute(
               name: AppRoute.addItemFromDashboard.name,
               path: 'add_item_from_dashboard',
