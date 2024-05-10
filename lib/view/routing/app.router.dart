@@ -31,7 +31,7 @@ import 'package:warelake/view/orders/sale.orders/add.sale.order.screen.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.screen.dart';
 import 'package:warelake/view/orders/sale.orders/sale.orders.screen.dart';
 import 'package:warelake/view/routing/go_router_refresh_stream.dart';
-import 'package:warelake/view/stock/stock.item.selection.dart';
+import 'package:warelake/view/stock/stock.item.variation.selection.dart';
 import 'package:warelake/view/stock/stock.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transaction.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transactions.screen.dart';
@@ -184,7 +184,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockIn.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(
@@ -210,7 +210,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockOutFromDashboard.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(
@@ -235,7 +235,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockAdjustFromDashboard.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(
@@ -366,7 +366,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockOutFromTransactionList.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(
@@ -391,7 +391,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockInFromTransactionList.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(
@@ -416,7 +416,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       name: AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name,
                       path: 'select',
                       builder: (BuildContext context, GoRouterState state) {
-                        return const StockItemSelectionScreen();
+                        return const StockItemVariationSelectionScreen();
                       },
                       routes: [
                         GoRoute(

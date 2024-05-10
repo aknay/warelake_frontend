@@ -23,7 +23,7 @@ class LowStockCheckWidget extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.av_timer),
-              title: const Text('Check Stock Shortage'),
+              title: const Text('Stock Shortage'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
                 context.goNamed(AppRoute.lowStockIteamVariations.name);

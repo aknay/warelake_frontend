@@ -7,6 +7,7 @@ import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart'
 import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/stock.item.variation.selection.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
@@ -51,32 +52,10 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            final router = GoRouter.of(context);
-            final path = router.routeInformationProvider.value.uri.path;
-
-            switch (widget.stockMovement) {
-              case StockMovement.stockIn:
-                if (path == router.namedLocation(AppRoute.stockInFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockInFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockIn.name);
-                }
-                break;
-
-              case StockMovement.stockOut:
-                if (path == router.namedLocation(AppRoute.stockOutFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromDashboard.name);
-                }
-                break;
-              case StockMovement.stockAdjust:
-                if (path == router.namedLocation(AppRoute.stockAdjustFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromDashboard.name);
-                }
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StockItemVariationSelectionScreen()),
+            );
           },
           child: const Icon(Icons.add),
         ),
