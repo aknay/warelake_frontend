@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
+import 'package:warelake/view/stock/new.stock.transaction.screen.dart';
 
 class StockInOutWidget extends ConsumerWidget {
   const StockInOutWidget({super.key});
@@ -26,7 +26,14 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock In'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockInFromDashboard.name);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NewStockTransactionScreen(
+                            stockMovement: StockMovement.stockIn,
+                          ),
+                      fullscreenDialog: true),
+                );
               },
             ),
             ListTile(
@@ -34,7 +41,12 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock Out'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockOutFromDashboard.name);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NewStockTransactionScreen(stockMovement: StockMovement.stockOut),
+                      fullscreenDialog: true),
+                );
               },
             ),
             ListTile(
@@ -42,7 +54,12 @@ class StockInOutWidget extends ConsumerWidget {
               title: const Text('Stock Adjust'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.stockAdjustFromDashboard.name);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NewStockTransactionScreen(stockMovement: StockMovement.stockAdjust),
+                      fullscreenDialog: true),
+                );
               },
             )
           ],

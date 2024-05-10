@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:warelake/view/main/drawer/drawer.dart';
-import 'package:warelake/view/stock/transactions/add.trasaction.modal.screen.dart';
+import 'package:warelake/view/stock/transactions/add.transaction.modal.screen.dart';
 import 'package:warelake/view/stock/transactions/filter.stock.transaction.screen.dart';
 import 'package:warelake/view/stock/transactions/stock.transaction.list.view.dart';
 
