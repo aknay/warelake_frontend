@@ -6,15 +6,15 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/stock.item.variation.selection.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 final _stockLineItemProvider = StateProvider<List<StockLineItem>>((ref) => const []);
 
-class StockScreen extends ConsumerStatefulWidget {
-  const StockScreen({super.key, required this.stockMovement});
+class NewStockTransactionScreen extends ConsumerStatefulWidget {
+  const NewStockTransactionScreen({super.key, required this.stockMovement});
 
   final StockMovement stockMovement;
 
@@ -22,18 +22,15 @@ class StockScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _StockInScreenState();
 }
 
-class _StockInScreenState extends ConsumerState<StockScreen> {
+class _StockInScreenState extends ConsumerState<NewStockTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
   var _dateTime = DateTime.now();
   Option<String> _note = const None();
 
   @override
   Widget build(BuildContext context) {
-    final stockTransactionListAsync = ref.watch(stockTransactionListControllerProvider);
-
-    if (stockTransactionListAsync.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // we need to watch it as if new transaction is add from dashboard, we will not ref to stockTransactionListControllerProvider since we need to that provider to add a transaction
+    ref.watch(stockTransactionListControllerProvider);
 
     String title;
 
@@ -51,32 +48,10 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            final router = GoRouter.of(context);
-            final path = router.routeInformationProvider.value.uri.path;
-
-            switch (widget.stockMovement) {
-              case StockMovement.stockIn:
-                if (path == router.namedLocation(AppRoute.stockInFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockInFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockIn.name);
-                }
-                break;
-
-              case StockMovement.stockOut:
-                if (path == router.namedLocation(AppRoute.stockOutFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockOutFromDashboard.name);
-                }
-                break;
-              case StockMovement.stockAdjust:
-                if (path == router.namedLocation(AppRoute.stockAdjustFromTransactionList.name)) {
-                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name);
-                } else {
-                  context.goNamed(AppRoute.selectStockLineItemForStockAdjustFromDashboard.name);
-                }
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StockItemVariationSelectionScreen()),
+            );
           },
           child: const Icon(Icons.add),
         ),
@@ -140,7 +115,10 @@ class _StockInScreenState extends ConsumerState<StockScreen> {
       final success = await ref.read(stockTransactionListControllerProvider.notifier).create(rawTx);
 
       if (success && mounted) {
-        context.goNamed(AppRoute.stockTransactions.name);
+        GoRouter.of(context).pop();
+        //if _stockLineItemProvider is used with autoDispose, it will be clear after come back from StockItemVariationSelectionScreen// not sure why
+        // so we dont use autoDispose and clear manually here.
+        ref.invalidate(_stockLineItemProvider);
       }
     }
   }

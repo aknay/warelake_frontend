@@ -7,6 +7,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
+import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
@@ -108,6 +109,15 @@ class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariati
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(itemVariation.name),
       ),
+      trailing: const Icon(Icons.arrow_forward_ios),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ItemVariationScreen(itemId: itemVariation.itemId!, itemVariationId: itemVariation.id!)),
+        );
+      },
     );
   }
 }

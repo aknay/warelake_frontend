@@ -58,42 +58,10 @@ class ItemVariationListView extends ConsumerWidget {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));
-
-                      if (uri.path.contains(
-                          router.namedLocation(AppRoute.selectStockLineItemForStockInFromTransactionList.name))) {
-                        context.goNamed(AppRoute.stockInFromTransactionList.name);
-                      } else {
-                        context.goNamed(
-                          AppRoute.stockInFromDashboard.name,
-                        );
-                      }
-                      //  GoRouter.of(context).pop();
                     } else if (uri.path.contains('stock_out')) {
                       ref
                           .read(stockLineItemControllerProvider.notifier)
                           .add(StockLineItem.create(itemVariation: e, quantity: 1));
-
-                      if (uri.path.contains(
-                          router.namedLocation(AppRoute.selectStockLineItemForStockOutFromTransactionList.name))) {
-                        context.goNamed(AppRoute.stockOutFromTransactionList.name);
-                      } else {
-                        context.goNamed(
-                          AppRoute.stockOutFromDashboard.name,
-                        );
-                      }
-                    } else if (uri.path.contains('stock_adjust')) {
-                      ref
-                          .read(stockLineItemControllerProvider.notifier)
-                          .add(StockLineItem.create(itemVariation: e, quantity: 1));
-
-                      if (uri.path.contains(
-                          router.namedLocation(AppRoute.selectStockLineItemForStockAdjustFromTransactionList.name))) {
-                        context.goNamed(AppRoute.stockAdjustFromTransactionList.name);
-                      } else {
-                        context.goNamed(
-                          AppRoute.stockAdjustFromDashboard.name,
-                        );
-                      }
                     } else if (uri.path.contains('purchase_order')) {
                       context.goNamed(
                         AppRoute.addLineItemForPurchaseOrder.name,

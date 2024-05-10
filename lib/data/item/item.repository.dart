@@ -18,46 +18,6 @@ part 'item.repository.g.dart';
 class ItemRepository extends ItemApi {
   ItemRepository();
 
-//       @override
-//   Future<Either<ErrorResponse, Item>> createItemRequest(
-//       {required CreateItemRequest request, required String teamId, required String token}) async {
-//     try {
-//       final response = await HttpHelper.post(
-//           url: ApiEndPoint.getItemEndPoint(), body: request.toJson(), token: token, teamId: teamId);
-
-//       if (response.statusCode == 201) {
-//         return Right(Item.fromJson(jsonDecode(response.body)));
-//       }
-//       log("error while creating an item: response code ${response.statusCode}");
-//       log("error while creating an item: response ${jsonDecode(response.body)}");
-//       return Left(ErrorResponse.fromJson(json: jsonDecode(response.body), statusCode: response.statusCode));
-//     } catch (e) {
-//       log("the error is $e");
-//       return Left(ErrorResponse.withOtherError(message: e.toString()));
-//     }
-//   }
-// }
-
-  // @override
-  // Future<Either<ErrorResponse, Item>> createItem(
-  //     {required Item item, required String teamId, required String token}) async {
-  //   throw Exception('should not be called');
-  //   try {
-  //     final response =
-  //         await HttpHelper.post(url: ApiEndPoint.getItemEndPoint(), body: item.toJson(), token: token, teamId: teamId);
-
-  //     if (response.statusCode == 201) {
-  //       return Right(Item.fromJson(jsonDecode(response.body)));
-  //     }
-  //     log("error while creating an item: response code ${response.statusCode}");
-  //     log("error while creating an item: response ${jsonDecode(response.body)}");
-  //     return Left(ErrorResponse.fromJson(json: jsonDecode(response.body), statusCode: response.statusCode));
-  //   } catch (e) {
-  //     log("the error is $e");
-  //     return Left(ErrorResponse.withOtherError(message: e.toString()));
-  //   }
-  // }
-
   @override
   Future<Either<ErrorResponse, ListResponse<Item>>> getItemList({
     required String teamId,

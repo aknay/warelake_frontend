@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:uuid/uuid.dart';
 import 'package:warelake/domain/item/entities.dart';
@@ -41,8 +39,6 @@ class ItemVariationPayload {
       {this.name, this.pruchasePrice, this.salePrice, this.barcode, this.minimumStockOrNone = const None()});
 
   Map<String, dynamic> toMap() {
-    log("payload ${minimumStockOrNone}");
-
     return {
       'name': name,
       'purchase_price': pruchasePrice == null ? pruchasePrice : (pruchasePrice! * 1000).toInt(),

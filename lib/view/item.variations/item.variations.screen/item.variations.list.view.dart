@@ -8,9 +8,11 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:warelake/data/item/item.service.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/search.fields.dart';
+import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state
@@ -63,7 +65,7 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
       child: PagedListView<int, ItemVariation>(
         pagingController: _pagingController,
         builderDelegate: PagedChildBuilderDelegate<ItemVariation>(itemBuilder: (context, item, index) {
-          return _getListTitle(item, context);
+          return _getListTitle(item, widget.isToSelectItemVariation, context);
         }),
       ),
     );
@@ -107,17 +109,26 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
     }
   }
 
-  ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
+  ListTile _getListTitle(ItemVariation itemVariation, bool isToSelectItemVariation, BuildContext context) {
+    final trailingOrNull = isToSelectItemVariation ? null :  const Icon(Icons.arrow_forward_ios);
     return ListTile(
-      leading: ItemVariationImageWidget(itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
+      leading: ItemVariationImageWidget(
+          itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(itemVariation.name),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios),
+      trailing: trailingOrNull,
       onTap: () {
-        context
-            .goNamed(AppRoute.itemVariationDetail.name, pathParameters: {'id' : itemVariation.id!}, queryParameters: {'itemId': itemVariation.itemId});
+        if (isToSelectItemVariation) {
+          ref
+              .read(stockLineItemControllerProvider.notifier)
+              .add(StockLineItem.create(itemVariation: itemVariation, quantity: 1));
+          GoRouter.of(context).pop();
+        } else {
+          context.goNamed(AppRoute.itemVariationDetail.name,
+              pathParameters: {'id': itemVariation.id!}, queryParameters: {'itemId': itemVariation.itemId});
+        }
       },
     );
   }
