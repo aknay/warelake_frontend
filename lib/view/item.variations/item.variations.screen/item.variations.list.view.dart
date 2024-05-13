@@ -11,6 +11,7 @@ import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
@@ -20,9 +21,17 @@ final toForceToRefreshIemListProvider = StateProvider<bool>(
   (ref) => true,
 );
 
+enum ItemVariationSelection {
+  forStockTransaction,
+  forOrder,
+}
+
 class ItemVariationListView extends ConsumerStatefulWidget {
   final bool isToSelectItemVariation;
-  const ItemVariationListView({super.key, required this.isToSelectItemVariation});
+  final Option<ItemVariationSelection> itemVariationSelectionOrNone;
+
+  const ItemVariationListView(
+      {super.key, required this.isToSelectItemVariation, required this.itemVariationSelectionOrNone});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ItemVariationListViewState();
@@ -110,7 +119,7 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
   }
 
   ListTile _getListTitle(ItemVariation itemVariation, bool isToSelectItemVariation, BuildContext context) {
-    final trailingOrNull = isToSelectItemVariation ? null :  const Icon(Icons.arrow_forward_ios);
+    final trailingOrNull = isToSelectItemVariation ? null : const Icon(Icons.arrow_forward_ios);
     return ListTile(
       leading: ItemVariationImageWidget(
           itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
@@ -121,10 +130,19 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
       trailing: trailingOrNull,
       onTap: () {
         if (isToSelectItemVariation) {
-          ref
-              .read(stockLineItemControllerProvider.notifier)
-              .add(StockLineItem.create(itemVariation: itemVariation, quantity: 1));
-          GoRouter.of(context).pop();
+          widget.itemVariationSelectionOrNone.fold(() => null, (selection) {
+            switch (selection) {
+              case ItemVariationSelection.forStockTransaction:
+                ref
+                    .read(stockLineItemControllerProvider.notifier)
+                    .add(StockLineItem.create(itemVariation: itemVariation, quantity: 1));
+                GoRouter.of(context).pop();
+              case ItemVariationSelection.forOrder:
+                ref.read(selectedItemVariationProvider.notifier).state = Some(itemVariation);
+                    GoRouter.of(context).pop();
+              // TODO: Handle this case.
+            }
+          });
         } else {
           context.goNamed(AppRoute.itemVariationDetail.name,
               pathParameters: {'id': itemVariation.id!}, queryParameters: {'itemId': itemVariation.itemId});

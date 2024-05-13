@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/valueobject.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.selection.widget.dart';
@@ -13,8 +14,9 @@ import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item
 import 'package:warelake/view/utils/alert_dialogs.dart';
 
 class AddLineItemScreen extends ConsumerStatefulWidget {
-  const AddLineItemScreen({super.key, this.lineItem = const None()});
+  const AddLineItemScreen({super.key, required this.orderType, this.lineItem = const None()});
   final Option<LineItem> lineItem;
+  final OrderType orderType;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddLineItemScreenState();
@@ -57,6 +59,20 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   }
 
   List<Widget> _buildFormChildren({required WidgetRef ref}) {
+    final selectedItemVariationOrNone = ref.watch(selectedItemVariationProvider);
+
+    log('${selectedItemVariationOrNone.isNone()}');
+
+    quantity =
+        quantity.fold(() => selectedItemVariationOrNone.fold(() => const None(), (a) => const Some(1)), (a) => Some(a));
+
+    // we give priority fr selection Item Variation so that the rate will be changed with item variation is changed.
+    rate = selectedItemVariationOrNone.fold(
+        () => rate.fold(() => const None(), (a) => Some(a)),
+        (itemVariation) => widget.orderType == OrderType.purchase
+            ? Some(itemVariation.purchasePriceMoney.amountInDouble)
+            : Some(itemVariation.salePriceMoney.amountInDouble));
+
     return [
       const LineItemSelectionWidget(),
       gapH8,
@@ -64,6 +80,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
         children: [
           Expanded(
             child: TextFormField(
+              key: UniqueKey(),
               initialValue: quantity.fold(() => null, (a) => a.toString()),
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
@@ -84,6 +101,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
           gapW8,
           Expanded(
             child: TextFormField(
+              key: UniqueKey(),
               initialValue: rate.fold(() => null, (a) => a.toString()),
               decoration: const InputDecoration(
                 labelText: 'Rate *',

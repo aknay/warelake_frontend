@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:warelake/view/main/drawer/drawer.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/orders/sale.orders/add.sale.order.screen.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.view.dart';
 
 class SaleOrdersScreen extends ConsumerWidget {
@@ -16,7 +15,10 @@ class SaleOrdersScreen extends ConsumerWidget {
       body: const SaleOrderListView(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.goNamed(AppRoute.addSaleOrder.name);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddSaleOrderScreen(), fullscreenDialog: true),
+          );
         },
         child: const Icon(Icons.add),
       ),

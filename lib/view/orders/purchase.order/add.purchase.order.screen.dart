@@ -4,13 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/valueobject.dart';
 import 'package:warelake/view/bill.account.selection/bill.account.selection.widget.dart';
 import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/orders/common.widgets/add.line.item.widget.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/add.line.item.screen.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.list.view.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
 import 'package:warelake/view/utils/alert_dialogs.dart';
@@ -94,7 +97,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
         _dateTime = value;
       }),
       gapH8,
-      NoteTextFormField(onChanged: (value){
+      NoteTextFormField(onChanged: (value) {
         _notes = Some(value);
       }),
       gapH8,
@@ -103,25 +106,22 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
           const Spacer(),
           AddLineItemButton(
             onPressed: () {
-              final router = GoRouter.of(context);
+              ref.read(selectedItemVariationProvider.notifier).state = const None();
 
-              final path = router.routeInformationProvider.value.uri.path;
-
-              if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
-                context.goNamed(
-                  AppRoute.addLineItemForPurchaseOrderFromDashboard.name,
-                );
-              } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
-                context.goNamed(
-                  AppRoute.addLineItemForPurchaseOrder.name,
-                );
-              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddLineItemScreen(
+                          orderType: OrderType.purchase,
+                        ),
+                    fullscreenDialog: true),
+              );
             },
           ),
           const Spacer()
         ],
       ),
-      const LineItemListView()
+      const LineItemListView(OrderType.purchase)
     ];
   }
 
@@ -160,7 +160,8 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
           subTotal: subTotal,
           total: subTotal,
           accountId: billAccount.id!,
-          purchaseOrderNumber: _saleOrderNumberOrNone.toIterable().first, notes: _notes);
+          purchaseOrderNumber: _saleOrderNumberOrNone.toIterable().first,
+          notes: _notes);
 
       final success = await ref.read(purchaseOrderListControllerProvider.notifier).createPurchaseOrder(saleOrder);
 
