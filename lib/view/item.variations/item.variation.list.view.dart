@@ -4,13 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/item/entities.dart';
-import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.list.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
 import 'package:warelake/view/routing/app.router.dart';
-import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.controller.dart';
 
 class ItemVariationListView extends ConsumerWidget {
   const ItemVariationListView({required this.itemVariationList, required this.isToSelectItemVariation, super.key});
@@ -44,33 +42,33 @@ class ItemVariationListView extends ConsumerWidget {
                   if (isToSelectItemVariation) {
                     ref.read(selectedItemVariationProvider.notifier).state = Some(e);
 
-                    final router = GoRouter.of(context);
-                    final uri = router.routeInformationProvider.value.uri;
+                    // final router = GoRouter.of(context);
+                    // final uri = router.routeInformationProvider.value.uri;
 
-                    final poOrSo =
-                        uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) ||
-                            uri.path.contains(router.namedLocation(AppRoute.addSaleOrderFromDashboard.name));
+                    // final poOrSo =
+                    //     uri.path.contains(router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) ||
+                    //         uri.path.contains(router.namedLocation(AppRoute.addSaleOrderFromDashboard.name));
 
-                    if (poOrSo) {
-                      GoRouter.of(context).pop();
-                      GoRouter.of(context).pop();
-                    } else if (uri.path.contains('stock_in')) {
-                      ref
-                          .read(stockLineItemControllerProvider.notifier)
-                          .add(StockLineItem.create(itemVariation: e, quantity: 1));
-                    } else if (uri.path.contains('stock_out')) {
-                      ref
-                          .read(stockLineItemControllerProvider.notifier)
-                          .add(StockLineItem.create(itemVariation: e, quantity: 1));
-                    } else if (uri.path.contains('purchase_order')) {
-                      context.goNamed(
-                        AppRoute.addLineItemForPurchaseOrder.name,
-                      );
-                    } else {
-                      context.goNamed(
-                        AppRoute.addLineItemForSaleOrder.name,
-                      );
-                    }
+                    // if (poOrSo) {
+                    //   GoRouter.of(context).pop();
+                    //   GoRouter.of(context).pop();
+                    // } else if (uri.path.contains('stock_in')) {
+                    //   ref
+                    //       .read(stockLineItemControllerProvider.notifier)
+                    //       .add(StockLineItem.create(itemVariation: e, quantity: 1));
+                    // } else if (uri.path.contains('stock_out')) {
+                    //   ref
+                    //       .read(stockLineItemControllerProvider.notifier)
+                    //       .add(StockLineItem.create(itemVariation: e, quantity: 1));
+                    // } else if (uri.path.contains('purchase_order')) {
+                    //   context.goNamed(
+                    //     AppRoute.addLineItemForPurchaseOrder.name,
+                    //   );
+                    // } else {
+                    //   context.goNamed(
+                    //     AppRoute.addLineItemForSaleOrder.name,
+                    //   );
+                    // }
                   } else {
                     if (e.itemId == null) {
                       //we want to edit local item variation

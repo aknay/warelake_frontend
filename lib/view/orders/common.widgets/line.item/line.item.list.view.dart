@@ -1,15 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
+import 'package:warelake/domain/valueobject.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/orders/common.widgets/line.item/add.line.item.screen.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/line.item.controller.dart';
 import 'package:warelake/view/orders/common.widgets/line.item/selected.line.item.controller.dart';
-import 'package:warelake/view/routing/app.router.dart';
 
 class LineItemListView extends ConsumerWidget {
-  const LineItemListView({super.key});
+  const LineItemListView(this.orderType, {super.key});
+  final OrderType orderType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,19 +45,19 @@ class LineItemListView extends ConsumerWidget {
   }
 
   void _showDialog({required BuildContext context, required LineItem lineItem, required WidgetRef ref}) {
-    final router = GoRouter.of(context);
+    // final router = GoRouter.of(context);
 
-    final path = router.routeInformationProvider.value.uri.path;
-    String nextRoute = '/';
-    if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
-      nextRoute = AppRoute.addLineItemForPurchaseOrderFromDashboard.name;
-    } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
-      nextRoute = AppRoute.addLineItemForPurchaseOrder.name;
-    } else if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
-      nextRoute = AppRoute.addLineItemForSaleOrderFromDashboard.name;
-    } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
-      nextRoute = AppRoute.addLineItemForSaleOrder.name;
-    }
+    // final path = router.routeInformationProvider.value.uri.path;
+    // String nextRoute = '/';
+    // if (path == router.namedLocation(AppRoute.addPurchaseOrderFromDashboard.name)) {
+    //   nextRoute = AppRoute.addLineItemForPurchaseOrderFromDashboard.name;
+    // } else if (path == router.namedLocation(AppRoute.addPurchaseOrder.name)) {
+    //   nextRoute = AppRoute.addLineItemForPurchaseOrder.name;
+    // } else if (path == router.namedLocation(AppRoute.addSaleOrderFromDashboard.name)) {
+    //   nextRoute = AppRoute.addLineItemForSaleOrderFromDashboard.name;
+    // } else if (path == router.namedLocation(AppRoute.addSaleOrder.name)) {
+    //   nextRoute = AppRoute.addLineItemForSaleOrder.name;
+    // }
 
     showDialog(
       context: context,
@@ -67,8 +68,17 @@ class LineItemListView extends ConsumerWidget {
             TextButton(
                 onPressed: () {
                   ref.read(selectedItemVariationProvider.notifier).state = Some(lineItem.itemVariation);
-                  context.goNamed(nextRoute, extra: lineItem);
+
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddLineItemScreen(
+                              orderType: orderType,
+                              lineItem: optionOf(lineItem),
+                            ),
+                        fullscreenDialog: true),
+                  );
                 },
                 child: const Text('EDIT')),
             TextButton(

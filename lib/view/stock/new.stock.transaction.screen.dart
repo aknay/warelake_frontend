@@ -6,6 +6,7 @@ import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/common.widgets/widgets/note.text.form.field.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/item.variations/item.variations.screen/item.variations.list.view.dart';
 import 'package:warelake/view/stock/stock.item.variation.selection.dart';
 import 'package:warelake/view/stock/stock.line.item.list.view/stock.line.item.list.view.dart';
 import 'package:warelake/view/stock/stock.transaction.list.controller.dart';
@@ -50,7 +51,9 @@ class _StockInScreenState extends ConsumerState<NewStockTransactionScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const StockItemVariationSelectionScreen()),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const StockItemVariationSelectionScreen(ItemVariationSelection.forStockTransaction)),
             );
           },
           child: const Icon(Icons.add),

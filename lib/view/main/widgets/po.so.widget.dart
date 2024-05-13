@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
+import 'package:warelake/view/orders/purchase.order/add.purchase.order.screen.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.controller.dart';
-import 'package:warelake/view/routing/app.router.dart';
+import 'package:warelake/view/orders/sale.orders/add.sale.order.screen.dart';
 import 'package:warelake/view/orders/sale.orders/sale.order.list.controller.dart';
 
 class PoSoWidget extends ConsumerWidget {
@@ -31,7 +31,12 @@ class PoSoWidget extends ConsumerWidget {
               title: const Text('Purchase Order'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.addPurchaseOrderFromDashboard.name);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddPurchaseOrderScreen(), fullscreenDialog: true),
+                );
+
+                // context.goNamed(AppRoute.addPurchaseOrderFromDashboard.name);
               },
             ),
             ListTile(
@@ -39,7 +44,12 @@ class PoSoWidget extends ConsumerWidget {
               title: const Text('Sale Order'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
-                context.goNamed(AppRoute.addSaleOrderFromDashboard.name);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddSaleOrderScreen(), fullscreenDialog: true),
+                );
+
+                // context.goNamed(AppRoute.addSaleOrderFromDashboard.name);
               },
             ),
           ],

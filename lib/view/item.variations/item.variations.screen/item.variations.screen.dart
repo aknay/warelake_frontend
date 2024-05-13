@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
@@ -20,6 +21,7 @@ class ItemVariationsScreen extends ConsumerWidget {
             Expanded(
               child: ItemVariationListView(
                 isToSelectItemVariation: false,
+                itemVariationSelectionOrNone: None(),
               ),
             ),
           ],

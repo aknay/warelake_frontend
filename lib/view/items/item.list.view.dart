@@ -117,26 +117,9 @@ class _ItemListViewState extends ConsumerState<ItemListView> {
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
         if (widget.isToSelectItemVariation) {
-          final router = GoRouter.of(context);
 
-          final path = router.routeInformationProvider.value.uri.path;
-          final pathParameters = {'id': item.id!};
 
-          // not from dashboard
-          if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrder.name)) {
-            context.goNamed(AppRoute.selectItemForPurchaseOrder.name, pathParameters: pathParameters);
-          } else if (path == router.namedLocation(AppRoute.itemsSelectionForSaleOrder.name)) {
-            context.goNamed(AppRoute.selectItemForSaleOrder.name, pathParameters: pathParameters);
-          }
-          // from dashboard
-          else if (path == router.namedLocation(AppRoute.itemsSelectionForPurchaseOrderFromDasboard.name)) {
-            context.goNamed(AppRoute.selectItemForPurchaseOrderFromDashboard.name, pathParameters: pathParameters);
-          } else if (path == router.namedLocation(AppRoute.itemsSelectionForSaleOrderFromDashboard.name)) {
-            context.goNamed(AppRoute.selectItemForSaleOrderFromDashboard.name, pathParameters: pathParameters);
 
-        
-          
-          }
         } else {
           context.goNamed(
             AppRoute.viewItem.name,

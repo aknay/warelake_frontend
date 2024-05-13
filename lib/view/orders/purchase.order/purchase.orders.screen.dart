@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:warelake/view/main/drawer/drawer.dart';
+import 'package:warelake/view/orders/purchase.order/add.purchase.order.screen.dart';
 import 'package:warelake/view/orders/purchase.order/purchase.order.list.view.dart';
-import 'package:warelake/view/routing/app.router.dart';
 
 class PurchaseOrdersScreen extends ConsumerWidget {
   const PurchaseOrdersScreen({super.key});
@@ -16,7 +15,10 @@ class PurchaseOrdersScreen extends ConsumerWidget {
       body: const PurchaseOrderListView(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.goNamed(AppRoute.addPurchaseOrder.name);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddPurchaseOrderScreen(), fullscreenDialog: true),
+          );
         },
         child: const Icon(Icons.add),
       ),
