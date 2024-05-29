@@ -68,8 +68,7 @@ class TeamService {
     return newTeamOrError;
   }
 
-  Future<Either<String, Team>> get(
-      {required String teamName, required tz.Location location, required Currency currency}) async {
+  Future<Either<String, Team>> getTeam() async {
     final teamIdOrNone = teamIdSharedRefRepository.existingTeamId;
 
     if (teamIdOrNone.isNone()) {
