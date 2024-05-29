@@ -17,13 +17,23 @@ class TeamFlashCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  title: const Text("Team Name:"),
+                  title: const Text("Team Name"),
                   trailing: Text(data.name,
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
                 ListTile(
-                  title: const Text("Current Plan:"),
+                  title: const Text("Current Plan"),
                   trailing: Text(planType,
+                      style: Theme.of(context).textTheme.titleMedium),
+                ),
+                   ListTile(
+                  title: const Text("Time Zone"),
+                  trailing: Text(data.timeZone,
+                      style: Theme.of(context).textTheme.titleMedium),
+                ),
+                        ListTile(
+                  title: const Text("Currency"),
+                  trailing: Text(data.currencyCode.name,
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
               ]);
