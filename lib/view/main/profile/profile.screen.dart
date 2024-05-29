@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
+import 'package:warelake/view/settings/team/app.version.text.dart';
 import 'package:warelake/view/settings/team/team.flashcards.dart';
 import 'package:warelake/view/settings/team/user.flashcards.dart';
 
@@ -48,6 +49,7 @@ class ProfileScreen extends ConsumerWidget {
             const TeamFlashCard(),
             const Spacer(),
             const SizedBox(height: 8),
+            const Center(child: AppVersionText()),
             const Divider(),
             TextButton.icon(
               icon: const Icon(Icons.logout_sharp),
