@@ -47,7 +47,7 @@ class StockLineItemListView extends ConsumerWidget {
                       inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                       initialValue: e.quantity.toString(),
                       onChanged: (value) {
-                        optionOf(int.tryParse(value)).fold(
+                        optionOf(double.tryParse(value)).fold(
                             () => null,
                             (a) => ref
                                 .read(stockLineItemControllerProvider.notifier)

@@ -109,7 +109,7 @@ void main() async {
 
     {
       // item utilization toal quatity of all item variation should be same as total line item
-      final total = lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+      final total = lineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
 
       final iuOrError = await itemApi.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
@@ -182,6 +182,41 @@ void main() async {
     }
   });
 
+    test('you can get back the created stock transaction for double', () async {
+    final retrievedWhiteShirt = shirtItemVariations.where((element) => element.name == "White Shirt").first;
+    final retrievedBlackShirt = shirtItemVariations.where((element) => element.name == "Black Shirt").first;
+
+    final lineItems = [
+      StockLineItem.create(itemVariation: retrievedWhiteShirt, quantity: 2.5),
+      StockLineItem.create(itemVariation: retrievedBlackShirt, quantity: 3.7)
+    ];
+
+    final rawTx = StockTransaction.create(
+      date: DateTime.now(),
+      lineItems: lineItems,
+      stockMovement: StockMovement.stockIn,
+    );
+    final stCreatedOrError =
+        await stockTransactionRepo.create(stockTransaction: rawTx, teamId: teamId, token: firstUserAccessToken);
+
+    expect(stCreatedOrError.isRight(), true);
+
+    final createdStx = stCreatedOrError.toIterable().first;
+    {
+      final stxOrError = await stockTransactionRepo.get(
+          stockTransactionId: createdStx.id!, teamId: teamId, token: firstUserAccessToken);
+      final stx = stxOrError.toIterable().first;
+      final retrivedWhiteShirt = stx.lineItems.where((element) => element.itemVariation.name == "White Shirt").first;
+      final retrivedBlackShirt = stx.lineItems.where((element) => element.itemVariation.name == "Black Shirt").first;
+      expect(retrivedWhiteShirt.quantity, 2.5);
+      expect(retrivedWhiteShirt.oldStockLevel, 0);
+      expect(retrivedWhiteShirt.newStockLevel, 2.5);
+      expect(retrivedBlackShirt.quantity, 3.7);
+      expect(retrivedBlackShirt.oldStockLevel, 0);
+      expect(retrivedBlackShirt.newStockLevel, 3.7);
+    }
+  });
+
   test('creating stx with stock out should be successful', () async {
     final stockInLineItems =
         getStocklLineItemWithRandomCount(createdItemList: shirtItemVariations + jeanItemVariations);
@@ -229,9 +264,9 @@ void main() async {
     {
       // item utilization toal quatity of all item variation should be same as total line item
       final totalStockOut =
-          stockOutLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          stockOutLineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
       final totalStockIn =
-          stockInLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          stockInLineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
       final iuOrError = await itemApi.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, totalStockIn - totalStockOut);
@@ -287,9 +322,9 @@ void main() async {
     {
       // item utilization toal quatity of all item variation should be same as total line item
       final totalStockOut =
-          stockOutLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          stockOutLineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
       final totalStockIn =
-          stockInLineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          stockInLineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
       final iuOrError = await itemApi.getItemUtilization(teamId: teamId, token: firstUserAccessToken);
       expect(iuOrError.isRight(), true);
       expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, totalStockIn - totalStockOut);

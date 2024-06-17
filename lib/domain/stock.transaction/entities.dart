@@ -85,7 +85,6 @@ class StockTransaction {
   }
 
   static StockTransaction fromMap(Map<String, dynamic> json) {
-    
     return StockTransaction(
         id: json['id'],
         date: DateTime.parse(json['date']).toLocal(),
@@ -103,9 +102,9 @@ class StockLineItem {
   int? itemId;
   int? lineItemId;
   String? description;
-  int quantity;
-  int? newStockLevel;
-  int? oldStockLevel;
+  double quantity;
+  double? newStockLevel;
+  double? oldStockLevel;
 
   StockLineItem(
       {this.itemId,
@@ -116,7 +115,7 @@ class StockLineItem {
       this.newStockLevel,
       this.oldStockLevel});
 
-  factory StockLineItem.create({required ItemVariation itemVariation, required int quantity}) {
+  factory StockLineItem.create({required ItemVariation itemVariation, required double quantity}) {
     return StockLineItem(itemVariation: itemVariation, quantity: quantity);
   }
 
@@ -131,14 +130,16 @@ class StockLineItem {
   }
 
   static StockLineItem fromJson(Map<String, dynamic> json) {
+    //ref: https://stackoverflow.com/a/20135063
+    // json['quantity'] will be either intger for 5.0 and float for 5.6. so need to convert it to float
     return StockLineItem(
       itemId: json['item_id'],
       itemVariation: ItemVariation.fromJson(json['item_variation']),
       lineItemId: json['line_item_id'],
       description: json['description'],
-      quantity: json['quantity'],
-      newStockLevel: json['new_stock_level'],
-      oldStockLevel: json['old_stock_level'],
+      quantity: (json['quantity'] as num).toDouble(),
+      newStockLevel: (json['new_stock_level'] as num).toDouble(),
+      oldStockLevel: (json['old_stock_level'] as num).toDouble(),
     );
   }
 }
