@@ -28,14 +28,13 @@ enum PurchaseOrderAction {
 }
 
 class PurchaseOrderScreen extends ConsumerWidget {
-  const PurchaseOrderScreen({super.key, required this.isToSelectItemVariation, required this.pruchaseOrderId});
+  const PurchaseOrderScreen({super.key, required this.purchaseOrderId});
 
-  final String pruchaseOrderId;
-  final bool isToSelectItemVariation;
+  final String purchaseOrderId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final saleOrderAsync = ref.watch(purchaseOrderProvider(pruchaseOrderId));
+    final saleOrderAsync = ref.watch(purchaseOrderProvider(purchaseOrderId));
     return ScaffoldAsyncValueWidget<PurchaseOrder>(
       value: saleOrderAsync,
       data: (job) => PageContents(po: job),
@@ -45,6 +44,7 @@ class PurchaseOrderScreen extends ConsumerWidget {
 
 class PageContents extends ConsumerWidget {
   const PageContents({super.key, required this.po});
+
   final PurchaseOrder po;
 
   @override
@@ -128,7 +128,8 @@ class PageContents extends ConsumerWidget {
                 children: [
                   DateText(po.date, enableTime: true),
                   const Spacer(),
-                  PurchaseOrderStausWidget(po.status), gapW4
+                  PurchaseOrderStausWidget(po.status),
+                  gapW4
                 ],
               ),
             ),

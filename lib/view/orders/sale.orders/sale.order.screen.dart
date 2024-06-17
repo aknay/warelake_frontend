@@ -27,10 +27,9 @@ enum SaleOrderAction {
 }
 
 class SaleOrderScreen extends ConsumerWidget {
-  const SaleOrderScreen({super.key, required this.isToSelectItemVariation, required this.saleOrderId});
+  const SaleOrderScreen({super.key, required this.saleOrderId});
 
   final String saleOrderId;
-  final bool isToSelectItemVariation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,6 +43,7 @@ class SaleOrderScreen extends ConsumerWidget {
 
 class PageContents extends ConsumerWidget {
   const PageContents({super.key, required this.so});
+
   final SaleOrder so;
 
   @override

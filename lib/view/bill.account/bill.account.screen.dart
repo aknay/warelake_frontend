@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/data/bill.account/bill.account.service.dart';
 import 'package:warelake/data/monthly.summary/monthly.summary.chart.wrapper.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 
 final billAccountProvider = FutureProvider.family<BillAccount, String>((ref, id) async {
@@ -49,9 +50,10 @@ class PageContents extends ConsumerWidget {
               child: Row(
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("Total Amount"),
-                      Text("${billAccount.currencyCodeAsEnum.name} ${billAccount.totalBalance}"),
+                      AmountText(billAccount.totalBalance)
                     ],
                   ),
                   Text(billAccount.status.toUpperCase())
