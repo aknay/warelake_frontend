@@ -162,6 +162,83 @@ void main() async {
     }
   });
 
+
+  test('you can create stock in, delete po with received state and check totalQuantityOfAllItemVariation using decimal', () async {
+    {
+      final rawTx = StockTransaction.create(
+        date: DateTime.now(),
+        lineItems: getStockLineItemWithIndividual(items: [
+          Tuple2(1.1, shirtItemVariations[0]),
+          Tuple2(2.2, shirtItemVariations[1]),
+          Tuple2(3.0, jeanItemVariations[0]),
+          Tuple2(4.1, jeanItemVariations[1]),
+        ]),
+        stockMovement: StockMovement.stockIn,
+      );
+      final stCreatedOrError =
+          await stockTransactionRepo.create(stockTransaction: rawTx, teamId: team.id!, token: firstUserAccessToken);
+      expect(stCreatedOrError.isRight(), true);
+    }
+
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10.4);
+    }
+    PurchaseOrder purchaseOrder;
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      final lineItems = getLineItemIndividual(items: [
+        Tuple2(2, shirtItemVariations[0]),
+        Tuple2(3, shirtItemVariations[1]),
+        Tuple2(4, jeanItemVariations[0]),
+        Tuple2(5, jeanItemVariations[1]),
+      ]);
+      final po = PurchaseOrder.create(
+          purchaseOrderNumber: "PO-0001",
+          accountId: billAccount.id!,
+          date: DateTime.now(),
+          currencyCode: CurrencyCode.AUD,
+          lineItems: lineItems,
+          subTotal: 10,
+          total: 20);
+      final poCreatedOrError =
+          await purchaseOrderApi.setToIssued(purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+      await Future.delayed(const Duration(seconds: 1));
+      expect(poCreatedOrError.isRight(), true);
+      purchaseOrder = poCreatedOrError.toIterable().first;
+      final poItemsReceivedOrError = await purchaseOrderApi.setToReceived(
+          purchaseOrderId: purchaseOrder.id!, date: DateTime.now(), teamId: team.id!, token: firstUserAccessToken);
+      expect(poItemsReceivedOrError.isRight(), true);
+    }
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 2));
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 24.4);
+    }
+    {
+      await Future.delayed(const Duration(seconds: 1));
+      final deletedOrError = await purchaseOrderApi.delete(
+        purchaseOrderId: purchaseOrder.id!,
+        teamId: team.id!,
+        token: firstUserAccessToken,
+      );
+      expect(deletedOrError.isRight(), true);
+    }
+    {
+      //sleep a while to update correctly
+      await Future.delayed(const Duration(seconds: 1));
+      final iuOrError = await itemApi.getItemUtilization(teamId: team.id!, token: firstUserAccessToken);
+      expect(iuOrError.isRight(), true);
+      expect(iuOrError.toIterable().first.totalQuantityOfAllItemVariation, 10.4);
+    }
+  });
+
   test('item utilization count is correct after new item variations can be added to the item', () async {
     {
       //sleep a while to update correctly

@@ -43,8 +43,12 @@ class StockLineItemListView extends ConsumerWidget {
                     child: TextFormField(
                       //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
                       key: UniqueKey(),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+                      ],
+
                       initialValue: e.quantity.toString(),
                       onChanged: (value) {
                         optionOf(double.tryParse(value)).fold(
