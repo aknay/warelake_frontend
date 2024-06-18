@@ -201,7 +201,7 @@ class PriceMoney {
 class ItemUtilization {
   int totalItemVariationsCount;
   int totalItemCount;
-  int totalQuantityOfAllItemVariation;
+  double totalQuantityOfAllItemVariation;
 
   ItemUtilization(
       {required this.totalItemVariationsCount,
@@ -209,10 +209,14 @@ class ItemUtilization {
       required this.totalQuantityOfAllItemVariation});
 
   factory ItemUtilization.fromMap(Map<String, dynamic> json) {
+    // so that it will take care of rounding due to floating point
+    final totalQuantityOfAllItemVariationInRawDouble = (json['total_quantity_of_all_item_variation'] as num).toDouble();
+    final totalQuantityOfAllItemVariationAfterDoubleFixed =
+        double.parse(totalQuantityOfAllItemVariationInRawDouble.toStringAsFixed(10));
     return ItemUtilization(
       totalItemVariationsCount: json['total_item_variations_count'],
       totalItemCount: json['total_item_count'],
-      totalQuantityOfAllItemVariation: json['total_quantity_of_all_item_variation'],
+      totalQuantityOfAllItemVariation: totalQuantityOfAllItemVariationAfterDoubleFixed,
     );
   }
 }
