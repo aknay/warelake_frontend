@@ -24,7 +24,7 @@ class AddLineItemScreen extends ConsumerStatefulWidget {
 
 class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
   final _formKey = GlobalKey<FormState>();
-  late Option<int> quantity = widget.lineItem.fold(() => const None(), (a) => Some(a.quantity));
+  late Option<double> quantity = widget.lineItem.fold(() => const None(), (a) => Some(a.quantity));
   late Option<double> rate = widget.lineItem.fold(() => const None(), (a) => Some(a.rateInDouble));
 
   @override
@@ -95,7 +95,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
                 }
                 return null;
               },
-              onSaved: (value) => quantity = value != null ? optionOf(int.tryParse(value)) : const Some(0),
+              onSaved: (value) => quantity = value != null ? optionOf(double.tryParse(value)) : const Some(0),
             ),
           ),
           gapW8,

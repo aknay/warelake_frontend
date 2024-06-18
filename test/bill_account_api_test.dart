@@ -131,12 +131,12 @@ void main() async {
   });
 
   test('bill account will be in negative after po is received', () async {
-    final int total;
+    final double total;
     {
       final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
       total = lineItems
           .map((e) => e.itemVariation.purchasePriceMoney.amount * e.quantity)
-          .fold(0, (previousValue, element) => previousValue + element);
+          .fold(0.0, (previousValue, element) => previousValue + element);
       final po = PurchaseOrder.create(
           purchaseOrderNumber: "PO-0001",
           accountId: billAccount.id!,
@@ -172,7 +172,7 @@ void main() async {
   });
 
   test('bill account will be zeo after received po is deleted', () async {
-    final int total;
+    final double total;
     {
       final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
       total = lineItems

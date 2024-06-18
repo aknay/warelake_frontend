@@ -69,7 +69,7 @@ void main() async {
     billAccount = accountListOrError.toIterable().first.data.first;
 
     final shirtCreatedOrError =
-        await itemApi.createItemRequest(request: getShirtItemRequest(), teamId: team.id!, token: firstUserAccessToken);
+        await itemApi.createItemRequest(request: getShirtItemRequest(purchasePrice: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final shirtVaraitionsOrError =
@@ -77,7 +77,7 @@ void main() async {
     shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
 
     final jeansCreatedOrError =
-        await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
+        await itemApi.createItemRequest(request: getJeanItemRequest(purchasePrice: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
     final jeanVariationsOrError =
         await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
@@ -89,7 +89,7 @@ void main() async {
         accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
+        lineItems: getLineItems(items: [Tuple2(5.6, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -102,12 +102,14 @@ void main() async {
     expect(createdPo.purchaseOrderNumber, "PO-0001");
   });
 
+
+
   test('check totalQuantityOfAllItemVariation after po issued', () async {
     final po = PurchaseOrder.create(
         accountId: billAccount.id!,
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
-        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
+        lineItems: getLineItems(items: [Tuple2(5.6, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         purchaseOrderNumber: "PO-0001",
         total: 20);
@@ -130,7 +132,7 @@ void main() async {
         date: DateTime.now(),
         currencyCode: CurrencyCode.AUD,
         purchaseOrderNumber: "PO-0001",
-        lineItems: getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
+        lineItems: getLineItems(items: [Tuple2(5.6, shirtItemVariations), Tuple2(10, jeanItemVariations)]),
         subTotal: 10,
         total: 20);
     final poCreatedOrError =
@@ -148,7 +150,7 @@ void main() async {
   });
 
   test('you can received item from po', () async {
-    final lineItems = getLineItems(items: [Tuple2(5, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
+    final lineItems = getLineItems(items: [Tuple2(5.3, shirtItemVariations), Tuple2(10, jeanItemVariations)]);
     final po = PurchaseOrder.create(
         purchaseOrderNumber: "PO-0001",
         accountId: billAccount.id!,
@@ -235,7 +237,7 @@ void main() async {
     {
       //check primary account's balance
       final total =
-          lineItems.map((e) => e.quantity * e.rate).fold(0, (previousValue, element) => previousValue + element);
+          lineItems.map((e) => e.quantity * e.rate).fold(0.0, (previousValue, element) => previousValue + element);
       final accountListOrError = await billAccountApi.list(teamId: team.id!, token: firstUserAccessToken);
       expect(accountListOrError.isRight(), true);
       expect(accountListOrError.toIterable().first.data.length == 1, true);

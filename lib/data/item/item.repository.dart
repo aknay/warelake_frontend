@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/config/api.endpoint.dart';
 import 'package:warelake/data/http.helper.dart';
@@ -338,7 +339,7 @@ class ItemRepository extends ItemApi {
       log("get item response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
-      log("the error is $e");
+      Logger().e(e);
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }

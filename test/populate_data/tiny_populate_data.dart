@@ -306,7 +306,7 @@ void main() async {
                 itemVariation: e, quantity: random.nextInt(8) + 2, rate: e.salePriceMoney.amountInDouble, unit: 'kg'),
           )
           .toList();
-      final totalAmount = lineItems.map((e) => e.rate).fold(0, (previousValue, element) => previousValue + element);
+      final totalAmount = lineItems.map((e) => e.rate).fold(0.0, (previousValue, element) => previousValue + element);
 
       final so = SaleOrder.create(
           accountId: account.id!,
@@ -344,7 +344,7 @@ void main() async {
                 unit: 'kg'),
           )
           .toList();
-      final totalAmount = lineItems.map((e) => e.rate).fold(0, (previousValue, element) => previousValue + element);
+      final totalAmount = lineItems.map((e) => e.rate).fold(0.0, (previousValue, element) => previousValue + element);
       final po = PurchaseOrder.create(
           accountId: account.id!,
           date: randomDateWithinLastSixMonths(i),

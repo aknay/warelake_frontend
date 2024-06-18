@@ -16,8 +16,8 @@ class PurchaseOrder {
   String currencyCode;
   String? deliveryDate;
   List<LineItem> lineItems;
-  int subTotal; //before tax
-  int total; //after tax
+  double subTotal; //before tax
+  double total; //after tax
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
@@ -56,8 +56,8 @@ class PurchaseOrder {
       {required DateTime date,
       required CurrencyCode currencyCode,
       required List<LineItem> lineItems,
-      required int subTotal,
-      required int total,
+      required double subTotal,
+      required double total,
       required String accountId,
       required String purchaseOrderNumber,
       Option<String> notes = const None()}) {
@@ -119,8 +119,8 @@ class PurchaseOrder {
       // deliveryDate: json['deliveryDate'],
       lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
       // lineItems: (json['line_items'] as List<LineItem>).map((item) => LineItem.fromJson(item)).toList(),
-      subTotal: json['sub_total'],
-      total: json['total'],
+      subTotal: (json['sub_total'] as num).toDouble(),
+      total: (json['total'] as num).toDouble(),
       // taxes: (json['taxes'] as List<dynamic>).map((tax) => Tax.fromJson(tax)).toList(),
       // pricePrecision: json['pricePrecision'],
       // billingAddress: (json['billingAddress'] as List<dynamic>).map((address) => Address.fromJson(address)).toList(),
@@ -179,7 +179,7 @@ class LineItem {
   int? lineItemId;
   String? description;
   int rate;
-  int quantity;
+  double quantity;
   String unit;
   // int itemTotal;
 
@@ -198,7 +198,7 @@ class LineItem {
   double get totalAmount => rateInDouble * quantity;
 
   factory LineItem.create(
-      {required ItemVariation itemVariation, required double rate, required int quantity, required String unit}) {
+      {required ItemVariation itemVariation, required double rate, required double quantity, required String unit}) {
     return LineItem(itemVariation: itemVariation, rate: (rate * 1000).toInt(), quantity: quantity, unit: unit);
   }
 
@@ -221,7 +221,7 @@ class LineItem {
       lineItemId: json['line_item_id'],
       description: json['description'],
       rate: json['rate'],
-      quantity: json['quantity'],
+      quantity: (json['quantity'] as num).toDouble(),
       unit: json['unit'],
     );
   }

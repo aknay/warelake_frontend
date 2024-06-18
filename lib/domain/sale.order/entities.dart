@@ -20,8 +20,8 @@ class SaleOrder {
   String currencyCode;
   String? deliveryDate;
   List<LineItem> lineItems;
-  int subTotal; //before tax
-  int total; //after tax
+  double subTotal; //before tax
+  double total; //after tax
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
@@ -60,8 +60,8 @@ class SaleOrder {
       {required DateTime date,
       required CurrencyCode currencyCode,
       required List<LineItem> lineItems,
-      required int subTotal,
-      required int total,
+      required double subTotal,
+      required double total,
       required String accountId,
       required String saleOrderNumber,
       Option<String> notes = const None()}) {

@@ -64,7 +64,7 @@ class ItemVariation {
   PriceMoney salePriceMoney;
   PriceMoney purchasePriceMoney;
   String sku;
-  int? itemCount;
+  double? itemCount;
   String? barcode;
   String? imageUrl;
   Option<int> minimumStockCountOrNone;
@@ -92,7 +92,7 @@ class ItemVariation {
       required String sku,
       required PriceMoney salePriceMoney,
       required PriceMoney purchasePriceMoney,
-      int? itemCount,
+      double? itemCount,
       String? barcode,
       Option<int> minimumStock = const None()}) {
     var uuid = const Uuid();
@@ -116,7 +116,7 @@ class ItemVariation {
       String? sku,
       PriceMoney? salePriceMoney,
       PriceMoney? purchasePriceMoney,
-      int? itemCount,
+      double? itemCount,
       String? barcode,
       Option<int> minimumStockCountOrNone = const None()}) {
     return ItemVariation(
@@ -144,7 +144,7 @@ class ItemVariation {
         sku: json['sku'],
         salePriceMoney: PriceMoney.fromJson(json['sale_price']),
         purchasePriceMoney: PriceMoney.fromJson(json['purchase_price']),
-        itemCount: json['item_count'],
+        itemCount: (json['item_count'] as num).toDouble(),
         barcode: json['barcode'],
         imageUrl: json['image_url'],
         minimumStockCountOrNone: json['minimum_stock_count'] == 0 ? const None() : Some(json['minimum_stock_count']));
