@@ -27,9 +27,9 @@ Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
 
-CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePrice}) {
-  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePrice);
-  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePrice);
+CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
+  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
   return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
@@ -63,9 +63,9 @@ Item getJean() {
   return Item.create(name: "jeans", unit: 'pcs');
 }
 
-CreateItemRequest getJeanItemRequest({int? salePriceInInt, int? purchasePrice}) {
-  final whiteJean = getWhiteJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePrice);
-  final blackJean = getBlackJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePrice);
+CreateItemRequest getJeanItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
+  final whiteJean = getWhiteJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+  final blackJean = getBlackJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
   return CreateItemRequest(item: Item.create(name: "jeans", unit: 'pcs'), itemVariations: [whiteJean, blackJean]);
 }
 

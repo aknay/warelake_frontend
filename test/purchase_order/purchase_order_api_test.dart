@@ -69,7 +69,7 @@ void main() async {
     billAccount = accountListOrError.toIterable().first.data.first;
 
     final shirtCreatedOrError =
-        await itemApi.createItemRequest(request: getShirtItemRequest(purchasePrice: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
+        await itemApi.createItemRequest(request: getShirtItemRequest(purchasePriceInInt: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final shirtVaraitionsOrError =
@@ -77,7 +77,7 @@ void main() async {
     shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
 
     final jeansCreatedOrError =
-        await itemApi.createItemRequest(request: getJeanItemRequest(purchasePrice: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
+        await itemApi.createItemRequest(request: getJeanItemRequest(purchasePriceInInt: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
     final jeanVariationsOrError =
         await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
