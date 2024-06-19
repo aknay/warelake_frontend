@@ -27,15 +27,17 @@ Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
 
-CreateItemRequest getShirtItemRequest() {
-  final whiteShirt = getWhiteShirt();
-  final blackShirt = getBlackShirt();
+CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
+  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
   return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
-ItemVariation getWhiteShirt() {
-  final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-  final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+  final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
+  final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
+  final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
+  final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
   return ItemVariation.create(
       name: "White Shirt",
       stockable: true,
@@ -44,9 +46,11 @@ ItemVariation getWhiteShirt() {
       purchasePriceMoney: purchasePriceMoney);
 }
 
-ItemVariation getBlackShirt() {
-  final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-  final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+  final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
+  final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
+  final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
+  final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
   return ItemVariation.create(
       name: "Black Shirt",
       stockable: true,
@@ -59,17 +63,17 @@ Item getJean() {
   return Item.create(name: "jeans", unit: 'pcs');
 }
 
-CreateItemRequest getJeanItemRequest() {
-  final whiteJean = getWhiteJean();
-  final blackJean = getBlackJean();
-  return CreateItemRequest(
-      item: Item.create(name: "jeans", unit: 'pcs'),
-      itemVariations: [whiteJean, blackJean]);
+CreateItemRequest getJeanItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
+  final whiteJean = getWhiteJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+  final blackJean = getBlackJean(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+  return CreateItemRequest(item: Item.create(name: "jeans", unit: 'pcs'), itemVariations: [whiteJean, blackJean]);
 }
 
-ItemVariation getWhiteJean() {
-  final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-  final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+ItemVariation getWhiteJean({int? salePriceInInt, int? purchasePriceInInt}) {
+  final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
+  final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
+  final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
+  final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
   return ItemVariation.create(
       name: "White Jean",
       stockable: true,
@@ -78,9 +82,11 @@ ItemVariation getWhiteJean() {
       purchasePriceMoney: purchasePriceMoney);
 }
 
-ItemVariation getBlackJean() {
-  final salePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
-  final purchasePriceMoney = PriceMoney(amount: Random().nextInt(1000) + 1000, currency: "SGD");
+ItemVariation getBlackJean({int? salePriceInInt, int? purchasePriceInInt}) {
+  final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
+  final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
+  final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
+  final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
   return ItemVariation.create(
       name: "Black Jean",
       stockable: true,
@@ -96,7 +102,7 @@ List<LineItem> getLineItemsWithRandomCount({required List<ItemVariation> items})
       .toList();
 }
 
-List<LineItem> getLineItems({required List<Tuple2<int, List<ItemVariation>>> items}) {
+List<LineItem> getLineItems({required List<Tuple2<double, List<ItemVariation>>> items}) {
   return items
       .map((f) => f.value2.map((e) => LineItem.create(
           itemVariation: e, rate: e.purchasePriceMoney.amountInDouble, quantity: f.value1, unit: 'unit')))
@@ -104,7 +110,7 @@ List<LineItem> getLineItems({required List<Tuple2<int, List<ItemVariation>>> ite
       .toList();
 }
 
-List<LineItem> getLineItemIndividual({required List<Tuple2<int, ItemVariation>> items}) {
+List<LineItem> getLineItemIndividual({required List<Tuple2<double, ItemVariation>> items}) {
   return items
       .map((e) => LineItem.create(
           itemVariation: e.value2, rate: e.value2.purchasePriceMoney.amountInDouble, quantity: e.value1, unit: 'pcs'))
@@ -112,16 +118,18 @@ List<LineItem> getLineItemIndividual({required List<Tuple2<int, ItemVariation>> 
 }
 
 List<StockLineItem> getStocklLineItemWithRandomCount({required List<ItemVariation> createdItemList}) {
-  return createdItemList.map((e) => StockLineItem.create(itemVariation: e, quantity: Random().nextInt(5) + 5)).toList();
+  return createdItemList
+      .map((e) => StockLineItem.create(itemVariation: e, quantity: Random().nextInt(5) + 5.0))
+      .toList();
 }
 
-List<StockLineItem> getStockLineItem({required List<Tuple2<int, List<ItemVariation>>> items}) {
+List<StockLineItem> getStockLineItem({required List<Tuple2<double, List<ItemVariation>>> items}) {
   return items
       .map((e) => e.value2.map((f) => StockLineItem.create(itemVariation: f, quantity: e.value1)))
       .flattened
       .toList();
 }
 
-List<StockLineItem> getStockLineItemWithIndividual({required List<Tuple2<int, ItemVariation>> items}) {
+List<StockLineItem> getStockLineItemWithIndividual({required List<Tuple2<double, ItemVariation>> items}) {
   return items.map((e) => StockLineItem.create(itemVariation: e.value2, quantity: e.value1)).toList();
 }

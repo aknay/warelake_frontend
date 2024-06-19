@@ -110,7 +110,7 @@ class PageContents extends ConsumerWidget {
   }
 
   Widget _toTotalItemCount(StockTransaction st, BuildContext context) {
-    final totalCount = st.lineItems.map((e) => e.quantity).fold(0, (previousValue, element) => previousValue + element);
+    final totalCount = st.lineItems.map((e) => e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
     return Column(
       children: [
         Text("$totalCount", style: Theme.of(context).textTheme.titleLarge),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/config/api.endpoint.dart';
 import 'package:warelake/data/http.helper.dart';
@@ -54,11 +55,11 @@ class SaleOrderRepository extends SaleOrderApi {
       if (response.statusCode == 201) {
         return Right(SaleOrder.fromJson(jsonDecode(response.body)));
       }
-      log("purchase order create response code ${response.statusCode}");
-      log("purchase order create response ${jsonDecode(response.body)}");
+      Logger().e("sale order create response code ${response.statusCode}");
+      Logger().e("sale order create response ${jsonDecode(response.body)}");
       return Left(ErrorResponse.withStatusCode(message: "having error", statusCode: response.statusCode));
     } catch (e) {
-      log("the error is $e");
+      Logger().e(e);
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }

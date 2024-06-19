@@ -152,7 +152,7 @@ void main() async {
     final poCreated = poCreatedOrError.toIterable().first;
     final amount = poCreated.lineItems
         .map((e) => e.rate * e.quantity)
-        .fold(0, (previousValue, element) => previousValue + element);
+        .fold(0.0, (previousValue, element) => previousValue + element);
     expect(monthlyOrderSummary.purchaseOrderAmount, amount / 1000);
   });
 
@@ -190,7 +190,7 @@ void main() async {
       final poCreated = poCreatedOrError.toIterable().first;
       final amount = poCreated.lineItems
           .map((e) => e.rate * e.quantity)
-          .fold(0, (previousValue, element) => previousValue + element);
+          .fold(0.0, (previousValue, element) => previousValue + element);
       expect(monthlyOrderSummary.purchaseOrderAmount, amount / 1000);
     }
     {
@@ -257,7 +257,7 @@ void main() async {
     final poCreated = soCreatedOrError.toIterable().first;
     final amount = poCreated.lineItems
         .map((e) => e.rate * e.quantity)
-        .fold(0, (previousValue, element) => previousValue + element);
+        .fold(0.0, (previousValue, element) => previousValue + element);
     expect(monthlyOrderSummary.saleOrderAmount, amount / 1000);
     expect(monthlyOrderSummary.purchaseOrderAmount, 0);
     expect(monthlyOrderSummary.purchaseOrderCount, 0);
@@ -295,7 +295,7 @@ void main() async {
       final poCreated = soCreatedOrError.toIterable().first;
       final amount = poCreated.lineItems
           .map((e) => e.rate * e.quantity)
-          .fold(0, (previousValue, element) => previousValue + element);
+          .fold(0.0, (previousValue, element) => previousValue + element);
       expect(monthlyOrderSummary.saleOrderAmount, amount / 1000);
     }
     {

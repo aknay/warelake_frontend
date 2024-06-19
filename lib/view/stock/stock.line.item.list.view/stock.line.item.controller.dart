@@ -39,7 +39,7 @@ class StockLineItemController extends _$StockLineItemController {
     ];
   }
 
-  void edit({required String itemVariationId, required int value}) {
+  void edit({required String itemVariationId, required double value}) {
     StockLineItem setValueToItemIfFound(StockLineItem item) {
       if (item.itemVariation.id == itemVariationId) {
         item.quantity = value;

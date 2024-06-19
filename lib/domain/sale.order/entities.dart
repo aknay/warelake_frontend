@@ -20,8 +20,8 @@ class SaleOrder {
   String currencyCode;
   String? deliveryDate;
   List<LineItem> lineItems;
-  int subTotal; //before tax
-  int total; //after tax
+  double subTotal; //before tax
+  double total; //after tax
   List<Tax>? taxes;
   int? pricePrecision;
   List<Address>? billingAddress;
@@ -60,8 +60,8 @@ class SaleOrder {
       {required DateTime date,
       required CurrencyCode currencyCode,
       required List<LineItem> lineItems,
-      required int subTotal,
-      required int total,
+      required double subTotal,
+      required double total,
       required String accountId,
       required String saleOrderNumber,
       Option<String> notes = const None()}) {
@@ -104,8 +104,8 @@ class SaleOrder {
         status: json['status'] == null ? const None() : Some(SaleOrderStatus.values.byName(json['status'])),
         currencyCode: json['currency_code'],
         lineItems: List<LineItem>.from(json['line_items'].map((v) => LineItem.fromJson(v))),
-        subTotal: json['sub_total'],
-        total: json['total'],
+        subTotal: (json['sub_total'] as num).toDouble(),
+        total: (json['total'] as num).toDouble(),
         notes: optionOf(json['notes']),
         accountId: json['account_id'],
         createdTime: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,

@@ -129,7 +129,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddPurchaseOrderScreen> {
     if (_validateAndSaveForm()) {
       final lineItems = ref.read(lineItemControllerProvider);
       final subTotal =
-          lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          lineItems.map((e) => e.rate * e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
 
       if (billAccountOrNone.isNone()) {
         showAlertDialog(

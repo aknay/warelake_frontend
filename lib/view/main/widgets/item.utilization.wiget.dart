@@ -11,25 +11,35 @@ class ItemUtilizationWidget extends ConsumerWidget {
     return itemUtilization.when(
         data: (data) {
           return Container(
-                          decoration: BoxDecoration(
-                  color: Theme.of(context).highlightColor, borderRadius: const BorderRadius.all(Radius.circular(8))),
+            decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor, borderRadius: const BorderRadius.all(Radius.circular(8))),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
-                      children: [Text("${data.totalItemCount}", style:  Theme.of(context).textTheme.headlineSmall),  Text('Item Groups', style: Theme.of(context).textTheme.labelSmall)],
+                      children: [
+                        Text("${data.totalItemCount}", style: Theme.of(context).textTheme.headlineSmall),
+                        Text('Item Groups', style: Theme.of(context).textTheme.labelSmall)
+                      ],
                     ),
                   ),
                   Expanded(
                     child: Column(
-                      children: [Text("${data.totalItemVariationsCount}", style:  Theme.of(context).textTheme.headlineSmall),  Text('Items', style: Theme.of(context).textTheme.labelSmall)],
+                      children: [
+                        Text("${data.totalItemVariationsCount}", style: Theme.of(context).textTheme.headlineSmall),
+                        Text('Items', style: Theme.of(context).textTheme.labelSmall)
+                      ],
                     ),
                   ),
                   Expanded(
                     child: Column(
-                      children: [Text("${data.totalQuantityOfAllItemVariation}", style:  Theme.of(context).textTheme.headlineSmall),  Text('Stock', style:  Theme.of(context).textTheme.labelSmall)],
+                      children: [
+                        Text("${data.totalQuantityOfAllItemVariation}",
+                            style: Theme.of(context).textTheme.headlineSmall),
+                        Text('Stock', style: Theme.of(context).textTheme.labelSmall)
+                      ],
                     ),
                   ),
                 ],

@@ -149,7 +149,7 @@ class _AddSaleOrderScreenState extends ConsumerState<AddSaleOrderScreen> {
       }
 
       final subTotal =
-          lineItems.map((e) => e.rate * e.quantity).fold(0, (previousValue, element) => previousValue + element);
+          lineItems.map((e) => e.rate * e.quantity).fold(0.0, (previousValue, element) => previousValue + element);
 
       final billAccount = billAccountOrNone.toIterable().first;
 

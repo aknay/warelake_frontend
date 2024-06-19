@@ -28,7 +28,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Option<double> purchasingPrice = const None();
   Option<double> sellingPrice = const None();
   Option<String> barcodeOrNone = const None();
-  Option<int> currentStockLevel = const Some(0);
+  Option<double> currentStockLevel = const Some(0);
   Option<int> minimumStockLevelOrNone = const Some(0);
   late final CurrencyCode currencyCode;
   late final currencyFormatter = CurrencyTextInputFormatter(currencyCode: currencyCode);
@@ -67,7 +67,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         final purchasePrice = purchasingPrice.fold(() => 0.0, (a) => a);
         final purchasePriceMoney = PriceMoney.from(amount: purchasePrice, currencyCode: currencyCode);
 
-        final itemCount = currentStockLevel.fold(() => 0, (a) => a);
+        final itemCount = currentStockLevel.fold(() => 0.0, (a) => a);
 
         widget.itemVariation.fold(() {
           final itemVariation = ItemVariation.create(

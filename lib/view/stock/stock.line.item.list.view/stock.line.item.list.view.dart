@@ -41,13 +41,18 @@ class StockLineItemListView extends ConsumerWidget {
                   trailing: SizedBox(
                     width: 80,
                     child: TextFormField(
+                      //TODO: disable key becuase it keeps refreshing while typing
                       //key need to be in random in order to initialValue be updated  ref: https://stackoverflow.com/a/63164782
-                      key: UniqueKey(),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                      // key: UniqueKey(),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+                      ],
+
                       initialValue: e.quantity.toString(),
                       onChanged: (value) {
-                        optionOf(int.tryParse(value)).fold(
+                        optionOf(double.tryParse(value)).fold(
                             () => null,
                             (a) => ref
                                 .read(stockLineItemControllerProvider.notifier)
