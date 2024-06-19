@@ -182,7 +182,7 @@ void main() async {
     }
   });
 
-    test('you can get back the created stock transaction for double', () async {
+  test('you can get back the created stock transaction for double', () async {
     final retrievedWhiteShirt = shirtItemVariations.where((element) => element.name == "White Shirt").first;
     final retrievedBlackShirt = shirtItemVariations.where((element) => element.name == "Black Shirt").first;
 

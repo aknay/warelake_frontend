@@ -5,6 +5,7 @@ import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
 import 'package:warelake/view/common.widgets/dialogs/yes.no.dialog.dart';
+import 'package:warelake/view/common.widgets/stock.count.widget.dart';
 import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.controller.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
@@ -119,7 +120,7 @@ class PageContents extends ConsumerWidget {
                   ),
                   ListTile(
                     title: const Text("Stock on hand"),
-                    trailing: Text("${itemVariation.itemCount}", style: Theme.of(context).textTheme.bodyLarge),
+                    trailing: StockCount(amount: itemVariation.itemCount!, style: Theme.of(context).textTheme.bodyLarge),
                   ),
                   ListTile(
                     title: const Text("Barcode"),

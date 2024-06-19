@@ -13,9 +13,9 @@ class AmountText extends StatelessWidget {
 
   String _formatCurrency(double amount) {
     var formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
-    String formattedAmount = formatter.format(amount.abs());
+    final formattedAmount = formatter.format(amount.abs());
     if (amount < 0) {
-      formattedAmount = '-$formattedAmount';
+      return '-$formattedAmount';
     }
     return formattedAmount;
   }
