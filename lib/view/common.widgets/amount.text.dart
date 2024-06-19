@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AmountText extends StatelessWidget {
   final double amount;
@@ -7,7 +8,15 @@ class AmountText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedValue = amount.toStringAsFixed(2);
-    return Text('\$$formattedValue', style: style);
+    return Text(_formatCurrency(amount), style: style);
+  }
+
+  String _formatCurrency(double amount) {
+    var formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+    String formattedAmount = formatter.format(amount.abs());
+    if (amount < 0) {
+      formattedAmount = '-$formattedAmount';
+    }
+    return formattedAmount;
   }
 }
