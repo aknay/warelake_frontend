@@ -83,9 +83,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
               key: UniqueKey(),
               initialValue: quantity.fold(() => null, (a) => a.toString()),
               keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
               decoration: const InputDecoration(
                 labelText: 'Quantity *',
               ),
@@ -116,6 +114,7 @@ class _AddLineItemScreenState extends ConsumerState<AddLineItemScreen> {
                 rate = value != null ? optionOf(double.tryParse(value)) : const Some(0.0);
                 log("The rate gerer is ${rate.toIterable().first}");
               },
+              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
               keyboardType: const TextInputType.numberWithOptions(
                 signed: false,
                 decimal: false,
