@@ -68,6 +68,7 @@ class ItemVariation {
   String? barcode;
   String? imageUrl;
   Option<int> minimumStockCountOrNone;
+  Option<DateTime> expiryDate;
 
   ItemVariation(
       {this.type,
@@ -84,7 +85,8 @@ class ItemVariation {
       this.itemCount,
       this.barcode,
       this.imageUrl,
-      this.minimumStockCountOrNone = const None()});
+      this.minimumStockCountOrNone = const None(),
+      this.expiryDate = const None()});
 
   factory ItemVariation.create(
       {required String name,
@@ -94,7 +96,8 @@ class ItemVariation {
       required PriceMoney purchasePriceMoney,
       double? itemCount,
       String? barcode,
-      Option<int> minimumStock = const None()}) {
+      Option<int> minimumStock = const None(),
+      Option<DateTime> expiryDate = const None()}) {
     var uuid = const Uuid();
     String newUuid = uuid.v4();
 
@@ -107,7 +110,8 @@ class ItemVariation {
         purchasePriceMoney: purchasePriceMoney,
         itemCount: itemCount,
         barcode: barcode,
-        minimumStockCountOrNone: minimumStock);
+        minimumStockCountOrNone: minimumStock,
+        expiryDate: expiryDate);
   }
 
   ItemVariation copyWith(
@@ -118,7 +122,8 @@ class ItemVariation {
       PriceMoney? purchasePriceMoney,
       double? itemCount,
       String? barcode,
-      Option<int> minimumStockCountOrNone = const None()}) {
+      Option<int> minimumStockCountOrNone = const None(),
+      Option<DateTime> expiryDate = const None()}) {
     return ItemVariation(
         id: id,
         stockable: stockable ?? this.stockable,
@@ -128,7 +133,8 @@ class ItemVariation {
         purchasePriceMoney: purchasePriceMoney ?? this.purchasePriceMoney,
         itemCount: itemCount ?? this.itemCount,
         barcode: barcode ?? this.barcode,
-        minimumStockCountOrNone: minimumStockCountOrNone);
+        minimumStockCountOrNone: minimumStockCountOrNone,
+        expiryDate: expiryDate);
   }
 
   factory ItemVariation.fromJson(Map<String, dynamic> json) {
@@ -147,7 +153,8 @@ class ItemVariation {
         itemCount: (json['item_count'] as num).toDouble(),
         barcode: json['barcode'],
         imageUrl: json['image_url'],
-        minimumStockCountOrNone: json['minimum_stock_count'] == 0 ? const None() : Some(json['minimum_stock_count']));
+        minimumStockCountOrNone: json['minimum_stock_count'] == 0 ? const None() : Some(json['minimum_stock_count']),
+        expiryDate: json['expiry_date'] == null ? const None() : Some(DateTime.parse(json['expiry_date']).toLocal()));
   }
 
   Map<String, dynamic> toJson() {
@@ -163,7 +170,8 @@ class ItemVariation {
       'sale_price': salePriceMoney.toJson(),
       'purchase_price': purchasePriceMoney.toJson(),
       'barcode': barcode,
-      'minimum_stock_count': minimumStockCountOrNone.fold(() => null, (a) => a)
+      'minimum_stock_count': minimumStockCountOrNone.fold(() => null, (a) => a),
+      'expiry_date': expiryDate.fold(() => null, (a) => a.toUtc().toIso8601String())
     };
   }
 }

@@ -23,17 +23,26 @@ String generateRandomEmail() {
   return '$randomEmail@$domain';
 }
 
+String generateRandomPassword({int length = 12}) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  Random random = Random();
+  List<String> result = List.generate(length, (index) => charset[random.nextInt(charset.length)]);
+
+  return result.join();
+}
+
 Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
 
-CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
-  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
-  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
+  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate);
+  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate);
   return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
-ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
@@ -43,10 +52,11 @@ ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt}) {
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,
-      purchasePriceMoney: purchasePriceMoney);
+      purchasePriceMoney: purchasePriceMoney,
+      expiryDate: optionOf(expiryDate));
 }
 
-ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
@@ -56,7 +66,8 @@ ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt}) {
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,
-      purchasePriceMoney: purchasePriceMoney);
+      purchasePriceMoney: purchasePriceMoney,
+      expiryDate: optionOf(expiryDate));
 }
 
 Item getJean() {
