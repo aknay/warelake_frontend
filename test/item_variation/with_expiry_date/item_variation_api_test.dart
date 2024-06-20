@@ -7,6 +7,7 @@ import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../../helpers/sign.in.response.dart';
@@ -67,6 +68,72 @@ void main() async {
           await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
       final shirts = shirtVariationsOrError.toIterable().first;
       expect(shirts[0].expiryDate, Some(twoWeeksLater));
+    }
+  });
+
+  test('updating expired date should be successful', () async {
+    DateTime today = DateTime.now();
+    DateTime twoWeeksLater = today.add(const Duration(days: 14));
+
+    final request = getShirtItemRequest(expiryDate: twoWeeksLater);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    final item = itemCreated.toIterable().first;
+
+    final shirtVariationsOrError =
+        await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    final shirts = shirtVariationsOrError.toIterable().first;
+    final firstShirt = shirts[0];
+    expect(firstShirt.expiryDate, Some(twoWeeksLater));
+
+    {
+      final updatedOrError = await itemRepo.updateItemVariation(
+          payload: ItemVariationPayload(expiryDateOrDisable: Some(ExpiryDateOrDisable.updateExpiryDate(today))),
+          itemId: item.id!,
+          itemVariationId: firstShirt.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+      expect(updatedOrError.isRight(), true);
+    }
+    {
+      final shirtVariationsOrError =
+          await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirts = shirtVariationsOrError.toIterable().first;
+      final firstShirt = shirts[0];
+      expect(firstShirt.expiryDate, Some(today));
+    }
+  });
+
+    test('disabling expired date should be successful', () async {
+    DateTime today = DateTime.now();
+    DateTime twoWeeksLater = today.add(const Duration(days: 14));
+
+    final request = getShirtItemRequest(expiryDate: twoWeeksLater);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    final item = itemCreated.toIterable().first;
+
+    final shirtVariationsOrError =
+        await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    final shirts = shirtVariationsOrError.toIterable().first;
+    final firstShirt = shirts[0];
+    expect(firstShirt.expiryDate, Some(twoWeeksLater));
+
+    {
+      final updatedOrError = await itemRepo.updateItemVariation(
+          payload: ItemVariationPayload(expiryDateOrDisable: Some(ExpiryDateOrDisable.disableExpiryDate())),
+          itemId: item.id!,
+          itemVariationId: firstShirt.id!,
+          teamId: teamId,
+          token: firstUserAccessToken);
+      expect(updatedOrError.isRight(), true);
+    }
+    {
+      final shirtVariationsOrError =
+          await itemRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirts = shirtVariationsOrError.toIterable().first;
+      final firstShirt = shirts[0];
+      expect(firstShirt.expiryDate.isNone(), true);
     }
   });
 }

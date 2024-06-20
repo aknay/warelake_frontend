@@ -352,11 +352,6 @@ class ItemRepository extends ItemApi {
           await HttpHelper.get(url: ApiEndPoint.getItemVariationEndPoint(itemId: itemId), token: token, teamId: teamId);
 
       if (response.statusCode == 200) {
-        //   List<ItemVariation> data = [];
-        //   response.body.forEach((v) {
-        //     data.add(ItemVariation.fromJson(v));
-        //   });
-        //   return Right(data);
         final listResponse = ListResponse.fromJson(jsonDecode(response.body), ItemVariation.fromJson);
 
         return Right(listResponse.data);
