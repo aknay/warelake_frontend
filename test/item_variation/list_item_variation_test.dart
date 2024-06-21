@@ -5,8 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
@@ -19,6 +22,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemRepo = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
@@ -113,7 +117,7 @@ void main() async {
       phoneItem = itemCreated.toIterable().first;
 
       final phoneItemVariationsOrError =
-          await itemRepo.getItemVariations(itemId: phoneItem.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: phoneItem.id!, teamId: teamId, token: firstUserAccessToken);
       phoneItemVariations = phoneItemVariationsOrError.toIterable().first;
       
     }
@@ -149,7 +153,7 @@ void main() async {
   });
 
   test('you can list item variation', () async {
-    final itemListOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
+    final itemListOrError = await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 6);
 
@@ -162,7 +166,7 @@ void main() async {
   test('you can list item variation with pagination', () async {
     final searchField = ItemVariationSearchField(startingAfterId: phoneItemVariations.first.id);
     final itemListOrError =
-        await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
+        await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 2);
   });
@@ -170,7 +174,7 @@ void main() async {
   test('you can search item variation by barcode', () async {
     final searchField = ItemVariationSearchField(barcode: '0003');
     final itemListOrError =
-        await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
+        await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 1);
     expect(itemListOrError.toIterable().first.data.first.barcode, '0003');
@@ -181,7 +185,7 @@ void main() async {
       final pixel8 = phoneItemVariations.where((element) => element.name == 'Pixel 8').first;
 
       final payload = ItemVariationPayload(barcode: '0007');
-      final updatedOrError = await itemRepo.updateItemVariation(
+      final updatedOrError = await itemVariationRepo.updateItemVariation(
           payload: payload,
           itemId: phoneItem.id!,
           itemVariationId: pixel8.id!,
@@ -193,7 +197,7 @@ void main() async {
 
     final searchField = ItemVariationSearchField(barcode: '0007');
     final itemListOrError =
-        await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
+        await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
     expect(itemListOrError.toIterable().first.data.length, 1);
     expect(itemListOrError.toIterable().first.data.first.barcode, '0007');

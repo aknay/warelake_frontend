@@ -54,7 +54,7 @@ class FilterStockTransactionScreen extends ConsumerWidget {
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3.0),
                         )),
                       ),

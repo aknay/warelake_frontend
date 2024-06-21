@@ -4,8 +4,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:warelake/data/item/item.service.dart';
-import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/data/item.variation/item.variation.service.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
@@ -20,11 +20,14 @@ class AsyncLowStockItemVariationListView extends ConsumerStatefulWidget {
   const AsyncLowStockItemVariationListView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ItemVariationListViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ItemVariationListViewState();
 }
 
-class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariationListView> {
-  final PagingController<int, ItemVariation> _pagingController = PagingController(firstPageKey: 0);
+class _ItemVariationListViewState
+    extends ConsumerState<AsyncLowStockItemVariationListView> {
+  final PagingController<int, ItemVariation> _pagingController =
+      PagingController(firstPageKey: 0);
   final _lastIdProvider = StateProvider<Option<String>>(
     (ref) => const None(),
   );
@@ -59,7 +62,8 @@ class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariati
       onRefresh: _refresh,
       child: PagedListView<int, ItemVariation>(
         pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(itemBuilder: (context, item, index) {
+        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(
+            itemBuilder: (context, item, index) {
           return _getListTitle(item, context);
         }),
       ),
@@ -78,7 +82,8 @@ class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariati
   }
 
   Future<void> _fetchPage(int pageKey) async {
-    final itemListResponseOrError = await ref.read(itemServiceProvider).getLowStockItemVarations();
+    final itemListResponseOrError =
+        await ref.read(itemVariationServiceProvider).getLowStockItemVarations();
 
     if (itemListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -104,7 +109,9 @@ class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariati
   ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
     return ListTile(
       leading: ItemVariationImageWidget(
-          itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
+          itemId: itemVariation.itemId,
+          itemVariationId: itemVariation.id!,
+          isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(itemVariation.name),
@@ -114,8 +121,9 @@ class _ItemVariationListViewState extends ConsumerState<AsyncLowStockItemVariati
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ItemVariationScreen(itemId: itemVariation.itemId!, itemVariationId: itemVariation.id!)),
+              builder: (context) => ItemVariationScreen(
+                  itemId: itemVariation.itemId!,
+                  itemVariationId: itemVariation.id!)),
         );
       },
     );

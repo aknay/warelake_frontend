@@ -5,8 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
@@ -18,6 +21,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemApi = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
@@ -83,7 +87,7 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const None());
@@ -116,7 +120,7 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const Some(5));
@@ -149,7 +153,7 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const Some(5));
@@ -159,10 +163,10 @@ void main() async {
       //test you can update the minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      final updatedOrError = await itemApi.updateItemVariation(
+      final updatedOrError = await itemVariationRepo.updateItemVariation(
           payload: ItemVariationPayload(minimumStockOrNone: const Some(3)),
           itemId: shirt.id!,
           teamId: teamId,
@@ -174,7 +178,7 @@ void main() async {
       final shirt = itemCreated.toIterable().first;
       // check after the update
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
 
@@ -208,7 +212,7 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const Some(5));
@@ -218,10 +222,10 @@ void main() async {
       //test you can update the minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
-      final updatedOrError = await itemApi.updateItemVariation(
+      final updatedOrError = await itemVariationRepo.updateItemVariation(
           payload: ItemVariationPayload(minimumStockOrNone: const Some(0)),
           itemId: shirt.id!,
           teamId: teamId,
@@ -233,7 +237,7 @@ void main() async {
       final shirt = itemCreated.toIterable().first;
       // check after the update
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
 
@@ -266,14 +270,14 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const None());
     }
     {
       final lowStockItemVariationListOrError =
-          await itemApi.getLowLevelItemVariationList(teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getLowLevelItemVariationList(teamId: teamId, token: firstUserAccessToken);
       expect(lowStockItemVariationListOrError.isRight(), true);
       final lowStockItemVariations = lowStockItemVariationListOrError.toIterable().first;
       expect(lowStockItemVariations.data.isEmpty, true);
@@ -306,14 +310,14 @@ void main() async {
       //test variation without minimum stock
       final shirt = itemCreated.toIterable().first;
       final shirtVaraiationsOrError =
-          await itemApi.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirt.id!, teamId: teamId, token: firstUserAccessToken);
       final shirtVariations = shirtVaraiationsOrError.toIterable().first;
       final whiteShirt = shirtVariations.where((element) => element.name == 'White Shirt').first;
       expect(whiteShirt.minimumStockCountOrNone, const Some(5));
     }
     {
       final lowStockItemVariationListOrError =
-          await itemApi.getLowLevelItemVariationList(teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getLowLevelItemVariationList(teamId: teamId, token: firstUserAccessToken);
       expect(lowStockItemVariationListOrError.isRight(), true);
       final lowStockItemVariations = lowStockItemVariationListOrError.toIterable().first;
       expect(lowStockItemVariations.data.isNotEmpty, true);

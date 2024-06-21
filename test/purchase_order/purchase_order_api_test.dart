@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/valueobject.dart';
@@ -21,6 +23,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemApi = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
@@ -73,14 +76,14 @@ void main() async {
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final shirtVaraitionsOrError =
-        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
     shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
 
     final jeansCreatedOrError =
         await itemApi.createItemRequest(request: getJeanItemRequest(purchasePriceInInt: 1200, salePriceInInt: 1200), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
     final jeanVariationsOrError =
-        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
     jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
@@ -189,7 +192,7 @@ void main() async {
       final whiteshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'White Shirt').first;
       final blackshirtLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Shirt').first;
 
-      final whiteShirtItemVaraitionOrError = await itemApi.getItemVariation(
+      final whiteShirtItemVaraitionOrError = await itemVariationRepo.getItemVariation(
           itemId: whiteshirtLineItem.itemVariation.itemId!,
           itemVariationId: whiteshirtLineItem.itemVariation.id!,
           teamId: teamId,
@@ -199,7 +202,7 @@ void main() async {
 
       expect(whiteShirtItemVariation.itemCount, whiteshirtLineItem.quantity);
 
-      final blackShirtItemVaraitionOrError = await itemApi.getItemVariation(
+      final blackShirtItemVaraitionOrError = await itemVariationRepo.getItemVariation(
           itemId: blackshirtLineItem.itemVariation.itemId!,
           itemVariationId: blackshirtLineItem.itemVariation.id!,
           teamId: teamId,
@@ -215,14 +218,14 @@ void main() async {
       final whiteJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'White Jean').first;
       final blackJeanLineItem = lineItems.where((element) => element.itemVariation.name == 'Black Jean').first;
 
-      final whiteJeanItemVaraitionOrError = await itemApi.getItemVariation(
+      final whiteJeanItemVaraitionOrError = await itemVariationRepo.getItemVariation(
           itemId: whiteJeanLineItem.itemVariation.itemId!,
           itemVariationId: whiteJeanLineItem.itemVariation.id!,
           teamId: teamId,
           token: firstUserAccessToken);
       final whiteJeanItemVariation = whiteJeanItemVaraitionOrError.toIterable().first;
 
-      final blackJeanItemVaraitionOrError = await itemApi.getItemVariation(
+      final blackJeanItemVaraitionOrError = await itemVariationRepo.getItemVariation(
           itemId: blackJeanLineItem.itemVariation.itemId!,
           itemVariationId: blackJeanLineItem.itemVariation.id!,
           teamId: teamId,
@@ -429,7 +432,7 @@ void main() async {
       // check all item count reset back to zero
 
       for (var v in lineItems) {
-        final itemVariationOrError = await itemApi.getItemVariation(
+        final itemVariationOrError = await itemVariationRepo.getItemVariation(
             itemId: v.itemVariation.itemId!,
             itemVariationId: v.itemVariation.id!,
             teamId: teamId,

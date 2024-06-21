@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:uuid/uuid.dart';
-import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 
 class ItemUpdatePayload {
   String? name;

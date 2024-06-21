@@ -4,8 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -16,6 +19,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemRepo = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
@@ -98,7 +102,7 @@ void main() async {
     {
       //check item variation list
       final shirtVariationsOrError =
-          await itemRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
       expect(shirtVariationsOrError.isRight(), true);
       final shirtVariations = shirtVariationsOrError.toIterable().first;
       expect(shirtVariations.length, 2);

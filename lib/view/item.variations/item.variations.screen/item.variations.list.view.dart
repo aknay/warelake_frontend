@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:warelake/data/item/item.service.dart';
-import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/data/item.variation/item.variation.service.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/stock.transaction/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
@@ -31,14 +31,18 @@ class ItemVariationListView extends ConsumerStatefulWidget {
   final Option<ItemVariationSelection> itemVariationSelectionOrNone;
 
   const ItemVariationListView(
-      {super.key, required this.isToSelectItemVariation, required this.itemVariationSelectionOrNone});
+      {super.key,
+      required this.isToSelectItemVariation,
+      required this.itemVariationSelectionOrNone});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ItemVariationListViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ItemVariationListViewState();
 }
 
 class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
-  final PagingController<int, ItemVariation> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, ItemVariation> _pagingController =
+      PagingController(firstPageKey: 0);
   final _lastIdProvider = StateProvider<Option<String>>(
     (ref) => const None(),
   );
@@ -73,7 +77,8 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
       onRefresh: _refresh,
       child: PagedListView<int, ItemVariation>(
         pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(itemBuilder: (context, item, index) {
+        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(
+            itemBuilder: (context, item, index) {
           return _getListTitle(item, widget.isToSelectItemVariation, context);
         }),
       ),
@@ -95,7 +100,9 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
     final searchField = ItemVariationSearchField(
         barcode: ref.read(searchItemVariationByBarcodeProvider).toNullable(),
         startingAfterId: ref.read(_lastIdProvider).toNullable());
-    final itemListResponseOrError = await ref.read(itemServiceProvider).listItemVaration(itemSearchField: searchField);
+    final itemListResponseOrError = await ref
+        .read(itemVariationServiceProvider)
+        .listItemVaration(itemSearchField: searchField);
 
     if (itemListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -118,11 +125,15 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
     }
   }
 
-  ListTile _getListTitle(ItemVariation itemVariation, bool isToSelectItemVariation, BuildContext context) {
-    final trailingOrNull = isToSelectItemVariation ? null : const Icon(Icons.arrow_forward_ios);
+  ListTile _getListTitle(ItemVariation itemVariation,
+      bool isToSelectItemVariation, BuildContext context) {
+    final trailingOrNull =
+        isToSelectItemVariation ? null : const Icon(Icons.arrow_forward_ios);
     return ListTile(
       leading: ItemVariationImageWidget(
-          itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
+          itemId: itemVariation.itemId,
+          itemVariationId: itemVariation.id!,
+          isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(itemVariation.name),
@@ -133,19 +144,21 @@ class _ItemVariationListViewState extends ConsumerState<ItemVariationListView> {
           widget.itemVariationSelectionOrNone.fold(() => null, (selection) {
             switch (selection) {
               case ItemVariationSelection.forStockTransaction:
-                ref
-                    .read(stockLineItemControllerProvider.notifier)
-                    .add(StockLineItem.create(itemVariation: itemVariation, quantity: 1));
+                ref.read(stockLineItemControllerProvider.notifier).add(
+                    StockLineItem.create(
+                        itemVariation: itemVariation, quantity: 1));
                 GoRouter.of(context).pop();
               case ItemVariationSelection.forOrder:
-                ref.read(selectedItemVariationProvider.notifier).state = Some(itemVariation);
-                    GoRouter.of(context).pop();
+                ref.read(selectedItemVariationProvider.notifier).state =
+                    Some(itemVariation);
+                GoRouter.of(context).pop();
               // TODO: Handle this case.
             }
           });
         } else {
           context.goNamed(AppRoute.itemVariationDetail.name,
-              pathParameters: {'id': itemVariation.id!}, queryParameters: {'itemId': itemVariation.itemId});
+              pathParameters: {'id': itemVariation.id!},
+              queryParameters: {'itemId': itemVariation.itemId});
         }
       },
     );

@@ -6,11 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/sale.order/sale.order.repository.dart';
 import 'package:warelake/data/stock.transaction/stock.transaction.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
@@ -23,6 +26,7 @@ import '../helpers/sign.in.response.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemApi = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final stockTransactionRepo = StockTransactionRepository();
   final billAccountApi = BillAccountRepository();
   final saleOrderApi = SaleOrderRepository();
@@ -180,7 +184,7 @@ void main() async {
       List<StockLineItem> lineItemList = [];
 
       final itemVariationsOrError =
-          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+          await itemVariationRepo.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
       final itemVariations = itemVariationsOrError.toIterable().first;
 
       for (var variation in itemVariations) {
@@ -194,7 +198,7 @@ void main() async {
               itemId: item.id!, itemVariationId: variation.id!, imagePath: File(imagePath), teamId: team.id!);
 
           final createdImageOrError =
-              await itemApi.upsertItemVariationImage(request: request, token: firstUserAccessToken);
+              await itemVariationRepo.upsertItemVariationImage(request: request, token: firstUserAccessToken);
 
           expect(createdImageOrError.isRight(), true);
         }
@@ -266,7 +270,7 @@ void main() async {
       }
 
       final itemVariationsOrError =
-          await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
+          await itemVariationRepo.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
       final itemVariations = itemVariationsOrError.toIterable().first;
       retrievedItemVariationList.addAll(itemVariations);
 

@@ -13,23 +13,26 @@ abstract class ItemApi {
     ItemSearchField? itemSearchField,
   });
 
-  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationList({
-    required String teamId,
-    required String token,
-    ItemVariationSearchField? searchField,
-  });
+  // Future<Either<ErrorResponse, ListResponse<ItemVariation>>>
+  //     getItemVariationList({
+  //   required String teamId,
+  //   required String token,
+  //   ItemVariationSearchField? searchField,
+  // });
 
-  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getItemVariationListByItemId({
-    required String teamId,
-    required String itemId,
-    required String token,
-  });
+  // Future<Either<ErrorResponse, ListResponse<ItemVariation>>>
+  //     getItemVariationListByItemId({
+  //   required String teamId,
+  //   required String itemId,
+  //   required String token,
+  // });
 
-  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getLowLevelItemVariationList({
-    required String teamId,
-    required String token,
-    Option<String> startingAfterId = const None(),
-  });
+  // Future<Either<ErrorResponse, ListResponse<ItemVariation>>>
+  //     getLowLevelItemVariationList({
+  //   required String teamId,
+  //   required String token,
+  //   Option<String> startingAfterId = const None(),
+  // });
 
   Future<Either<ErrorResponse, Item>> createItemRequest({
     required CreateItemRequest request,
@@ -37,11 +40,6 @@ abstract class ItemApi {
     required String token,
   });
 
-  // Future<Either<ErrorResponse, Item>> createItem({
-  //   required Item item,
-  //   required String teamId,
-  //   required String token,
-  // });
   Future<Either<ErrorResponse, Item>> getItem({
     required String itemId,
     required String teamId,
@@ -52,17 +50,17 @@ abstract class ItemApi {
     required String token,
   });
 
-  Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({
-    required ItemVariationImageRequest request,
-    required String token,
-  });
-  Future<Either<ErrorResponse, Unit>> updateItemVariation({
-    required ItemVariationPayload payload,
-    required String itemId,
-    required String itemVariationId,
-    required String teamId,
-    required String token,
-  });
+  // Future<Either<ErrorResponse, Unit>> upsertItemVariationImage({
+  //   required ItemVariationImageRequest request,
+  //   required String token,
+  // });
+  // Future<Either<ErrorResponse, Unit>> updateItemVariation({
+  //   required ItemVariationPayload payload,
+  //   required String itemId,
+  //   required String itemVariationId,
+  //   required String teamId,
+  //   required String token,
+  // });
   Future<Either<ErrorResponse, Item>> updateItem({
     required ItemUpdatePayload payload,
     required String itemId,
@@ -75,25 +73,25 @@ abstract class ItemApi {
     required String token,
   });
 
-  Future<Either<ErrorResponse, Unit>> deleteItemVariation({
-    required String itemId,
-    required String itemVariationId,
-    required String teamId,
-    required String token,
-  });
+  // Future<Either<ErrorResponse, Unit>> deleteItemVariation({
+  //   required String itemId,
+  //   required String itemVariationId,
+  //   required String teamId,
+  //   required String token,
+  // });
 
-  Future<Either<ErrorResponse, ItemVariation>> getItemVariation({
-    required String itemId,
-    required String itemVariationId,
-    required String teamId,
-    required String token,
-  });
+  // Future<Either<ErrorResponse, ItemVariation>> getItemVariation({
+  //   required String itemId,
+  //   required String itemVariationId,
+  //   required String teamId,
+  //   required String token,
+  // });
 
-  Future<Either<ErrorResponse, List<ItemVariation>>> getItemVariations({
-    required String itemId,
-    required String teamId,
-    required String token,
-  });
+  // Future<Either<ErrorResponse, List<ItemVariation>>> getItemVariations({
+  //   required String itemId,
+  //   required String teamId,
+  //   required String token,
+  // });
 
   Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
     required String teamId,
