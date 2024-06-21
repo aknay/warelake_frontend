@@ -4,7 +4,7 @@ import 'package:warelake/data/auth/firebase.auth.repository.dart';
 import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
-import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
 

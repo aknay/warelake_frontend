@@ -9,8 +9,7 @@ import 'package:warelake/data/http.helper.dart';
 import 'package:warelake/domain/errors/response.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item.variation/api.dart';
-import 'package:warelake/domain/item/entities.dart';
-import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
@@ -39,27 +38,6 @@ class ItemVariationRepository extends ItemVariationApi {
       log("update item variation response ${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         return const Right(unit);
-      }
-      return Left(ErrorResponse.withStatusCode(
-          message: "having error", statusCode: response.statusCode));
-    } catch (e) {
-      log("the error is $e");
-      return Left(ErrorResponse.withOtherError(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization(
-      {required String teamId, required String token}) async {
-    try {
-      final response = await HttpHelper.get(
-          url: ApiEndPoint.itemUtilizationEndPoint,
-          token: token,
-          teamId: teamId);
-      log("get item response code ${response.statusCode}");
-      log("get item response ${jsonDecode(response.body)}");
-      if (response.statusCode == 200) {
-        return Right(ItemUtilization.fromMap(jsonDecode(response.body)));
       }
       return Left(ErrorResponse.withStatusCode(
           message: "having error", statusCode: response.statusCode));
@@ -273,6 +251,7 @@ class ItemVariationRepository extends ItemVariationApi {
 }
 
 @Riverpod(keepAlive: true)
-ItemVariationRepository itemVariationRepository(ItemVariationRepositoryRef ref) {
+ItemVariationRepository itemVariationRepository(
+    ItemVariationRepositoryRef ref) {
   return ItemVariationRepository();
 }

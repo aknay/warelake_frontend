@@ -8,7 +8,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
-import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/team/entities.dart';
 
 import '../../helpers/sign.in.response.dart';
@@ -30,8 +30,11 @@ void main() async {
     signUpData["email"] = email;
     signUpData["password"] = password;
 
-    await http.post(Uri.parse("http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=abcdefg"),
-        headers: {"Content-Type": "application/json"}, body: jsonEncode(signUpData));
+    await http.post(
+        Uri.parse(
+            "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=abcdefg"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(signUpData));
 
     Map<String, dynamic> data = {};
     data["email"] = email;
@@ -39,7 +42,8 @@ void main() async {
     data["returnSecureToken"] = true;
 
     final response = await http.post(
-        Uri.parse("http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=abcdefg"),
+        Uri.parse(
+            "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=abcdefg"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(data));
 
@@ -49,11 +53,16 @@ void main() async {
   });
 
   setUp(() async {
-    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
-    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    final newTeam = Team.create(
+        name: 'Power Ranger',
+        timeZone: "Africa/Abidjan",
+        currencyCode: CurrencyCode.AUD);
+    final createdOrError =
+        await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     teamId = createdOrError.toIterable().first.id!;
-    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
+    final accountListOrError =
+        await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
   });
 
@@ -63,11 +72,11 @@ void main() async {
 
     final request = getShirtItemRequest(expiryDate: twoWeeksLater);
     {
-      final itemCreated =
-          await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+      final itemCreated = await itemRepo.createItemRequest(
+          request: request, teamId: teamId, token: firstUserAccessToken);
       final item = itemCreated.toIterable().first;
-      final shirtVariationsOrError =
-          await itemVariationRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+          itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
       final shirts = shirtVariationsOrError.toIterable().first;
       expect(shirts[0].expiryDate, Some(twoWeeksLater));
     }
@@ -79,18 +88,21 @@ void main() async {
 
     final request = getShirtItemRequest(expiryDate: twoWeeksLater);
 
-    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItemRequest(
+        request: request, teamId: teamId, token: firstUserAccessToken);
     final item = itemCreated.toIterable().first;
 
-    final shirtVariationsOrError =
-        await itemVariationRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+        itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
     final shirts = shirtVariationsOrError.toIterable().first;
     final firstShirt = shirts[0];
     expect(firstShirt.expiryDate, Some(twoWeeksLater));
 
     {
       final updatedOrError = await itemVariationRepo.updateItemVariation(
-          payload: ItemVariationPayload(expiryDateOrDisable: Some(ExpiryDateOrDisable.updateExpiryDate(today))),
+          payload: ItemVariationPayload(
+              expiryDateOrDisable:
+                  Some(ExpiryDateOrDisable.updateExpiryDate(today))),
           itemId: item.id!,
           itemVariationId: firstShirt.id!,
           teamId: teamId,
@@ -98,32 +110,35 @@ void main() async {
       expect(updatedOrError.isRight(), true);
     }
     {
-      final shirtVariationsOrError =
-          await itemVariationRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+          itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
       final shirts = shirtVariationsOrError.toIterable().first;
       final firstShirt = shirts[0];
       expect(firstShirt.expiryDate, Some(today));
     }
   });
 
-    test('disabling expired date should be successful', () async {
+  test('disabling expired date should be successful', () async {
     DateTime today = DateTime.now();
     DateTime twoWeeksLater = today.add(const Duration(days: 14));
 
     final request = getShirtItemRequest(expiryDate: twoWeeksLater);
 
-    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItemRequest(
+        request: request, teamId: teamId, token: firstUserAccessToken);
     final item = itemCreated.toIterable().first;
 
-    final shirtVariationsOrError =
-        await itemVariationRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+        itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
     final shirts = shirtVariationsOrError.toIterable().first;
     final firstShirt = shirts[0];
     expect(firstShirt.expiryDate, Some(twoWeeksLater));
 
     {
       final updatedOrError = await itemVariationRepo.updateItemVariation(
-          payload: ItemVariationPayload(expiryDateOrDisable: Some(ExpiryDateOrDisable.disableExpiryDate())),
+          payload: ItemVariationPayload(
+              expiryDateOrDisable:
+                  Some(ExpiryDateOrDisable.disableExpiryDate())),
           itemId: item.id!,
           itemVariationId: firstShirt.id!,
           teamId: teamId,
@@ -131,8 +146,8 @@ void main() async {
       expect(updatedOrError.isRight(), true);
     }
     {
-      final shirtVariationsOrError =
-          await itemVariationRepo.getItemVariations(itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+      final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+          itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
       final shirts = shirtVariationsOrError.toIterable().first;
       final firstShirt = shirts[0];
       expect(firstShirt.expiryDate.isNone(), true);

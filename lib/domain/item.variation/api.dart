@@ -1,8 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:warelake/domain/errors/response.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
-import 'package:warelake/domain/item/entities.dart';
-import 'package:warelake/domain/item/payloads.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/item/search.fields.dart';
 import 'package:warelake/domain/responses.dart';
@@ -57,11 +56,6 @@ abstract class ItemVariationApi {
 
   Future<Either<ErrorResponse, List<ItemVariation>>> getItemVariations({
     required String itemId,
-    required String teamId,
-    required String token,
-  });
-
-  Future<Either<ErrorResponse, ItemUtilization>> getItemUtilization({
     required String teamId,
     required String token,
   });
