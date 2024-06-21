@@ -59,4 +59,10 @@ abstract class ItemVariationApi {
     required String teamId,
     required String token,
   });
+
+  Future<Either<ErrorResponse, List<ItemVariation>>> getExpiredItemVariations({
+    required String teamId,
+    required String token,
+    required DateTime expiryDate,
+  });
 }

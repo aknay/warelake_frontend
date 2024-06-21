@@ -153,4 +153,41 @@ void main() async {
       expect(firstShirt.expiryDate.isNone(), true);
     }
   });
+
+  test('we can list item variation based on expired date', () async {
+    DateTime today = DateTime.now();
+    DateTime twoWeeksLater = today.add(const Duration(days: 14));
+    DateTime threeWeeksLater = today.add(const Duration(days: 14));
+
+    final request = getShirtItemRequest(expiryDate: twoWeeksLater);
+
+    final itemCreated = await itemRepo.createItemRequest(
+        request: request, teamId: teamId, token: firstUserAccessToken);
+    final item = itemCreated.toIterable().first;
+
+    final shirtVariationsOrError = await itemVariationRepo.getItemVariations(
+        itemId: item.id!, teamId: teamId, token: firstUserAccessToken);
+    final shirts = shirtVariationsOrError.toIterable().first;
+    final firstShirt = shirts[0];
+    expect(firstShirt.expiryDate, Some(twoWeeksLater));
+
+    {
+      final expiredItemOrError =
+          await itemVariationRepo.getExpiredItemVariations(
+              teamId: teamId, token: firstUserAccessToken, expiryDate: threeWeeksLater);
+
+      expect(expiredItemOrError.isRight(), true);
+      expect(expiredItemOrError.toIterable().first.length, 2);
+    }
+
+    {
+      final expiredItemOrError =
+          await itemVariationRepo.getExpiredItemVariations(
+              teamId: teamId, token: firstUserAccessToken, expiryDate: today);
+
+      expect(expiredItemOrError.isRight(), true);
+      expect(expiredItemOrError.toIterable().first.length, 2);
+    }
+
+  });
 }

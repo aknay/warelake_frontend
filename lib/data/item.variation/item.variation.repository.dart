@@ -248,6 +248,36 @@ class ItemVariationRepository extends ItemVariationApi {
       return Left(ErrorResponse.withOtherError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<ErrorResponse, List<ItemVariation>>> getExpiredItemVariations(
+      {required String teamId,
+      required String token,
+      required DateTime expiryDate}) async {
+    try {
+      Map<String, String> additionalQuery = {};
+      additionalQuery["expiry_date"] = expiryDate.toUtc().toIso8601String();
+      final response = await HttpHelper.get(
+          url: ApiEndPoint.getExpiredItemVariationsEndPoint(expiryDate),
+          token: token,
+          teamId: teamId,
+          additionalQuery: additionalQuery);
+
+      if (response.statusCode == 200) {
+        final listResponse = ListResponse.fromJson(
+            jsonDecode(response.body), ItemVariation.fromJson);
+
+        return Right(listResponse.data);
+      }
+      log("get item response code ${response.statusCode}");
+      log("get item response ${jsonDecode(response.body)}");
+      return Left(ErrorResponse.withStatusCode(
+          message: "having error", statusCode: response.statusCode));
+    } catch (e) {
+      Logger().e(e);
+      return Left(ErrorResponse.withOtherError(message: e.toString()));
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)
