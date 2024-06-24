@@ -156,8 +156,9 @@ void main() async {
 
   test('we can list item variation based on expired date', () async {
     DateTime today = DateTime.now();
+    DateTime oneWeeksLater = today.add(const Duration(days: 7));
     DateTime twoWeeksLater = today.add(const Duration(days: 14));
-    DateTime threeWeeksLater = today.add(const Duration(days: 14));
+    DateTime threeWeeksLater = today.add(const Duration(days: 21));
 
     final request = getShirtItemRequest(expiryDate: twoWeeksLater);
 
@@ -174,7 +175,9 @@ void main() async {
     {
       final expiredItemOrError =
           await itemVariationRepo.getExpiredItemVariations(
-              teamId: teamId, token: firstUserAccessToken, expiryDate: threeWeeksLater);
+              teamId: teamId,
+              token: firstUserAccessToken,
+              expiryDate: threeWeeksLater);
 
       expect(expiredItemOrError.isRight(), true);
       expect(expiredItemOrError.toIterable().first.length, 2);
@@ -183,11 +186,12 @@ void main() async {
     {
       final expiredItemOrError =
           await itemVariationRepo.getExpiredItemVariations(
-              teamId: teamId, token: firstUserAccessToken, expiryDate: today);
+              teamId: teamId,
+              token: firstUserAccessToken,
+              expiryDate: oneWeeksLater);
 
       expect(expiredItemOrError.isRight(), true);
-      expect(expiredItemOrError.toIterable().first.length, 2);
+      expect(expiredItemOrError.toIterable().first.isEmpty, true);
     }
-
   });
 }
