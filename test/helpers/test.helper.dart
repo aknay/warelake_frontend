@@ -38,19 +38,26 @@ Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
 
-CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
-  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate);
-  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate);
+CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, List<String>? nameList}) {
+  String? firstShirtName;
+  String? secondShirtName; 
+  if (nameList != null && nameList.length == 2){
+    firstShirtName = nameList[0];
+    secondShirtName = nameList[1];
+  }
+  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate, name:  firstShirtName);
+  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate, name: secondShirtName);
   return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
-ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
+ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, String? name}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
   final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
+  final shirtName = name ?? "White Shirt";
   return ItemVariation.create(
-      name: "White Shirt",
+      name: shirtName,
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,
@@ -58,13 +65,14 @@ ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt, DateT
       expiryDate: optionOf(expiryDate));
 }
 
-ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate}) {
+ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, String? name}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
   final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
+    final shirtName = name ?? "Black Shirt";
   return ItemVariation.create(
-      name: "Black Shirt",
+      name: shirtName,
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,

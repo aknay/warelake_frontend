@@ -180,7 +180,7 @@ void main() async {
               expiryDate: threeWeeksLater);
 
       expect(expiredItemOrError.isRight(), true);
-      expect(expiredItemOrError.toIterable().first.length, 2);
+      expect(expiredItemOrError.toIterable().first.data.length, 2);
     }
 
     {
@@ -191,7 +191,49 @@ void main() async {
               expiryDate: oneWeeksLater);
 
       expect(expiredItemOrError.isRight(), true);
-      expect(expiredItemOrError.toIterable().first.isEmpty, true);
+      expect(expiredItemOrError.toIterable().first.data.isEmpty, true);
+    }
+  });
+
+  test('we can paginate item variation based on expired date ', () async {
+    DateTime today = DateTime.now();
+    DateTime twoWeeksLater = today.add(const Duration(days: 14));
+    DateTime threeWeeksLater = today.add(const Duration(days: 21));
+
+    for (var i = 0; i < 6; i++) {
+      final request = getShirtItemRequest(
+          expiryDate: twoWeeksLater,
+          nameList: ['white shirt $i', 'black shirt $i']);
+      final itemCreated = await itemRepo.createItemRequest(
+          request: request, teamId: teamId, token: firstUserAccessToken);
+      expect(itemCreated.isRight(), true);
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    {
+      final expiredItemOrError =
+          await itemVariationRepo.getExpiredItemVariations(
+              teamId: teamId,
+              token: firstUserAccessToken,
+              expiryDate: threeWeeksLater);
+
+      expect(expiredItemOrError.isRight(), true);
+      expect(expiredItemOrError.toIterable().first.data.length, 10);
+
+      final lastItem = expiredItemOrError.toIterable().first.data.last;
+
+      {
+        final expiredItemOrError =
+            await itemVariationRepo.getExpiredItemVariations(
+                teamId: teamId,
+                token: firstUserAccessToken,
+                expiryDate: threeWeeksLater,
+                startingAfterId: Some(lastItem.id!));
+
+        expect(expiredItemOrError.isRight(), true);
+
+        expect(expiredItemOrError.toIterable().first.data.length, 2);
+      }
     }
   });
 }

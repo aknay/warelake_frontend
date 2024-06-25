@@ -60,9 +60,9 @@ abstract class ItemVariationApi {
     required String token,
   });
 
-  Future<Either<ErrorResponse, List<ItemVariation>>> getExpiredItemVariations({
-    required String teamId,
-    required String token,
-    required DateTime expiryDate,
-  });
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getExpiredItemVariations(
+      {required String teamId,
+      required String token,
+      required DateTime expiryDate,
+      Option<String> startingAfterId = const None()});
 }

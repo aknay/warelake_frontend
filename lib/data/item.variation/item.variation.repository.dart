@@ -250,13 +250,17 @@ class ItemVariationRepository extends ItemVariationApi {
   }
 
   @override
-  Future<Either<ErrorResponse, List<ItemVariation>>> getExpiredItemVariations(
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getExpiredItemVariations(
       {required String teamId,
       required String token,
-      required DateTime expiryDate}) async {
+      required DateTime expiryDate,
+      Option<String> startingAfterId = const None()}) async {
     try {
       Map<String, String> additionalQuery = {};
       additionalQuery["expiry_date"] = expiryDate.toUtc().toIso8601String();
+      startingAfterId.fold(() => null, (a) {
+        additionalQuery['starting_after'] = a;
+      });
       final response = await HttpHelper.get(
           url: ApiEndPoint.getExpiredItemVariationsEndPoint(expiryDate),
           token: token,
@@ -267,7 +271,7 @@ class ItemVariationRepository extends ItemVariationApi {
         final listResponse = ListResponse.fromJson(
             jsonDecode(response.body), ItemVariation.fromJson);
 
-        return Right(listResponse.data);
+        return Right(listResponse);
       }
       log("get item response code ${response.statusCode}");
       log("get item response ${jsonDecode(response.body)}");
