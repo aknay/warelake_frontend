@@ -24,29 +24,29 @@ class ExpiryDateOrDisable {
 
 
 class ItemVariationPayload {
-  String? name;
-  double? pruchasePrice;
-  double? salePrice;
-  String? barcode;
+  Option<String> name;
+  Option<double> pruchasePrice;
+  Option<double> salePrice;
+  Option<String> barcode;
   Option<int> minimumStockOrNone;
 
   Option<ExpiryDateOrDisable> expiryDateOrDisable;
 
   ItemVariationPayload({
-    this.name,
-    this.pruchasePrice,
-    this.salePrice,
-    this.barcode,
+    this.name = const None(),
+    this.pruchasePrice =  const None(),
+    this.salePrice = const None(),
+    this.barcode = const None(),
     this.minimumStockOrNone = const None(),
     this.expiryDateOrDisable = const None(),
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'purchase_price': pruchasePrice == null ? pruchasePrice : (pruchasePrice! * 1000).toInt(),
-      'sale_price': salePrice == null ? salePrice : (salePrice! * 1000).toInt(),
-      'barcode': barcode,
+      'name': name.fold(() => null, (x) => x),
+      'purchase_price': pruchasePrice.fold(() => null, (x) => (x * 1000).toInt()),
+      'sale_price': salePrice.fold(() => null, (x) => (x * 1000).toInt()),
+      'barcode': barcode.fold(() => null, (x) => x),
       'minimum_stock_count': minimumStockOrNone.fold(() => null, (a) => a),
       'expiry_date_or_disable': expiryDateOrDisable.fold(() => null, (a) => a.toMap())
     };

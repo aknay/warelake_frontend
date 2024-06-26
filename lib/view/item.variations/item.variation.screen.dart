@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
@@ -44,7 +45,7 @@ class PageContents extends ConsumerWidget {
   final String itemVariationId;
 
   Future<void> _edit(ItemVariation oldItemVariation, BuildContext context, WidgetRef ref) async {
-    final ItemVariation? newItemVariation = await Navigator.push(
+ final ItemVariationPayload? newItemVariation = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => AddItemVariationScreen(itemVariation: Some(oldItemVariation), hideStockLevelUi: true),
@@ -54,7 +55,7 @@ class PageContents extends ConsumerWidget {
     if (newItemVariation != null) {
       await ref
           .read(itemControllerProvider(itemId: oldItemVariation.itemId!).notifier)
-          .updateItemVariation(newItemVariation: newItemVariation, oldItemVariation: oldItemVariation);
+          .updateItemVariation(payload: newItemVariation, itemVariationId: oldItemVariation.id! );
     }
   }
 

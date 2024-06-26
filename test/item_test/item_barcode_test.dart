@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
@@ -133,7 +134,7 @@ void main() async {
     final itemCreatedOrError = await itemRepo.createItemRequest(
         request: request, teamId: teamId, token: firstUserAccessToken);
     expect(itemCreatedOrError.isRight(), true);
-    final payload = ItemVariationPayload(barcode: '67890');
+    final payload = ItemVariationPayload(barcode: const Some('67890'));
     final item = itemCreatedOrError.toIterable().first;
 
     final itemVarationListOrError = await itemVariationRepo

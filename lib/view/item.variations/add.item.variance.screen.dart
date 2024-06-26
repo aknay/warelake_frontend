@@ -7,6 +7,7 @@ import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/domain/common/entities.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/view/barcode/barcode.scanner.value.controller.dart';
 import 'package:warelake/view/barcode/barcode.scanner.widget.dart';
 import 'package:warelake/view/common.widgets/responsive.center.dart';
@@ -90,23 +91,27 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
 
           context.pop(itemVariation);
         }, (a) {
-          final isLowStockEnabled = ref.read(enableLowStockProvider);
-          if (!isLowStockEnabled) {
+          if (!ref.read(enableLowStockProvider)) {
             minimumStockLevelOrNone =
                 const Some(0); // we have to disable low stock with 0 value // the logic is a bit weird
           }
 
-          final itemVariation = a.copyWith(
-              name: itemVariationName.fold(() => '', (a) => a),
-              stockable: true,
-              sku: 'abc',
-              salePriceMoney: salePriceMoney,
-              purchasePriceMoney: purchasePriceMoney,
-              itemCount: itemCount,
-              barcode: barcodeOrNone.fold(() => '', (a) => a),
-              minimumStockCountOrNone: minimumStockLevelOrNone);
+          Option<ExpiryDateOrDisable> expiryDateOrDisable;
+          if (!ref.read(enableExpiryDateProvider)) {
+            expiryDateOrDisable = Some(ExpiryDateOrDisable.disableExpiryDate());
+          } else {
+            expiryDateOrDisable =
+                expiryDateOrNone.fold(() => const None(), (x) => Some(ExpiryDateOrDisable.updateExpiryDate(x)));
+          }
 
-          context.pop(itemVariation);
+          final payload = ItemVariationPayload(
+              name: itemVariationName,
+              pruchasePrice: purchasingPrice,
+              salePrice: sellingPrice,
+              expiryDateOrDisable: expiryDateOrDisable,
+              barcode: barcodeOrNone);
+
+          context.pop(payload);
         });
       }
     }

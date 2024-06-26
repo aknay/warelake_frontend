@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
@@ -37,11 +38,8 @@ void main() async {
     signUpData["email"] = email;
     signUpData["password"] = password;
 
-    await http.post(
-        Uri.parse(
-            "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=abcdefg"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(signUpData));
+    await http.post(Uri.parse("http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=abcdefg"),
+        headers: {"Content-Type": "application/json"}, body: jsonEncode(signUpData));
 
     Map<String, dynamic> data = {};
     data["email"] = email;
@@ -49,8 +47,7 @@ void main() async {
     data["returnSecureToken"] = true;
 
     final response = await http.post(
-        Uri.parse(
-            "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=abcdefg"),
+        Uri.parse("http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=abcdefg"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(data));
 
@@ -60,16 +57,11 @@ void main() async {
   });
 
   setUp(() async {
-    final newTeam = Team.create(
-        name: 'Power Ranger',
-        timeZone: "Africa/Abidjan",
-        currencyCode: CurrencyCode.AUD);
-    final createdOrError =
-        await teamApi.create(team: newTeam, token: firstUserAccessToken);
+    final newTeam = Team.create(name: 'Power Ranger', timeZone: "Africa/Abidjan", currencyCode: CurrencyCode.AUD);
+    final createdOrError = await teamApi.create(team: newTeam, token: firstUserAccessToken);
     expect(createdOrError.isRight(), true);
     teamId = createdOrError.toIterable().first.id!;
-    final accountListOrError =
-        await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
+    final accountListOrError = await billAccountApi.list(teamId: teamId, token: firstUserAccessToken);
     expect(accountListOrError.isRight(), true);
 
     final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
@@ -95,11 +87,9 @@ void main() async {
 
     final shirt = Item.create(name: "shirt", unit: 'pcs');
 
-    final request = CreateItemRequest(
-        item: shirt, itemVariations: [whiteShirt, blackShirt]);
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt, blackShirt]);
 
-    final itemCreated = await itemRepo.createItemRequest(
-        request: request, teamId: teamId, token: firstUserAccessToken);
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
     itemCreated.toIterable().first;
 
     await Future.delayed(const Duration(seconds: 1));
@@ -112,27 +102,16 @@ void main() async {
         purchasePriceMoney: purchasePriceMoney,
         barcode: '0003');
 
-    final iPhone15 = ItemVariation.create(
-        name: "iPhone 15",
-        stockable: true,
-        sku: 'sku 123',
-        salePriceMoney: salePriceMoney,
-        purchasePriceMoney: purchasePriceMoney,
-        barcode: '0004');
     {
       final phones = Item.create(name: "phones", unit: 'pcs');
-      final request =
-          CreateItemRequest(item: phones, itemVariations: [pixel8, iPhone15]);
+      final request = CreateItemRequest(item: phones, itemVariations: [pixel8]);
 
-      final itemCreated = await itemRepo.createItemRequest(
-          request: request, teamId: teamId, token: firstUserAccessToken);
+      final itemCreated =
+          await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
       phoneItem = itemCreated.toIterable().first;
 
       final phoneItemVariationsOrError =
-          await itemVariationRepo.getItemVariations(
-              itemId: phoneItem.id!,
-              teamId: teamId,
-              token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: phoneItem.id!, teamId: teamId, token: firstUserAccessToken);
       phoneItemVariations = phoneItemVariationsOrError.toIterable().first;
     }
 
@@ -156,11 +135,10 @@ void main() async {
           barcode: '0006');
       {
         final item = Item.create(name: "books", unit: 'pcs');
-        final request =
-            CreateItemRequest(item: item, itemVariations: [textbook, novels]);
+        final request = CreateItemRequest(item: item, itemVariations: [textbook, novels]);
 
-        final itemCreated = await itemRepo.createItemRequest(
-            request: request, teamId: teamId, token: firstUserAccessToken);
+        final itemCreated =
+            await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
 
         itemCreated.toIterable().first;
       }
@@ -168,10 +146,9 @@ void main() async {
   });
 
   test('you can list item variation', () async {
-    final itemListOrError = await itemVariationRepo.getItemVariationList(
-        teamId: teamId, token: firstUserAccessToken);
+    final itemListOrError = await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
     expect(itemListOrError.isRight(), true);
-    expect(itemListOrError.toIterable().first.data.length, 6);
+    expect(itemListOrError.toIterable().first.data.length, 5);
 
     itemListOrError.toIterable().first.data.forEach((element) {
       log(element.name);
@@ -180,11 +157,11 @@ void main() async {
   });
 
   test('you can list item variation with pagination', () async {
-    final searchField =
-        ItemVariationSearchField(startingAfterId: phoneItemVariations.first.id);
+    final searchField = ItemVariationSearchField(startingAfterId: phoneItemVariations.first.id);
     final itemListOrError = await itemVariationRepo.getItemVariationList(
         teamId: teamId, token: firstUserAccessToken, searchField: searchField);
     expect(itemListOrError.isRight(), true);
+
     expect(itemListOrError.toIterable().first.data.length, 2);
   });
 
@@ -197,15 +174,11 @@ void main() async {
     expect(itemListOrError.toIterable().first.data.first.barcode, '0003');
   });
 
-  test(
-      'you can still search item variation by barcode after barcode is altered',
-      () async {
+  test('you can still search item variation by barcode after barcode is altered', () async {
     {
-      final pixel8 = phoneItemVariations
-          .where((element) => element.name == 'Pixel 8')
-          .first;
+      final pixel8 = phoneItemVariations.where((element) => element.name == 'Pixel 8').first;
 
-      final payload = ItemVariationPayload(barcode: '0007');
+      final payload = ItemVariationPayload(barcode: const Some('0007'));
       final updatedOrError = await itemVariationRepo.updateItemVariation(
           payload: payload,
           itemId: phoneItem.id!,

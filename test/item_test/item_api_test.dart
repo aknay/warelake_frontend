@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
@@ -426,7 +427,7 @@ void main() async {
 
     // final itemCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreatedOrError.isRight(), true);
-    final payload = ItemVariationPayload(name: "Blue shirt", salePrice: 2.5, pruchasePrice: 4.7);
+    final payload = ItemVariationPayload(name: const Some("Blue shirt"), salePrice: const Some(2.5), pruchasePrice: const Some(4.7));
     final item = itemCreatedOrError.toIterable().first;
 
     final itemVariationsOrError = await itemVariationRepo.getItemVariationListByItemId(
