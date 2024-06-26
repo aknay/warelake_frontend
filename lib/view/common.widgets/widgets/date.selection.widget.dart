@@ -1,28 +1,42 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
-final _dateProvider = StateProvider.autoDispose<DateTime>((ref) => DateTime.now());
-
-class DateSelectionWidget extends ConsumerWidget {
-  const DateSelectionWidget({super.key, required this.onValueChanged});
+class DateSelectionWidget extends ConsumerStatefulWidget {
+  const DateSelectionWidget(
+      {super.key, this.initialDate = const None(), required this.onValueChanged, this.useLastDateAsToday = true});
   final void Function(DateTime dateTime) onValueChanged;
+  final Option<DateTime> initialDate;
+  final bool useLastDateAsToday;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _DateSelectionWidgetState();
+}
+
+class _DateSelectionWidgetState extends ConsumerState<DateSelectionWidget> {
+  late final _dateProvider =
+      StateProvider.autoDispose<DateTime>((ref) => widget.initialDate.fold(() => DateTime.now(), (x) => x));
+
+  @override
+  Widget build(BuildContext context) {
     final dateTime = ref.watch(_dateProvider);
 
-    final currencyText = _formattedDate(dateTime);
+    final formattedDateText = formatDate(dateTime);
 
     return GestureDetector(
       onTap: () async {
-        final now = DateTime.now();
+        final now = widget.initialDate.fold(() => DateTime.now(), (x) => x);
+        final lastDate = widget.useLastDateAsToday == true ? now : DateTime(now.year + 20, now.month, now.day);
         final DateTime? picked = await showDatePicker(
-            context: context, initialDate: now, firstDate: DateTime(now.year, now.month - 6, now.day), lastDate: now);
+            context: context,
+            initialDate: now,
+            firstDate: DateTime(now.year, now.month - 6, now.day),
+            lastDate: lastDate);
         if (picked != null) {
           ref.read(_dateProvider.notifier).state = picked;
-          onValueChanged(picked);
+          widget.onValueChanged(picked);
         }
       },
       child: TextFormField(
@@ -32,20 +46,11 @@ class DateSelectionWidget extends ConsumerWidget {
             padding: EdgeInsets.only(left: 12, top: 12),
             child: FaIcon(FontAwesomeIcons.calendar, color: Colors.white),
           ),
-          labelText: currencyText,
+          labelText: formattedDateText,
           labelStyle: Theme.of(context).textTheme.bodyLarge,
           border: const OutlineInputBorder(),
         ),
       ),
     );
-  }
-
-  String _formattedDate(DateTime dt) {
-    final now = DateTime.now();
-    if (dt.day == now.day && dt.month == now.month && dt.year == now.year) {
-      return 'Today';
-    }
-
-    return DateFormat('d MMM yyyy').format(dt);
   }
 }

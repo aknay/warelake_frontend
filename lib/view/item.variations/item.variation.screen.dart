@@ -11,6 +11,7 @@ import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.controller.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/items/item.controller.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
 enum ItemVariationAction {
   delete,
@@ -121,7 +122,8 @@ class PageContents extends ConsumerWidget {
                   ),
                   ListTile(
                     title: const Text("Stock on hand"),
-                    trailing: StockCount(amount: itemVariation.itemCount!, style: Theme.of(context).textTheme.bodyLarge),
+                    trailing:
+                        StockCount(amount: itemVariation.itemCount!, style: Theme.of(context).textTheme.bodyLarge),
                   ),
                   ListTile(
                     title: const Text("Barcode"),
@@ -137,8 +139,12 @@ class PageContents extends ConsumerWidget {
                           style: Theme.of(context).textTheme.bodyLarge)),
                   ListTile(
                     title: const Text("Minimum Stock"),
-                    trailing: Text(
-                        itemVariation.minimumStockCountOrNone.fold(() => '-', (a) => a.toString()),
+                    trailing: Text(itemVariation.minimumStockCountOrNone.fold(() => '-', (a) => a.toString()),
+                        style: Theme.of(context).textTheme.bodyLarge),
+                  ),
+                  ListTile(
+                    title: const Text("Expiry Date"),
+                    trailing: Text(itemVariation.expiryDate.fold(() => '-', (a) => formatDate(a)),
                         style: Theme.of(context).textTheme.bodyLarge),
                   ),
                 ],
