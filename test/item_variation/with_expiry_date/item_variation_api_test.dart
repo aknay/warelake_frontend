@@ -174,7 +174,7 @@ void main() async {
 
     {
       final expiredItemOrError =
-          await itemVariationRepo.getExpiredItemVariations(
+          await itemVariationRepo.getExpiringItemVariations(
               teamId: teamId,
               token: firstUserAccessToken,
               expiryDate: threeWeeksLater);
@@ -185,7 +185,7 @@ void main() async {
 
     {
       final expiredItemOrError =
-          await itemVariationRepo.getExpiredItemVariations(
+          await itemVariationRepo.getExpiringItemVariations(
               teamId: teamId,
               token: firstUserAccessToken,
               expiryDate: oneWeeksLater);
@@ -212,7 +212,7 @@ void main() async {
 
     {
       final expiredItemOrError =
-          await itemVariationRepo.getExpiredItemVariations(
+          await itemVariationRepo.getExpiringItemVariations(
               teamId: teamId,
               token: firstUserAccessToken,
               expiryDate: threeWeeksLater);
@@ -224,7 +224,7 @@ void main() async {
 
       {
         final expiredItemOrError =
-            await itemVariationRepo.getExpiredItemVariations(
+            await itemVariationRepo.getExpiringItemVariations(
                 teamId: teamId,
                 token: firstUserAccessToken,
                 expiryDate: threeWeeksLater,

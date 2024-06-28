@@ -250,11 +250,12 @@ class ItemVariationRepository extends ItemVariationApi {
   }
 
   @override
-  Future<Either<ErrorResponse, ListResponse<ItemVariation>>> getExpiredItemVariations(
-      {required String teamId,
-      required String token,
-      required DateTime expiryDate,
-      Option<String> startingAfterId = const None()}) async {
+  Future<Either<ErrorResponse, ListResponse<ItemVariation>>>
+      getExpiringItemVariations(
+          {required String teamId,
+          required String token,
+          required DateTime expiryDate,
+          Option<String> startingAfterId = const None()}) async {
     try {
       Map<String, String> additionalQuery = {};
       additionalQuery["expiry_date"] = expiryDate.toUtc().toIso8601String();
