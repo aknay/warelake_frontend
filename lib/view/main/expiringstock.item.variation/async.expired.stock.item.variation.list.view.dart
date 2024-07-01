@@ -9,6 +9,7 @@ import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
+import 'package:warelake/view/main/expiringstock.item.variation/expiring.stock.item.variations.screen.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state
@@ -20,11 +21,14 @@ class AsyncExpiringStockItemVariationListView extends ConsumerStatefulWidget {
   const AsyncExpiringStockItemVariationListView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ItemVariationListViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ItemVariationListViewState();
 }
 
-class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVariationListView> {
-  final PagingController<int, ItemVariation> _pagingController = PagingController(firstPageKey: 0);
+class _ItemVariationListViewState
+    extends ConsumerState<AsyncExpiringStockItemVariationListView> {
+  final PagingController<int, ItemVariation> _pagingController =
+      PagingController(firstPageKey: 0);
   final _lastIdProvider = StateProvider<Option<String>>(
     (ref) => const None(),
   );
@@ -33,12 +37,20 @@ class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVa
   void initState() {
     super.initState();
     _pagingController.addPageRequestListener((pageKey) {
+      ref.watch(expiringDateProvider);
       _fetchPage(pageKey);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<DateTime>(
+      expiringDateProvider,
+      (_, state) {
+        _pagingController.refresh();
+      },
+    );
+
     ref.listen<Option<String>>(
       searchItemVariationByBarcodeProvider,
       (_, state) {
@@ -59,7 +71,8 @@ class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVa
       onRefresh: _refresh,
       child: PagedListView<int, ItemVariation>(
         pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(itemBuilder: (context, item, index) {
+        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(
+            itemBuilder: (context, item, index) {
           return _getListTitle(item, context);
         }),
       ),
@@ -78,7 +91,11 @@ class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVa
   }
 
   Future<void> _fetchPage(int pageKey) async {
-    final itemListResponseOrError = await ref.read(itemVariationServiceProvider).getExpiringStockItemVarations(DateTime.now());
+    final dateTime = ref.read(expiringDateProvider);
+
+    final itemListResponseOrError = await ref
+        .read(itemVariationServiceProvider)
+        .getExpiringStockItemVarations(dateTime);
 
     if (itemListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -104,7 +121,9 @@ class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVa
   ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
     return ListTile(
       leading: ItemVariationImageWidget(
-          itemId: itemVariation.itemId, itemVariationId: itemVariation.id!, isForTheList: true),
+          itemId: itemVariation.itemId,
+          itemVariationId: itemVariation.id!,
+          isForTheList: true),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 16, top: 16),
         child: Text(itemVariation.name),
@@ -114,8 +133,9 @@ class _ItemVariationListViewState extends ConsumerState<AsyncExpiringStockItemVa
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ItemVariationScreen(itemId: itemVariation.itemId!, itemVariationId: itemVariation.id!)),
+              builder: (context) => ItemVariationScreen(
+                  itemId: itemVariation.itemId!,
+                  itemVariationId: itemVariation.id!)),
         );
       },
     );

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:warelake/view/main/expiringstock.item.variation/async.expired.stock.item.variation.list.view.dart';
 
-final dateProvider = StateProvider<DateTime>((ref) {
-  return DateTime.now().add(const Duration(days: 22));
+final expiringDateProvider = StateProvider.autoDispose<DateTime>((ref) {
+  return DateTime.now().add(const Duration(days: 30));
 });
 
 class ExpiringStockItemVariationsScreen extends ConsumerWidget {
@@ -14,8 +13,7 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dateTime = ref.watch(dateProvider);
-
+    final dateTime = ref.watch(expiringDateProvider);
     final formattedDateText = formatExpiryDate(dateTime);
 
     return Scaffold(
@@ -30,8 +28,6 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                 onTap: () {
                   showModalBottomSheet<void>(
                     isScrollControlled: true,
-                    // constraints: BoxConstraints(
-                    //     maxHeight: MediaQuery.of(context).size.height * 0.15),
                     context: context,
                     builder: (BuildContext context) {
                       return Padding(
@@ -46,8 +42,11 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   child: const Text('In 1 month'),
                                   onPressed: () {
-                                    ref.read(dateProvider.notifier).state =
-                                        addMonths(DateTime.now(), 1);
+                                    ref
+                                            .read(expiringDateProvider.notifier)
+                                            .state =
+                                        DateTime.now()
+                                            .add(const Duration(days: 31));
 
                                     Navigator.pop(context);
                                   },
@@ -55,7 +54,9 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   child: const Text('In 6 months'),
                                   onPressed: () {
-                                    ref.read(dateProvider.notifier).state =
+                                    ref
+                                            .read(expiringDateProvider.notifier)
+                                            .state =
                                         DateTime.now()
                                             .add(const Duration(days: 30 * 6));
 
@@ -65,7 +66,9 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   child: const Text('In 12 months'),
                                   onPressed: () {
-                                    ref.read(dateProvider.notifier).state =
+                                    ref
+                                            .read(expiringDateProvider.notifier)
+                                            .state =
                                         DateTime.now()
                                             .add(const Duration(days: 365));
 
@@ -74,7 +77,27 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                                 ),
                                 ElevatedButton(
                                   child: const Text('Custom'),
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () async {
+                                    final now = DateTime.now();
+                                    final lastDate = DateTime(
+                                        now.year + 20, now.month, now.day);
+
+                                    final DateTime? picked =
+                                        await showDatePicker(
+                                            context: context,
+                                            initialDate: now,
+                                            firstDate: DateTime(now.year,
+                                                now.month - 6, now.day),
+                                            lastDate: lastDate);
+                                    if (picked != null) {
+                                      ref
+                                          .read(expiringDateProvider.notifier)
+                                          .state = picked;
+                                    }
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
                                 ),
                               ],
                             )),
@@ -97,7 +120,6 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text('hjello')),
             const Expanded(child: AsyncExpiringStockItemVariationListView())
           ],
         ));
@@ -109,54 +131,14 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
     Duration difference = expiryDate.difference(now);
     int daysDifference = difference.inDays;
 
-    Logger().d("diff now ${now}");
-    Logger().d("diff expir ${expiryDate}");
-    Logger().d("diff ${daysDifference}");
-
-    if (daysDifference < 0) {
-      // Expiry date is in the past
-      return 'Expired on ${DateFormat.yMMMd().format(expiryDate)}';
-    } else if (daysDifference == 0) {
-      // Expiry date is today
-      return 'Expires today';
-    } else if (daysDifference == 1) {
-      // Expiry date is tomorrow
-      return 'Expires tomorrow';
-    } else if (daysDifference <= 7) {
-      // Expiry date is within the next week
-      return 'Expires in ${daysDifference} days';
-    } else if (daysDifference <= 30) {
-      // Expiry date is within the next month
-      return 'Expires in ${daysDifference ~/ 7} weeks';
-    } else if (daysDifference <= 180) {
-      // Expiry date is within the next 6 months
-      int monthsDifference = (daysDifference / 30).ceil();
-      return 'Expires in $monthsDifference months';
-    } else if (daysDifference <= 365) {
-      // Expiry date is within the next year
+    if (daysDifference == 30) {
+      return 'Expires in 1 month';
+    } else if (daysDifference == 30 * 6 - 1) {
+      return 'Expires in 6 months';
+    } else if (daysDifference == 364) {
       return 'Expires in 12 months';
     } else {
-      // Expiry date is more than a year away
-      return 'Expires on ${DateFormat.yMMMd().format(expiryDate)}';
+      return 'Expires after ${DateFormat.yMMMd().format(expiryDate)}';
     }
-  }
-
-  DateTime addMonths(DateTime dateTime, int monthsToAdd) {
-    int year = dateTime.year + monthsToAdd ~/ 12;
-    int month = dateTime.month + monthsToAdd % 12;
-    if (month > 12) {
-      year++;
-      month -= 12;
-    }
-    int day = dateTime.day;
-
-    // Handle edge case where adding months may overshoot to the next month
-    int daysInNextMonth = DateTime(year, month + 1, 0).day;
-    if (day > daysInNextMonth) {
-      day = daysInNextMonth;
-    }
-
-    return DateTime(year, month, day, dateTime.hour, dateTime.minute,
-        dateTime.second, dateTime.millisecond, dateTime.microsecond);
   }
 }
