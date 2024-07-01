@@ -10,6 +10,7 @@ import 'package:warelake/view/item.variations/item.variation.image/item.variatio
 import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 import 'package:warelake/view/main/expiringstock.item.variation/expiring.stock.item.variations.screen.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state
@@ -124,9 +125,16 @@ class _ItemVariationListViewState
           itemId: itemVariation.itemId,
           itemVariationId: itemVariation.id!,
           isForTheList: true),
-      title: Padding(
-        padding: const EdgeInsets.only(bottom: 16, top: 16),
-        child: Text(itemVariation.name),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(itemVariation.name),
+          ),
+          itemVariation.expiryDate.fold(() => const SizedBox.shrink(),
+              (x) => Text("Expired on ${formatDate(x)}"))
+        ],
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {

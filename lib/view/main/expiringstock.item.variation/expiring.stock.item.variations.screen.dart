@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:warelake/view/main/expiringstock.item.variation/async.expired.stock.item.variation.list.view.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
 final expiringDateProvider = StateProvider.autoDispose<DateTime>((ref) {
   return DateTime.now().add(const Duration(days: 30));
@@ -46,7 +46,7 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                                             .read(expiringDateProvider.notifier)
                                             .state =
                                         DateTime.now()
-                                            .add(const Duration(days: 31));
+                                            .add(const Duration(days: 30));
 
                                     Navigator.pop(context);
                                   },
@@ -131,14 +131,14 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
     Duration difference = expiryDate.difference(now);
     int daysDifference = difference.inDays;
 
-    if (daysDifference == 30) {
+    if (daysDifference == 30 - 1) {
       return 'Expires in 1 month';
     } else if (daysDifference == 30 * 6 - 1) {
       return 'Expires in 6 months';
     } else if (daysDifference == 364) {
       return 'Expires in 12 months';
     } else {
-      return 'Expires after ${DateFormat.yMMMd().format(expiryDate)}';
+      return 'Expiring within ${formatDate(expiryDate)}';
     }
   }
 }
