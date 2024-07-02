@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/purchase.order/search.field.dart';
@@ -22,6 +24,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemApi = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
@@ -72,14 +75,14 @@ void main() async {
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final shirtVaraitionsOrError =
-        await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: shirtItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: shirtItem.id!);
     shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
 
     final jeansCreatedOrError =
         await itemApi.createItemRequest(request: getJeanItemRequest(), teamId: team.id!, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
     final jeanVariationsOrError =
-        await itemApi.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: jeanItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: team.id!, token: firstUserAccessToken, itemId: jeanItem.id!);
     jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 

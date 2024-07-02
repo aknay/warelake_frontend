@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:warelake/data/auth/firebase.auth.repository.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
 import 'package:warelake/domain/item/requests.dart';
@@ -15,10 +16,11 @@ final imagePickerProvider = Provider((_) => ImagePicker());
 class ImageUploadService {
   final ImagePicker imagePicker;
   final ItemRepository itemRepository;
+  final ItemVariationRepository itemVariationRepository;
   final AuthRepository authRepo;
   final TeamIdSharedRefereceRepository teamIdSharedRefRepository;
 
-  ImageUploadService(this.imagePicker, this.itemRepository, this.authRepo, this.teamIdSharedRefRepository);
+  ImageUploadService(this.imagePicker, this.itemRepository, this.itemVariationRepository, this.authRepo, this.teamIdSharedRefRepository);
 
   Future<XFile?> pickImageByGallary() async {
     return await imagePicker.pickImage(source: ImageSource.gallery);
@@ -53,7 +55,7 @@ class ImageUploadService {
     );
 
     final token = await authRepo.shouldGetToken();
-    final createdOrError = await itemRepository.upsertItemVariationImage(request: ivmr, token: token);
+    final createdOrError = await itemVariationRepository.upsertItemVariationImage(request: ivmr, token: token);
     return createdOrError.fold((l) => left(l.message), (r) => right(unit));
   }
 }
@@ -63,6 +65,7 @@ ImageUploadService imageUploadService(ImageUploadServiceRef ref) {
   final authRepo = ref.watch(authRepositoryProvider);
   final teamIdSharedRefRepo = ref.watch(teamIdSharedReferenceRepositoryProvider);
   final itemRepo = ref.watch(itemRepositoryProvider);
+  final itemVariationRepo = ref.watch(itemVariationRepositoryProvider);
   final imagePicker = ref.watch(imagePickerProvider);
-  return ImageUploadService(imagePicker, itemRepo, authRepo, teamIdSharedRefRepo);
+  return ImageUploadService(imagePicker, itemRepo, itemVariationRepo, authRepo, teamIdSharedRefRepo);
 }

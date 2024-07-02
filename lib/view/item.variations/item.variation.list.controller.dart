@@ -1,5 +1,5 @@
-import 'package:warelake/domain/item/entities.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 
 part 'item.variation.list.controller.g.dart';
 

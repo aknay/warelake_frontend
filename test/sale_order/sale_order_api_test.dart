@@ -6,11 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/purchase.order/purchase.order.repository.dart';
 import 'package:warelake/data/sale.order/sale.order.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
 import 'package:warelake/domain/bill.account/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
 import 'package:warelake/domain/sale.order/entities.dart';
@@ -22,6 +24,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemApi = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final saleOrderApi = SaleOrderRepository();
   final billAccountApi = BillAccountRepository();
   final purchaseOrderApi = PurchaseOrderRepository();
@@ -73,14 +76,14 @@ void main() async {
     shirtItem = shirtCreatedOrError.toIterable().first;
 
     final shirtVaraitionsOrError =
-        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: shirtItem.id!);
     shirtItemVariations = shirtVaraitionsOrError.toIterable().first;
 
     final jeansCreatedOrError =
         await itemApi.createItemRequest(request: getJeanItemRequest(purchasePriceInInt: 1200, salePriceInInt: 1200), teamId: teamId, token: firstUserAccessToken);
     jeanItem = jeansCreatedOrError.toIterable().first;
     final jeanVariationsOrError =
-        await itemApi.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
+        await itemVariationRepo.getItemVariations(teamId: teamId, token: firstUserAccessToken, itemId: jeanItem.id!);
     jeanItemVariations = jeanVariationsOrError.toIterable().first;
   });
 
@@ -265,12 +268,12 @@ void main() async {
 
     {
       //test item increased after received
-      final shirt1VariationOrError = await itemApi.getItemVariation(
+      final shirt1VariationOrError = await itemVariationRepo.getItemVariation(
           itemId: shirtItem.id!, itemVariationId: shirt1.id!, teamId: teamId, token: firstUserAccessToken);
       final item1 = shirt1VariationOrError.toIterable().first;
       expect(item1.itemCount, -5.4);
 
-      final shirt2VariationOrError = await itemApi.getItemVariation(
+      final shirt2VariationOrError = await itemVariationRepo.getItemVariation(
           itemId: shirtItem.id!, itemVariationId: shirt2.id!, teamId: teamId, token: firstUserAccessToken);
       final item2 = shirt2VariationOrError.toIterable().first;
       expect(item2.itemCount, -4);
@@ -413,7 +416,7 @@ void main() async {
 
     {
       //test item increased after received
-      final retrievedItemOrError = await itemApi.getItemVariation(
+      final retrievedItemOrError = await itemVariationRepo.getItemVariation(
           itemVariationId: shirt1Varation.id!,
           itemId: shirt1Varation.itemId!,
           teamId: teamId,
@@ -439,7 +442,7 @@ void main() async {
 
     {
       //test item count is back to zero
-      final retrievedItemOrError = await itemApi.getItemVariation(
+      final retrievedItemOrError = await itemVariationRepo.getItemVariation(
           itemVariationId: shirt1Varation.id!,
           itemId: shirt1Varation.itemId!,
           teamId: teamId,

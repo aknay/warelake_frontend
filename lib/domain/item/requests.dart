@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 
 class ItemImageRequest {

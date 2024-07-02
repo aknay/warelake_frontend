@@ -5,10 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
 import 'package:warelake/data/onboarding/team.id.shared.ref.repository.dart';
-import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/view/barcode/barcode.scanner.value.controller.dart';
 import 'package:warelake/view/barcode/barcode.scanner.widget.dart';
 import 'package:warelake/view/common.widgets/responsive.center.dart';
+import 'package:warelake/view/common.widgets/widgets/date.selection.widget.dart';
 import 'package:warelake/view/constants/app.sizes.dart';
 import 'package:warelake/view/constants/breakpoints.dart';
 import 'package:warelake/view/utils/currency.input.formatter.dart';
@@ -30,12 +33,17 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
   Option<String> barcodeOrNone = const None();
   Option<double> currentStockLevel = const Some(0);
   Option<int> minimumStockLevelOrNone = const Some(0);
+  Option<DateTime> expiryDateOrNone = const None();
   late final CurrencyCode currencyCode;
   late final currencyFormatter = CurrencyTextInputFormatter(currencyCode: currencyCode);
   late final bool hideStockLevelUi = widget.hideStockLevelUi == null ? false : widget.hideStockLevelUi!;
 
   late final enableLowStockProvider = StateProvider.autoDispose<bool>((ref) {
     return widget.itemVariation.fold(() => false, (a) => a.minimumStockCountOrNone.isSome());
+  });
+
+  late final enableExpiryDateProvider = StateProvider.autoDispose<bool>((ref) {
+    return widget.itemVariation.fold(() => false, (a) => a.expiryDate.isSome());
   });
 
   @override
@@ -78,27 +86,32 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
               purchasePriceMoney: purchasePriceMoney,
               itemCount: itemCount,
               barcode: barcodeOrNone.toNullable(),
-              minimumStock: minimumStockLevelOrNone);
+              minimumStock: minimumStockLevelOrNone,
+              expiryDate: expiryDateOrNone);
 
           context.pop(itemVariation);
         }, (a) {
-          final isLowStockEnabled = ref.read(enableLowStockProvider);
-          if (!isLowStockEnabled) {
+          if (!ref.read(enableLowStockProvider)) {
             minimumStockLevelOrNone =
                 const Some(0); // we have to disable low stock with 0 value // the logic is a bit weird
           }
 
-          final itemVariation = a.copyWith(
-              name: itemVariationName.fold(() => '', (a) => a),
-              stockable: true,
-              sku: 'abc',
-              salePriceMoney: salePriceMoney,
-              purchasePriceMoney: purchasePriceMoney,
-              itemCount: itemCount,
-              barcode: barcodeOrNone.fold(() => '', (a) => a),
-              minimumStockCountOrNone: minimumStockLevelOrNone);
+          Option<ExpiryDateOrDisable> expiryDateOrDisable;
+          if (!ref.read(enableExpiryDateProvider)) {
+            expiryDateOrDisable = Some(ExpiryDateOrDisable.disableExpiryDate());
+          } else {
+            expiryDateOrDisable =
+                expiryDateOrNone.fold(() => const None(), (x) => Some(ExpiryDateOrDisable.updateExpiryDate(x)));
+          }
 
-          context.pop(itemVariation);
+          final payload = ItemVariationPayload(
+              name: itemVariationName,
+              pruchasePrice: purchasingPrice,
+              salePrice: sellingPrice,
+              expiryDateOrDisable: expiryDateOrDisable,
+              barcode: barcodeOrNone);
+
+          context.pop(payload);
         });
       }
     }
@@ -178,11 +191,11 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
         initialValue: widget.itemVariation.fold(() => null, (a) => a.name),
         decoration: const InputDecoration(
           labelText: 'Item Name *',
-          hintText: 'Enter your username',
+          hintText: 'Item Name',
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter your username';
+            return 'Please enter Item Name';
           }
           return null;
         },
@@ -236,7 +249,7 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
                   ref.read(enableLowStockProvider.notifier).state = value;
                 }),
           ],
-        )
+        ),
       ]),
       gapH8,
       Visibility(
@@ -260,6 +273,27 @@ class _AddItemVariationScreenState extends ConsumerState<AddItemVariationScreen>
           },
           onSaved: (value) => minimumStockLevelOrNone = value == null ? const None() : optionOf(int.tryParse(value)),
         ),
+      ),
+      Row(
+        children: [
+          const Text('Enable Expiry Date:'),
+          gapW8,
+          Switch(
+              value: ref.watch(enableExpiryDateProvider),
+              onChanged: (value) {
+                ref.read(enableExpiryDateProvider.notifier).state = value;
+              }),
+        ],
+      ),
+      gapH8,
+      Visibility(
+        visible: ref.watch(enableExpiryDateProvider),
+        child: DateSelectionWidget(
+            useLastDateAsToday: false,
+            initialDate: widget.itemVariation.fold(() => const None(), (x) => x.expiryDate),
+            onValueChanged: (value) {
+              expiryDateOrNone = Some(value);
+            }),
       ),
     ];
   }

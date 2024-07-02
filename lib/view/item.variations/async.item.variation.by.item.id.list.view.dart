@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:warelake/domain/item/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/view/common.widgets/stock.count.widget.dart';
 import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/async.item.variation.list.by.item.id.controller.dart';

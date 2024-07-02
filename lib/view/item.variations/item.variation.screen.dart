@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/view/common.widgets/amount.text.dart';
 import 'package:warelake/view/common.widgets/async_value_widget.dart';
@@ -10,6 +12,7 @@ import 'package:warelake/view/item.variations/add.item.variance.screen.dart';
 import 'package:warelake/view/item.variations/item.variation.controller.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/items/item.controller.dart';
+import 'package:warelake/view/utils/date.time.utils.dart';
 
 enum ItemVariationAction {
   delete,
@@ -42,7 +45,7 @@ class PageContents extends ConsumerWidget {
   final String itemVariationId;
 
   Future<void> _edit(ItemVariation oldItemVariation, BuildContext context, WidgetRef ref) async {
-    final ItemVariation? newItemVariation = await Navigator.push(
+ final ItemVariationPayload? newItemVariation = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => AddItemVariationScreen(itemVariation: Some(oldItemVariation), hideStockLevelUi: true),
@@ -52,7 +55,7 @@ class PageContents extends ConsumerWidget {
     if (newItemVariation != null) {
       await ref
           .read(itemControllerProvider(itemId: oldItemVariation.itemId!).notifier)
-          .updateItemVariation(newItemVariation: newItemVariation, oldItemVariation: oldItemVariation);
+          .updateItemVariation(payload: newItemVariation, itemVariationId: oldItemVariation.id! );
     }
   }
 
@@ -120,7 +123,8 @@ class PageContents extends ConsumerWidget {
                   ),
                   ListTile(
                     title: const Text("Stock on hand"),
-                    trailing: StockCount(amount: itemVariation.itemCount!, style: Theme.of(context).textTheme.bodyLarge),
+                    trailing:
+                        StockCount(amount: itemVariation.itemCount!, style: Theme.of(context).textTheme.bodyLarge),
                   ),
                   ListTile(
                     title: const Text("Barcode"),
@@ -136,8 +140,12 @@ class PageContents extends ConsumerWidget {
                           style: Theme.of(context).textTheme.bodyLarge)),
                   ListTile(
                     title: const Text("Minimum Stock"),
-                    trailing: Text(
-                        itemVariation.minimumStockCountOrNone.fold(() => '-', (a) => a.toString()),
+                    trailing: Text(itemVariation.minimumStockCountOrNone.fold(() => '-', (a) => a.toString()),
+                        style: Theme.of(context).textTheme.bodyLarge),
+                  ),
+                  ListTile(
+                    title: const Text("Expiry Date"),
+                    trailing: Text(itemVariation.expiryDate.fold(() => '-', (a) => formatDate(a)),
                         style: Theme.of(context).textTheme.bodyLarge),
                   ),
                 ],

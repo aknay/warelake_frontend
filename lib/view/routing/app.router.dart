@@ -16,6 +16,7 @@ import 'package:warelake/view/items/add.item.screen.dart';
 import 'package:warelake/view/items/item.screen.dart';
 import 'package:warelake/view/items/items.screen.dart';
 import 'package:warelake/view/main/dashboard.screen.dart';
+import 'package:warelake/view/main/expiringstock.item.variation/expiring.stock.item.variations.screen.dart';
 import 'package:warelake/view/main/low.stock.item.variation/low.stock.item.variations.screen.dart';
 import 'package:warelake/view/main/profile/profile.screen.dart';
 import 'package:warelake/view/onboarding/onboarding.error.screen.dart';
@@ -51,6 +52,7 @@ enum AppRoute {
   itemVariations,
   itemVariationDetail,
   lowStockIteamVariations,
+  checkExpiringStockIteamVariations,
 }
 
 @riverpod
@@ -118,6 +120,14 @@ GoRouter goRouter(GoRouterRef ref) {
               pageBuilder: (context, state) => const MaterialPage(
                 fullscreenDialog: true,
                 child: LowStockItemVariationsScreen(),
+              ),
+            ),
+            GoRoute(
+              name: AppRoute.checkExpiringStockIteamVariations.name,
+              path: 'check_expiring_stock_item_variations',
+              pageBuilder: (context, state) => const MaterialPage(
+                fullscreenDialog: true,
+                child: ExpiringStockItemVariationsScreen(),
               ),
             ),
             GoRoute(

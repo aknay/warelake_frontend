@@ -4,8 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/team/entities.dart';
@@ -16,6 +19,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemRepo = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
@@ -98,12 +102,56 @@ void main() async {
     {
       //check item variation list
       final shirtVariationsOrError =
-          await itemRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+          await itemVariationRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
       expect(shirtVariationsOrError.isRight(), true);
       final shirtVariations = shirtVariationsOrError.toIterable().first;
       expect(shirtVariations.length, 2);
       expect(shirtVariations.where((element) => element.name == 'White shirt').length, 1);
       expect(shirtVariations.where((element) => element.name == 'Black shirt').length, 1);
+    }
+  });
+
+
+  test('item variations should be created in different created_at even created with an item', () async {
+    final salePriceMoney = PriceMoney(amount: 10, currency: "SGD");
+    final purchasePriceMoney = PriceMoney(amount: 5, currency: "SGD");
+
+    final whiteShirt = ItemVariation.create(
+        name: "White shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+    final shirt = Item.create(name: "shirt", unit: 'kg');
+
+    final blackShirt = ItemVariation.create(
+        name: "Black shirt",
+        stockable: true,
+        sku: 'sku 123',
+        salePriceMoney: salePriceMoney,
+        purchasePriceMoney: purchasePriceMoney);
+
+    final request = CreateItemRequest(item: shirt, itemVariations: [whiteShirt, blackShirt]);
+
+    final itemCreated = await itemRepo.createItemRequest(request: request, teamId: teamId, token: firstUserAccessToken);
+    expect(itemCreated.isRight(), true);
+
+    final retrievedItemOrError =
+        await itemRepo.getItem(itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
+    expect(retrievedItemOrError.isRight(), true);
+    final shirtItem = retrievedItemOrError.toIterable().first;
+
+    {
+      //check item variation list
+      final shirtVariationsOrError =
+          await itemVariationRepo.getItemVariations(itemId: shirtItem.id!, teamId: teamId, token: firstUserAccessToken);
+      expect(shirtVariationsOrError.isRight(), true);
+      final shirtVariations = shirtVariationsOrError.toIterable().first;
+      expect(shirtVariations.length, 2);
+      expect(shirtVariations.where((element) => element.name == 'White shirt').length, 1);
+      expect(shirtVariations.where((element) => element.name == 'Black shirt').length, 1);
+      final shouldNotBeSame = shirtVariations.first.createdAt! != shirtVariations.last.createdAt!;
+      expect(shouldNotBeSame, true);
     }
   });
 }

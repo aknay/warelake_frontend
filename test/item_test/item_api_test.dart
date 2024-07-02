@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:warelake/data/bill.account/bill.account.repository.dart';
 import 'package:warelake/data/currency.code/valueobject.dart';
+import 'package:warelake/data/item.variation/item.variation.repository.dart';
 import 'package:warelake/data/item/item.repository.dart';
 import 'package:warelake/data/team/team.repository.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
+import 'package:warelake/domain/item.variation/payloads.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/payloads.dart';
 import 'package:warelake/domain/item/requests.dart';
@@ -18,6 +23,7 @@ import '../helpers/test.helper.dart';
 void main() async {
   final teamApi = TeamRepository();
   final itemRepo = ItemRepository();
+  final itemVariationRepo = ItemVariationRepository();
   final billAccountApi = BillAccountRepository();
   late String firstUserAccessToken;
   late String teamId;
@@ -153,7 +159,7 @@ void main() async {
 
     {
       //check item variations before delete
-      final itemVariaitonsOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
+      final itemVariaitonsOrError = await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
       expect(itemVariaitonsOrError.toIterable().first.data.length, 2);
     }
 
@@ -178,7 +184,7 @@ void main() async {
 
     {
       //check item variations after delete
-      final itemVariaitonsOrError = await itemRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
+      final itemVariaitonsOrError = await itemVariationRepo.getItemVariationList(teamId: teamId, token: firstUserAccessToken);
       expect(itemVariaitonsOrError.toIterable().first.data.isEmpty, true);
     }
   });
@@ -189,7 +195,7 @@ void main() async {
 
     expect(itemCreated.isRight(), true);
 
-    final itemVariationsOrError = await itemRepo.getItemVariationListByItemId(
+    final itemVariationsOrError = await itemVariationRepo.getItemVariationListByItemId(
         teamId: teamId, itemId: itemCreated.toIterable().first.id!, token: firstUserAccessToken);
     final itemVariations = itemVariationsOrError.toIterable().first;
     {
@@ -199,13 +205,13 @@ void main() async {
 
     {
       //check item variations list before deleting
-      final itemVariationsOrError = await itemRepo.getItemVariations(
+      final itemVariationsOrError = await itemVariationRepo.getItemVariations(
           itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
       expect(itemVariationsOrError.isRight(), true);
       expect(itemVariationsOrError.toIterable().first.length, 2);
     }
     final retrievedItem = itemCreated.toIterable().first;
-    final deletedOrError = await itemRepo.deleteItemVariation(
+    final deletedOrError = await itemVariationRepo.deleteItemVariation(
       itemId: retrievedItem.id!,
       teamId: teamId,
       token: firstUserAccessToken,
@@ -224,7 +230,7 @@ void main() async {
 
     {
       //check item variations list after the delete
-      final itemVariationsOrError = await itemRepo.getItemVariations(
+      final itemVariationsOrError = await itemVariationRepo.getItemVariations(
           itemId: itemCreated.toIterable().first.id!, teamId: teamId, token: firstUserAccessToken);
       expect(itemVariationsOrError.isRight(), true);
       expect(itemVariationsOrError.toIterable().first.length, 1);
@@ -421,14 +427,14 @@ void main() async {
 
     // final itemCreatedOrError = await itemRepo.createItem(item: shirt, teamId: team.id!, token: firstUserAccessToken);
     expect(itemCreatedOrError.isRight(), true);
-    final payload = ItemVariationPayload(name: "Blue shirt", salePrice: 2.5, pruchasePrice: 4.7);
+    final payload = ItemVariationPayload(name: const Some("Blue shirt"), salePrice: const Some(2.5), pruchasePrice: const Some(4.7));
     final item = itemCreatedOrError.toIterable().first;
 
-    final itemVariationsOrError = await itemRepo.getItemVariationListByItemId(
+    final itemVariationsOrError = await itemVariationRepo.getItemVariationListByItemId(
         teamId: team.id!, itemId: itemCreatedOrError.toIterable().first.id!, token: firstUserAccessToken);
     final itemVariations = itemVariationsOrError.toIterable().first;
 
-    final updatedOrError = await itemRepo.updateItemVariation(
+    final updatedOrError = await itemVariationRepo.updateItemVariation(
         payload: payload,
         itemId: item.id!,
         itemVariationId: itemVariations.data.first.id!,
@@ -439,7 +445,7 @@ void main() async {
 
     {
       //get back the updated item
-      final itemVariationsOrError = await itemRepo.getItemVariationListByItemId(
+      final itemVariationsOrError = await itemVariationRepo.getItemVariationListByItemId(
           teamId: team.id!, itemId: itemCreatedOrError.toIterable().first.id!, token: firstUserAccessToken);
       final itemVariation = itemVariationsOrError.toIterable().first.data.first;
       expect(itemVariation.name, "Blue shirt");

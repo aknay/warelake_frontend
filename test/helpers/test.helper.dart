@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:warelake/domain/common/entities.dart';
+import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/domain/item/entities.dart';
 import 'package:warelake/domain/item/requests.dart';
 import 'package:warelake/domain/purchase.order/entities.dart';
@@ -23,40 +25,59 @@ String generateRandomEmail() {
   return '$randomEmail@$domain';
 }
 
+String generateRandomPassword({int length = 12}) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  Random random = Random();
+  List<String> result = List.generate(length, (index) => charset[random.nextInt(charset.length)]);
+
+  return result.join();
+}
+
 Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
 
-CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt}) {
-  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
-  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt);
+CreateItemRequest getShirtItemRequest({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, List<String>? nameList}) {
+  String? firstShirtName;
+  String? secondShirtName; 
+  if (nameList != null && nameList.length == 2){
+    firstShirtName = nameList[0];
+    secondShirtName = nameList[1];
+  }
+  final whiteShirt = getWhiteShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate, name:  firstShirtName);
+  final blackShirt = getBlackShirt(salePriceInInt: salePriceInInt, purchasePriceInInt: purchasePriceInInt, expiryDate: expiryDate, name: secondShirtName);
   return CreateItemRequest(item: Item.create(name: "shirt", unit: 'pcs'), itemVariations: [whiteShirt, blackShirt]);
 }
 
-ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+ItemVariation getWhiteShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, String? name}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
   final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
+  final shirtName = name ?? "White Shirt";
   return ItemVariation.create(
-      name: "White Shirt",
+      name: shirtName,
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,
-      purchasePriceMoney: purchasePriceMoney);
+      purchasePriceMoney: purchasePriceMoney,
+      expiryDate: optionOf(expiryDate));
 }
 
-ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt}) {
+ItemVariation getBlackShirt({int? salePriceInInt, int? purchasePriceInInt, DateTime? expiryDate, String? name}) {
   final salePrice = salePriceInInt ?? Random().nextInt(1000) + 1000;
   final purchasePrice = purchasePriceInInt ?? Random().nextInt(1000) + 1000;
   final salePriceMoney = PriceMoney(amount: salePrice, currency: "SGD");
   final purchasePriceMoney = PriceMoney(amount: purchasePrice, currency: "SGD");
+    final shirtName = name ?? "Black Shirt";
   return ItemVariation.create(
-      name: "Black Shirt",
+      name: shirtName,
       stockable: true,
       sku: 'sku 123',
       salePriceMoney: salePriceMoney,
-      purchasePriceMoney: purchasePriceMoney);
+      purchasePriceMoney: purchasePriceMoney,
+      expiryDate: optionOf(expiryDate));
 }
 
 Item getJean() {
