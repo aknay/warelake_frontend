@@ -4,13 +4,14 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:warelake/data/item.variation/item.variation.service.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.screen.dart';
 import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 import 'package:warelake/view/main/expiringstock.item.variation/expiring.stock.item.variations.screen.dart';
-import 'package:warelake/view/utils/date.time.utils.dart';
+import 'package:warelake/view/widgets/expired.label.dart';
 
 // we will use this to refresh item list from another screen after certain action (such as edit or remove) is done.
 // we use bool type so that we can toggle. the value should be diffrent from current state
@@ -73,9 +74,12 @@ class _ItemVariationListViewState
       child: PagedListView<int, ItemVariation>(
         pagingController: _pagingController,
         builderDelegate: PagedChildBuilderDelegate<ItemVariation>(
+            noItemsFoundIndicatorBuilder: (context) => Center(
+                child: Text(
+                    "No items expiring ${formatExpiryDate(ref.watch(expiringDateProvider))}")),
             itemBuilder: (context, item, index) {
-          return _getListTitle(item, context);
-        }),
+              return _getListTitle(item, context);
+            }),
       ),
     );
   }
@@ -120,6 +124,13 @@ class _ItemVariationListViewState
   }
 
   ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
+    DateTime now = DateTime.now();
+
+    DateTime futureDate =
+        now.add(const Duration(days: 1)); // Example future date calculation
+
+    String difference = timeago.format(futureDate); // "in 1 day"
+
     return ListTile(
       leading: ItemVariationImageWidget(
           itemId: itemVariation.itemId,
@@ -132,8 +143,12 @@ class _ItemVariationListViewState
             padding: const EdgeInsets.only(top: 16),
             child: Text(itemVariation.name),
           ),
-          itemVariation.expiryDate.fold(() => const SizedBox.shrink(),
-              (x) => Text("Expired on ${formatDate(x)}"))
+          itemVariation.expiryDate.fold(() => const SizedBox.shrink(), (x) {
+            if (x.isBefore(DateTime.now())) {
+              return const ExpiredItemLabel("Expired");
+            }
+            return Text(timeago.format(x, allowFromNow: true));
+          })
         ],
       ),
       trailing: const Icon(Icons.arrow_forward_ios),

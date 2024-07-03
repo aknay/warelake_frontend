@@ -18,7 +18,7 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Expiration Check"),
+          title: const Text("Expiry Check"),
         ),
         body: Column(
           children: [
@@ -113,7 +113,7 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
                       child: FaIcon(FontAwesomeIcons.calendar,
                           color: Colors.white),
                     ),
-                    labelText: formattedDateText,
+                    labelText: "Expires $formattedDateText",
                     labelStyle: Theme.of(context).textTheme.bodyLarge,
                     border: const OutlineInputBorder(),
                   ),
@@ -124,21 +124,21 @@ class ExpiringStockItemVariationsScreen extends ConsumerWidget {
           ],
         ));
   }
+}
 
-  String formatExpiryDate(DateTime expiryDate) {
-    // Calculate the difference in days from today to the expiry date
-    DateTime now = DateTime.now();
-    Duration difference = expiryDate.difference(now);
-    int daysDifference = difference.inDays;
+String formatExpiryDate(DateTime expiryDate) {
+  // Calculate the difference in days from today to the expiry date
+  DateTime now = DateTime.now();
+  Duration difference = expiryDate.difference(now);
+  int daysDifference = difference.inDays;
 
-    if (daysDifference == 30 - 1) {
-      return 'Expires in 1 month';
-    } else if (daysDifference == 30 * 6 - 1) {
-      return 'Expires in 6 months';
-    } else if (daysDifference == 364) {
-      return 'Expires in 12 months';
-    } else {
-      return 'Expiring within ${formatDate(expiryDate)}';
-    }
+  if (daysDifference == 30 - 1) {
+    return 'in 1 month';
+  } else if (daysDifference == 30 * 6 - 1) {
+    return 'in 6 months';
+  } else if (daysDifference == 364) {
+    return 'in 12 months';
+  } else {
+    return 'within ${formatDate(expiryDate)}';
   }
 }
