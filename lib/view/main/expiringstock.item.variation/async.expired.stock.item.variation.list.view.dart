@@ -9,7 +9,6 @@ import 'package:warelake/data/item.variation/item.variation.service.dart';
 import 'package:warelake/domain/item.utilization/entities.dart';
 import 'package:warelake/view/item.variations/item.variation.image/item.variation.image.widget.dart';
 import 'package:warelake/view/item.variations/item.variation.screen.dart';
-import 'package:warelake/view/item.variations/item.variations.screen/item.variation.list.view/item.variation.search.widget.dart';
 import 'package:warelake/view/main/expiringstock.item.variation/expiring.stock.item.variations.screen.dart';
 import 'package:warelake/view/widgets/expired.label.dart';
 
@@ -39,7 +38,6 @@ class _ItemVariationListViewState
   void initState() {
     super.initState();
     _pagingController.addPageRequestListener((pageKey) {
-      ref.watch(expiringDateProvider);
       _fetchPage(pageKey);
     });
   }
@@ -48,13 +46,6 @@ class _ItemVariationListViewState
   Widget build(BuildContext context) {
     ref.listen<DateTime>(
       expiringDateProvider,
-      (_, state) {
-        _pagingController.refresh();
-      },
-    );
-
-    ref.listen<Option<String>>(
-      searchItemVariationByBarcodeProvider,
       (_, state) {
         ref.read(_lastIdProvider.notifier).state = const None();
         _pagingController.refresh();
@@ -97,10 +88,10 @@ class _ItemVariationListViewState
 
   Future<void> _fetchPage(int pageKey) async {
     final dateTime = ref.read(expiringDateProvider);
-
     final itemListResponseOrError = await ref
         .read(itemVariationServiceProvider)
-        .getExpiringStockItemVarations(dateTime);
+        .getExpiringStockItemVarations(dateTime,
+            startingAfterId: ref.read(_lastIdProvider));
 
     if (itemListResponseOrError.isLeft()) {
       _pagingController.error = "Having error";
@@ -124,13 +115,6 @@ class _ItemVariationListViewState
   }
 
   ListTile _getListTitle(ItemVariation itemVariation, BuildContext context) {
-    DateTime now = DateTime.now();
-
-    DateTime futureDate =
-        now.add(const Duration(days: 1)); // Example future date calculation
-
-    String difference = timeago.format(futureDate); // "in 1 day"
-
     return ListTile(
       leading: ItemVariationImageWidget(
           itemId: itemVariation.itemId,
