@@ -34,6 +34,43 @@ String generateRandomPassword({int length = 12}) {
   return result.join();
 }
 
+DateTime generateRandomExpiredDate() {
+  Random random = Random();
+
+  // Generate a random number of days between 1 and 365 (1 year)
+  int randomDays = random.nextInt(365) + 1;
+
+  // Get the current date
+  DateTime currentDate = DateTime.now();
+
+  // Calculate the future date
+  DateTime futureDate = currentDate.add(Duration(days: randomDays));
+
+  return futureDate;
+}
+
+String generateRandomEAN13() {
+  Random random = Random();
+
+  // Generate 12 random digits (first 12 digits of EAN-13)
+  String twelveDigits = '';
+  for (int i = 0; i < 12; i++) {
+    twelveDigits += random.nextInt(10).toString(); // Generate a random digit (0-9)
+  }
+
+  // Calculate the checksum digit (13th digit of EAN-13)
+  int sum = 0;
+  for (int i = 0; i < 12; i++) {
+    int digit = int.parse(twelveDigits[i]);
+    sum += (i % 2 == 0) ? digit * 1 : digit * 3;
+  }
+  int checksum = (10 - (sum % 10)) % 10;
+
+  // Combine all digits to form the EAN-13 barcode number
+  String ean13 = twelveDigits + checksum.toString();
+
+  return ean13;
+}
 Item getShirt() {
   return Item.create(name: "shirt", unit: 'pcs');
 }
