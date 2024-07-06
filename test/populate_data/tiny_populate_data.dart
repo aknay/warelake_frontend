@@ -321,6 +321,29 @@ void main() async {
       final itemVariationsOrError = await itemVariationRepo.getItemVariations(
           teamId: team.id!, token: firstUserAccessToken, itemId: item.id!);
       final itemVariations = itemVariationsOrError.toIterable().first;
+
+      for (var i in itemVariations) {
+        //insert images to each item variation
+        String currentDirectory = Directory.current.path;
+        // Construct the path to the image file in the same directory as the test file
+        final fruitImageFileName = '${fruit.toLowerCase()}.jpeg';
+        final String imagePath =
+            '$currentDirectory/test/images/$fruitImageFileName'; // Adjust the image file name
+        if (File(imagePath).existsSync()) {
+          final request = ItemVariationImageRequest(
+              itemId: item.id!,
+              imagePath: File(imagePath),
+              teamId: team.id!,
+              itemVariationId: i.id!);
+
+          final createdImageOrError =
+              await itemVariationRepo.upsertItemVariationImage(
+                  request: request, token: firstUserAccessToken);
+
+          expect(createdImageOrError.isRight(), true);
+        }
+      }
+
       retrievedItemVariationList.addAll(itemVariations);
 
       await Future.delayed(const Duration(milliseconds: 1000));
