@@ -1,4 +1,3 @@
-
 class Item {
   String? id;
   String name;
@@ -19,7 +18,8 @@ class Item {
       this.id,
       this.imageUrl});
 
-  factory Item.create({required String name, String? description, required String unit}) {
+  factory Item.create(
+      {required String name, String? description, required String unit}) {
     return Item(name: name, description: description, unit: unit);
   }
 
@@ -45,10 +45,6 @@ class Item {
   }
 }
 
-
-
-
-
 class ItemUtilization {
   int totalItemVariationsCount;
   int totalItemCount;
@@ -61,13 +57,15 @@ class ItemUtilization {
 
   factory ItemUtilization.fromMap(Map<String, dynamic> json) {
     // so that it will take care of rounding due to floating point
-    final totalQuantityOfAllItemVariationInRawDouble = (json['total_quantity_of_all_item_variation'] as num).toDouble();
-    final totalQuantityOfAllItemVariationAfterDoubleFixed =
-        double.parse(totalQuantityOfAllItemVariationInRawDouble.toStringAsFixed(10));
+    final totalQuantityOfAllItemVariationInRawDouble =
+        (json['total_quantity_of_all_item_variation'] as num).toDouble();
+    final totalQuantityOfAllItemVariationAfterDoubleFixed = double.parse(
+        totalQuantityOfAllItemVariationInRawDouble.toStringAsFixed(10));
     return ItemUtilization(
       totalItemVariationsCount: json['total_item_variations_count'],
       totalItemCount: json['total_item_count'],
-      totalQuantityOfAllItemVariation: totalQuantityOfAllItemVariationAfterDoubleFixed,
+      totalQuantityOfAllItemVariation:
+          totalQuantityOfAllItemVariationAfterDoubleFixed,
     );
   }
 }
