@@ -74,13 +74,13 @@ class ItemVariationService {
   }
 
   Future<Either<String, ListResponse<ItemVariation>>>
-      getExpiringStockItemVarations(DateTime dateTime) async {
+      getExpiringStockItemVarations(DateTime dateTime, {Option<String> startingAfterId = const None()}) async {
     final teamIdOrNone = _teamIdSharedRefRepository.existingTeamId;
     return teamIdOrNone.fold(() => const Left("Team Id is empty"),
         (teamId) async {
       final token = await _authRepo.shouldGetToken();
       final items = await _itemRepo.getExpiringItemVariations(
-          expiryDate: dateTime, teamId: teamId, token: token);
+          expiryDate: dateTime, teamId: teamId, token: token, startingAfterId: startingAfterId);
       return items.fold((l) => Left(l.message), (r) => Right(r));
     });
   }

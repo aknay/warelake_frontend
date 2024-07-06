@@ -19,11 +19,11 @@ class ExpiringStockCheckWidget extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Expiration Stock Check', style: Theme.of(context).textTheme.titleLarge),
+              child: Text('Expiry Check', style: Theme.of(context).textTheme.titleLarge),
             ),
             ListTile(
               leading: const Icon(Icons.hourglass_bottom),
-              title: const Text('Stock Expiry'),
+              title: const Text('Expiring Items'),
               trailing: const FaIcon(FontAwesomeIcons.angleRight),
               onTap: () {
                 context.goNamed(AppRoute.checkExpiringStockIteamVariations.name);
