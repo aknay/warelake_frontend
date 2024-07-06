@@ -349,7 +349,7 @@ void main() async {
       await Future.delayed(const Duration(milliseconds: 1000));
     }
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 20; i++) {
       List<StockLineItem> lineItemList = [];
       getItemVariationList(retrievedItemVariationList, 4).forEach((element) {
         final lineItem = StockLineItem.create(
@@ -380,13 +380,14 @@ void main() async {
 
     //add sale orders
     List<String> saleOrderIdList = [];
-    for (int i = 0; i < 30; i++) {
+
+    for (int i = 0; i < 10; i++) {
       final lineItems = getItemVariationList(
               retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
                 itemVariation: e,
-                quantity: random.nextInt(8) + 2,
+                quantity: random.nextInt(10) + 10,
                 rate: e.salePriceMoney.amountInDouble,
                 unit: 'kg'),
           )
@@ -394,10 +395,10 @@ void main() async {
       final totalAmount = lineItems
           .map((e) => e.rate)
           .fold(0.0, (previousValue, element) => previousValue + element);
-
+      final date = randomDateTimeLast7Days();
       final so = SaleOrder.create(
           accountId: account.id!,
-          date: randomDateWithinLastSixMonths(i),
+          date: date,
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
           subTotal: totalAmount,
@@ -407,63 +408,135 @@ void main() async {
           saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
       saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
-    }
 
-    {
-      //delivered sale order
-      saleOrderIdList.shuffle();
-      final soIdList = saleOrderIdList.take(random.nextInt(10) + 3);
-      for (var element in soIdList) {
+      if (radomBool()) {
         await saleOrderApi.setToDelivered(
-            saleOrderId: element,
-            date: DateTime.now(),
+            saleOrderId: soCreatedOrError.toIterable().first.id!,
+            date: date,
             teamId: team.id!,
             token: firstUserAccessToken);
         await Future.delayed(const Duration(milliseconds: 1000));
       }
     }
 
-    //add purchase order
-    List<String> purchaseOrderIdList = [];
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 30; i++) {
       final lineItems = getItemVariationList(
               retrievedItemVariationList, random.nextInt(5) + 1)
           .map(
             (e) => LineItem.create(
                 itemVariation: e,
                 quantity: random.nextInt(10) + 10,
-                rate: e.purchasePriceMoney.amountInDouble,
+                rate: e.salePriceMoney.amountInDouble,
                 unit: 'kg'),
           )
           .toList();
       final totalAmount = lineItems
           .map((e) => e.rate)
           .fold(0.0, (previousValue, element) => previousValue + element);
-      final po = PurchaseOrder.create(
+
+      final date = randomDateWithinLastSixMonths(i);
+      final so = SaleOrder.create(
           accountId: account.id!,
-          date: randomDateWithinLastSixMonths(i),
+          date: date,
           currencyCode: CurrencyCode.AUD,
           lineItems: lineItems,
           subTotal: totalAmount,
           total: totalAmount,
-          purchaseOrderNumber: "P0-0000$i");
-      final poCreatedOrError = await purchaseOrderApi.setToIssued(
-          purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
-      purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
+          saleOrderNumber: "S0-0000$i");
+      final soCreatedOrError = await saleOrderApi.create(
+          saleOrder: so, teamId: team.id!, token: firstUserAccessToken);
       await Future.delayed(const Duration(milliseconds: 1000));
-    }
-    {
-      //delivered sale order
-      purchaseOrderIdList.shuffle();
-      final poIdList = purchaseOrderIdList.take(random.nextInt(10) + 3);
+      saleOrderIdList.add(soCreatedOrError.toIterable().first.id!);
 
-      for (var element in poIdList) {
-        await purchaseOrderApi.setToReceived(
-            purchaseOrderId: element,
-            date: DateTime.now(),
+      if (radomBool()) {
+        await saleOrderApi.setToDelivered(
+            saleOrderId: soCreatedOrError.toIterable().first.id!,
+            date: date,
             teamId: team.id!,
             token: firstUserAccessToken);
         await Future.delayed(const Duration(milliseconds: 1000));
+      }
+    }
+
+    {
+      //add purchase order
+      List<String> purchaseOrderIdList = [];
+
+      for (int i = 0; i < 20; i++) {
+        final lineItems = getItemVariationList(
+                retrievedItemVariationList, random.nextInt(5) + 1)
+            .map(
+              (e) => LineItem.create(
+                  itemVariation: e,
+                  quantity: random.nextInt(10) + 10,
+                  rate: e.purchasePriceMoney.amountInDouble,
+                  unit: 'kg'),
+            )
+            .toList();
+        final totalAmount = lineItems
+            .map((e) => e.rate)
+            .fold(0.0, (previousValue, element) => previousValue + element);
+        final date = randomDateTimeLast7Days();
+        final po = PurchaseOrder.create(
+            accountId: account.id!,
+            date: date,
+            currencyCode: CurrencyCode.AUD,
+            lineItems: lineItems,
+            subTotal: totalAmount,
+            total: totalAmount,
+            purchaseOrderNumber: "P0-0000$i");
+        final poCreatedOrError = await purchaseOrderApi.setToIssued(
+            purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
+        await Future.delayed(const Duration(milliseconds: 1000));
+
+        if (radomBool()) {
+          await purchaseOrderApi.setToReceived(
+              purchaseOrderId: poCreatedOrError.toIterable().first.id!,
+              date: date,
+              teamId: team.id!,
+              token: firstUserAccessToken);
+          await Future.delayed(const Duration(milliseconds: 1000));
+        }
+      }
+
+      for (int i = 0; i < 40; i++) {
+        final lineItems = getItemVariationList(
+                retrievedItemVariationList, random.nextInt(5) + 1)
+            .map(
+              (e) => LineItem.create(
+                  itemVariation: e,
+                  quantity: random.nextInt(10) + 10,
+                  rate: e.purchasePriceMoney.amountInDouble,
+                  unit: 'kg'),
+            )
+            .toList();
+        final totalAmount = lineItems
+            .map((e) => e.rate)
+            .fold(0.0, (previousValue, element) => previousValue + element);
+
+        final date = randomDateWithinLastSixMonths(i);
+        final po = PurchaseOrder.create(
+            accountId: account.id!,
+            date: date,
+            currencyCode: CurrencyCode.AUD,
+            lineItems: lineItems,
+            subTotal: totalAmount,
+            total: totalAmount,
+            purchaseOrderNumber: "P0-0000$i");
+        final poCreatedOrError = await purchaseOrderApi.setToIssued(
+            purchaseOrder: po, teamId: team.id!, token: firstUserAccessToken);
+        purchaseOrderIdList.add(poCreatedOrError.toIterable().first.id!);
+        await Future.delayed(const Duration(milliseconds: 1000));
+
+        if (radomBool()) {
+          await purchaseOrderApi.setToReceived(
+              purchaseOrderId: poCreatedOrError.toIterable().first.id!,
+              date: date,
+              teamId: team.id!,
+              token: firstUserAccessToken);
+          await Future.delayed(const Duration(milliseconds: 1000));
+        }
       }
     }
   }, timeout: const Timeout(Duration(minutes: 20)), skip: false);
