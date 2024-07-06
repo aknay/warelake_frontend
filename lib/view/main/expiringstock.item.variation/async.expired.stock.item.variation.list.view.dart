@@ -28,11 +28,13 @@ class AsyncExpiringStockItemVariationListView extends ConsumerStatefulWidget {
 
 class _ItemVariationListViewState
     extends ConsumerState<AsyncExpiringStockItemVariationListView> {
-  final PagingController<int, ItemVariation> _pagingController =
-      PagingController(firstPageKey: 0);
+  final PagingController<int, MapEntry<Option<String>, List<ItemVariation>>>
+      _pagingController = PagingController(firstPageKey: 0);
   final _lastIdProvider = StateProvider<Option<String>>(
     (ref) => const None(),
   );
+
+  final Set<String> _expiryGroupingKey = {};
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _ItemVariationListViewState
       expiringDateProvider,
       (_, state) {
         ref.read(_lastIdProvider.notifier).state = const None();
+        _expiryGroupingKey.clear(); // we need to clear the key
         _pagingController.refresh();
       },
     );
@@ -62,14 +65,49 @@ class _ItemVariationListViewState
 
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: PagedListView<int, ItemVariation>(
+      child: PagedListView<int, MapEntry<Option<String>, List<ItemVariation>>>(
         pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<ItemVariation>(
+        builderDelegate: PagedChildBuilderDelegate<
+                MapEntry<Option<String>, List<ItemVariation>>>(
             noItemsFoundIndicatorBuilder: (context) => Center(
                 child: Text(
                     "No items expiring ${formatExpiryDate(ref.watch(expiringDateProvider))}")),
-            itemBuilder: (context, item, index) {
-              return _getListTitle(item, context);
+            itemBuilder: (context, itemVariationMap, index) {
+              if (itemVariationMap.value.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              if (itemVariationMap.key.isSome()) {
+                final key = itemVariationMap.key.toIterable().first;
+                final text =
+                    key.substring(0, 1).toUpperCase() + key.substring(1);
+
+                return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _combine(
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Container(
+                            color: Theme.of(context).dividerColor,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, bottom: 12, top: 12),
+                              child: Text(text,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                            ),
+                          ),
+                        ),
+                        itemVariationMap.value
+                            .map((t) => _getListTitle(t, context))
+                            .toList()));
+              }
+              return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: itemVariationMap.value
+                      .map((t) => _getListTitle(t, context))
+                      .toList());
             }),
       ),
     );
@@ -83,6 +121,7 @@ class _ItemVariationListViewState
 
   Future<void> _refresh() async {
     ref.read(_lastIdProvider.notifier).state = const None();
+    _expiryGroupingKey.clear();
     _pagingController.refresh();
   }
 
@@ -106,11 +145,24 @@ class _ItemVariationListViewState
       log("item list is empty");
     }
 
+    final f = groupItemsByExpiry(DateTime.now(), itemList);
+    // we want to change to Option<String> so the we dont need to display another group with same title (such as Expired in weeks)
+    Map<Option<String>, List<ItemVariation>> mapWithOptionString = {};
+    for (var v in f.entries) {
+      if (_expiryGroupingKey.contains(v.key)) {
+        mapWithOptionString[const None()] = v.value;
+      } else {
+        mapWithOptionString[Some(v.key)] = v.value;
+      }
+      _expiryGroupingKey.add(v.key);
+    }
+
     if (itemListResponse.hasMore) {
       final nextPageKey = pageKey + itemList.length;
-      _pagingController.appendPage(itemList, nextPageKey);
+      _pagingController.appendPage(
+          mapWithOptionString.entries.toList(), nextPageKey);
     } else {
-      _pagingController.appendLastPage(itemList);
+      _pagingController.appendLastPage(mapWithOptionString.entries.toList());
     }
   }
 
@@ -146,5 +198,62 @@ class _ItemVariationListViewState
         );
       },
     );
+  }
+
+  List<Widget> _combine(Widget w1, List<Widget> w2) {
+    //due to text + TransactionItem list, we need to change to widget and combine them
+    return [w1] + w2;
+  }
+
+  Map<String, List<ItemVariation>> groupItemsByExpiry(
+      DateTime currentDate, List<ItemVariation> items) {
+    //Generated by ChatGPT
+    Map<String, List<ItemVariation>> groupedItems = {
+      'expired': [],
+      'expired in days': [],
+      'expired in weeks': [],
+      'expired in months': [],
+    };
+
+    for (var item in items) {
+      String remainingTime = calculateRemainingTime(
+          currentDate, item.expiryDate.fold(() => DateTime.now(), (x) => x));
+      if (remainingTime == 'expired') {
+        groupedItems['expired']!.add(item);
+      } else if (remainingTime.contains('day')) {
+        groupedItems['expired in days']!.add(item);
+      } else if (remainingTime.contains('week')) {
+        groupedItems['expired in weeks']!.add(item);
+      } else if (remainingTime.contains('month')) {
+        groupedItems['expired in months']!.add(item);
+      }
+    }
+
+    return groupedItems;
+  }
+
+  String calculateRemainingTime(DateTime currentDate, DateTime expiryDate) {
+    //Generated by ChatGPT
+    if (currentDate.isAfter(expiryDate)) {
+      return 'expired';
+    }
+
+    Duration difference = expiryDate.difference(currentDate);
+    if (difference.inDays > 0) {
+      if (difference.inDays == 1) {
+        return 'in 1 day';
+      } else if (difference.inDays < 7) {
+        return 'in ${difference.inDays} days';
+      } else if (difference.inDays < 30) {
+        int weeks = (difference.inDays / 7).floor();
+        return 'in $weeks weeks';
+      } else {
+        int months = (difference.inDays / 30).floor();
+        return 'in $months months';
+      }
+    } else {
+      int months = difference.inDays ~/ 30;
+      return 'in ${months.abs()} months';
+    }
   }
 }
